@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Brain, Briefcase, Target, Zap } from 'lucide-react';
@@ -73,33 +72,43 @@ const Index = () => {
           transition={{ delay: 0.5, type: "spring" }}
           className="relative z-10"
         >
+          {/* Logo */}
+          <div className="mb-8 flex justify-center">
+            <img 
+              src="/lovable-uploads/a9a8850e-efa8-4ff3-be18-e9ca23a403a2.png" 
+              alt="Fractionl Logo" 
+              className="w-24 h-24 object-contain"
+            />
+          </div>
+          
           <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 bg-clip-text text-transparent mb-4">
-            Fractionl Portfolio
-            <br />
-            Path-Finder
+            Pathfinder for Individuals
           </h1>
-          <p className="text-xl text-purple-200 mb-2">
-            Turn your hidden super-powers into
-          </p>
-          <p className="text-2xl font-semibold text-white mb-8">
-            agent-powered income streams 🚀
+          <p className="text-xl text-purple-200 mb-8">
+            Turn your ideas and superpowers into agent-powered income streams
           </p>
         </motion.div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card className="bg-gray-800/50 border-purple-500/20 p-6 hover:bg-gray-800/70 transition-all">
-          <Brain className="text-purple-400 mb-3" size={32} />
+          <div className="flex justify-center mb-3">
+            <Brain className="text-purple-400" size={32} />
+          </div>
           <h3 className="text-white font-semibold mb-2">AI-Powered Mapping</h3>
           <p className="text-gray-300 text-sm">Smart algorithms identify your unique skill combinations</p>
         </Card>
         <Card className="bg-gray-800/50 border-purple-500/20 p-6 hover:bg-gray-800/70 transition-all">
-          <Target className="text-purple-400 mb-3" size={32} />
+          <div className="flex justify-center mb-3">
+            <Target className="text-purple-400" size={32} />
+          </div>
           <h3 className="text-white font-semibold mb-2">Portfolio Strategy</h3>
           <p className="text-gray-300 text-sm">Build resilient income streams across multiple sectors</p>
         </Card>
         <Card className="bg-gray-800/50 border-purple-500/20 p-6 hover:bg-gray-800/70 transition-all">
-          <Zap className="text-purple-400 mb-3" size={32} />
+          <div className="flex justify-center mb-3">
+            <Zap className="text-purple-400" size={32} />
+          </div>
           <h3 className="text-white font-semibold mb-2">Instant Action Plan</h3>
           <p className="text-gray-300 text-sm">Get your personalized roadmap in just 7 minutes</p>
         </Card>
