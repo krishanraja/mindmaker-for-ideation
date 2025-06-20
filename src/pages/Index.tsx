@@ -65,33 +65,56 @@ const Index = () => {
       animate={{ opacity: 1, y: 0 }}
       className="text-center space-y-8 max-w-5xl mx-auto"
     >
-      <div className="relative">
+      {/* Background Animation Layer */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <NeuronLoop />
-        <motion.div
-          initial={{ scale: 0.8 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.5, type: "spring" }}
-          className="relative z-10"
-        >
-          {/* Logo */}
-          <div className="mb-8 flex justify-center">
-            <img 
-              src="/lovable-uploads/a9a8850e-efa8-4ff3-be18-e9ca23a403a2.png" 
-              alt="Fractionl Logo" 
-              className="w-24 h-24 object-contain"
-            />
-          </div>
-          
-          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 bg-clip-text text-transparent mb-4">
-            Pathfinder for Individuals
-          </h1>
-          <p className="text-xl text-purple-200 mb-8">
-            Turn your ideas and superpowers into agent-powered income streams
-          </p>
-        </motion.div>
       </div>
+      
+      {/* Logo - Stable and Separate */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ 
+          duration: 0.6, 
+          ease: "easeOut",
+          type: "spring",
+          stiffness: 100,
+          damping: 15
+        }}
+        className="relative z-20 mb-8"
+      >
+        <div className="flex justify-center">
+          <img 
+            src="/lovable-uploads/a9a8850e-efa8-4ff3-be18-e9ca23a403a2.png" 
+            alt="Fractionl Logo" 
+            className="w-24 h-24 object-contain"
+            style={{ maxWidth: '96px', maxHeight: '96px' }}
+          />
+        </div>
+      </motion.div>
+      
+      {/* Hero Text */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="relative z-10"
+      >
+        <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 bg-clip-text text-transparent mb-4">
+          Pathfinder for Individuals
+        </h1>
+        <p className="text-xl text-purple-200 mb-8">
+          Turn your ideas and superpowers into agent-powered income streams
+        </p>
+      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      {/* Feature Cards */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 relative z-10"
+      >
         <Card className="bg-gray-800/50 border-purple-500/20 p-6 hover:bg-gray-800/70 transition-all backdrop-blur-sm">
           <div className="flex justify-center mb-3">
             <Brain className="text-purple-400" size={32} />
@@ -113,11 +136,16 @@ const Index = () => {
           <h3 className="text-white font-semibold mb-2">Instant Action Plan</h3>
           <p className="text-gray-300 text-sm">Get your personalized roadmap in just 7 minutes</p>
         </Card>
-      </div>
+      </motion.div>
 
+      {/* CTA Button */}
       <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.7 }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
+        className="relative z-10"
       >
         <Button 
           onClick={handleStart}
@@ -129,7 +157,7 @@ const Index = () => {
         </Button>
       </motion.div>
 
-      <p className="text-gray-400 text-sm">
+      <p className="text-gray-400 text-sm relative z-10">
         ⏱️ Takes ~7 minutes • 🔒 Your data stays private • ✨ Instant results
       </p>
     </motion.div>
