@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Brain, Briefcase, Target, Zap } from 'lucide-react';
@@ -62,7 +63,7 @@ const Index = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="text-center space-y-8"
+      className="text-center space-y-8 max-w-5xl mx-auto"
     >
       <div className="relative">
         <NeuronLoop />
@@ -91,21 +92,21 @@ const Index = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card className="bg-gray-800/50 border-purple-500/20 p-6 hover:bg-gray-800/70 transition-all">
+        <Card className="bg-gray-800/50 border-purple-500/20 p-6 hover:bg-gray-800/70 transition-all backdrop-blur-sm">
           <div className="flex justify-center mb-3">
             <Brain className="text-purple-400" size={32} />
           </div>
           <h3 className="text-white font-semibold mb-2">AI-Powered Mapping</h3>
           <p className="text-gray-300 text-sm">Smart algorithms identify your unique skill combinations</p>
         </Card>
-        <Card className="bg-gray-800/50 border-purple-500/20 p-6 hover:bg-gray-800/70 transition-all">
+        <Card className="bg-gray-800/50 border-purple-500/20 p-6 hover:bg-gray-800/70 transition-all backdrop-blur-sm">
           <div className="flex justify-center mb-3">
             <Target className="text-purple-400" size={32} />
           </div>
           <h3 className="text-white font-semibold mb-2">Portfolio Strategy</h3>
           <p className="text-gray-300 text-sm">Build resilient income streams across multiple sectors</p>
         </Card>
-        <Card className="bg-gray-800/50 border-purple-500/20 p-6 hover:bg-gray-800/70 transition-all">
+        <Card className="bg-gray-800/50 border-purple-500/20 p-6 hover:bg-gray-800/70 transition-all backdrop-blur-sm">
           <div className="flex justify-center mb-3">
             <Zap className="text-purple-400" size={32} />
           </div>
@@ -184,7 +185,77 @@ const Index = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-[#0E0E11] to-gray-900 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-[#0E0E11] to-gray-900 text-white relative overflow-hidden">
+      {/* Dynamic Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Animated gradient orbs */}
+        <motion.div
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-purple-600/10 to-blue-600/10 rounded-full blur-3xl"
+          animate={{
+            x: [0, 100, -50, 0],
+            y: [0, -50, 100, 0],
+            scale: [1, 1.2, 0.8, 1],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        
+        <motion.div
+          className="absolute top-3/4 right-1/4 w-80 h-80 bg-gradient-to-r from-purple-500/8 to-pink-500/8 rounded-full blur-3xl"
+          animate={{
+            x: [0, -80, 60, 0],
+            y: [0, 80, -40, 0],
+            scale: [1, 0.9, 1.1, 1],
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 5,
+          }}
+        />
+
+        <motion.div
+          className="absolute top-1/2 right-1/3 w-64 h-64 bg-gradient-to-r from-indigo-500/6 to-purple-600/6 rounded-full blur-2xl"
+          animate={{
+            x: [0, 60, -30, 0],
+            y: [0, -60, 30, 0],
+            scale: [1, 1.3, 0.7, 1],
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 10,
+          }}
+        />
+
+        {/* Floating particles */}
+        {[...Array(12)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-purple-400/20 rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              opacity: [0.2, 0.8, 0.2],
+            }}
+            transition={{
+              duration: 3 + Math.random() * 4,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: Math.random() * 5,
+            }}
+          />
+        ))}
+      </div>
+
       {/* Progress Ring - Fixed position */}
       {isStarted && (
         <div className="fixed top-6 right-6 z-50">
@@ -192,15 +263,25 @@ const Index = () => {
         </div>
       )}
 
-      <div className="container mx-auto px-4 py-8 md:py-16">
-        {!isStarted ? renderWelcomeScreen() : renderConversation()}
+      {/* Main Content - Centered */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-6xl">
+          {!isStarted ? renderWelcomeScreen() : renderConversation()}
+        </div>
       </div>
 
-      {/* Subtle background pattern */}
-      <div className="fixed inset-0 opacity-5 pointer-events-none">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 25% 25%, #6C40FF 0%, transparent 50%), radial-gradient(circle at 75% 75%, #8F6CFF 0%, transparent 50%)`
-        }} />
+      {/* Enhanced gradient overlay */}
+      <div className="fixed inset-0 opacity-30 pointer-events-none">
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: `
+              radial-gradient(circle at 20% 80%, rgba(108, 64, 255, 0.15) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(143, 108, 255, 0.15) 0%, transparent 50%),
+              radial-gradient(circle at 40% 40%, rgba(108, 64, 255, 0.1) 0%, transparent 50%)
+            `
+          }}
+        />
       </div>
     </div>
   );
