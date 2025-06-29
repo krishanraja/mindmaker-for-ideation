@@ -24,7 +24,7 @@ const ProgressRing: React.FC<ProgressRingProps> = ({ progress, size = 60 }) => {
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="rgba(108, 64, 255, 0.2)"
+          stroke="rgba(139, 92, 246, 0.2)"
           strokeWidth="3"
           fill="transparent"
         />
@@ -48,8 +48,8 @@ const ProgressRing: React.FC<ProgressRingProps> = ({ progress, size = 60 }) => {
         {/* Gradient definition */}
         <defs>
           <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#6C40FF" />
-            <stop offset="100%" stopColor="#8F6CFF" />
+            <stop offset="0%" stopColor="#8B5CF6" />
+            <stop offset="100%" stopColor="#A78BFA" />
           </linearGradient>
         </defs>
       </svg>
@@ -65,7 +65,7 @@ const ProgressRing: React.FC<ProgressRingProps> = ({ progress, size = 60 }) => {
       <div 
         className="absolute inset-0 rounded-full opacity-30 blur-sm"
         style={{
-          background: `conic-gradient(from 0deg, transparent ${100 - progress}%, #6C40FF ${100 - progress}%, #8F6CFF 100%, transparent 100%)`
+          background: `conic-gradient(from 0deg, transparent ${100 - progress}%, #8B5CF6 ${100 - progress}%, #A78BFA 100%, transparent 100%)`
         }}
       />
     </div>

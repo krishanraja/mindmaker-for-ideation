@@ -108,10 +108,10 @@ const Index = () => {
         transition={{ delay: 0.3 }}
         className="relative z-10"
       >
-        <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 bg-clip-text text-transparent mb-4">
+        <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-violet-400 via-violet-500 to-violet-600 bg-clip-text text-transparent mb-4">
           Pathfinder for Individuals
         </h1>
-        <p className="text-xl text-purple-200 mb-8">
+        <p className="text-xl text-gray-300 mb-8">
           Turn your ideas and superpowers into agent-powered income streams
         </p>
       </motion.div>
@@ -123,23 +123,23 @@ const Index = () => {
         transition={{ delay: 0.5 }}
         className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 relative z-10"
       >
-        <Card className="bg-gray-800/50 border-purple-500/20 p-6 hover:bg-gray-800/70 transition-all backdrop-blur-sm">
+        <Card className="bg-gray-900/50 border-violet-500/20 p-6 hover:bg-gray-900/70 transition-all backdrop-blur-sm">
           <div className="flex justify-center mb-3">
-            <Brain className="text-purple-400" size={32} />
+            <Brain className="text-violet-400" size={32} />
           </div>
           <h3 className="text-white font-semibold mb-2">AI-Powered Mapping</h3>
           <p className="text-gray-300 text-sm">Smart algorithms identify your unique skill combinations</p>
         </Card>
-        <Card className="bg-gray-800/50 border-purple-500/20 p-6 hover:bg-gray-800/70 transition-all backdrop-blur-sm">
+        <Card className="bg-gray-900/50 border-violet-500/20 p-6 hover:bg-gray-900/70 transition-all backdrop-blur-sm">
           <div className="flex justify-center mb-3">
-            <Target className="text-purple-400" size={32} />
+            <Target className="text-violet-400" size={32} />
           </div>
           <h3 className="text-white font-semibold mb-2">Portfolio Strategy</h3>
           <p className="text-gray-300 text-sm">Build resilient income streams across multiple sectors</p>
         </Card>
-        <Card className="bg-gray-800/50 border-purple-500/20 p-6 hover:bg-gray-800/70 transition-all backdrop-blur-sm">
+        <Card className="bg-gray-900/50 border-violet-500/20 p-6 hover:bg-gray-900/70 transition-all backdrop-blur-sm">
           <div className="flex justify-center mb-3">
-            <Zap className="text-purple-400" size={32} />
+            <Zap className="text-violet-400" size={32} />
           </div>
           <h3 className="text-white font-semibold mb-2">Instant Action Plan</h3>
           <p className="text-gray-300 text-sm">Get your personalized roadmap in just 7 minutes</p>
@@ -158,7 +158,7 @@ const Index = () => {
         <Button 
           onClick={handleStart}
           size="lg"
-          className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-8 py-4 text-lg rounded-full shadow-lg shadow-purple-500/25"
+          className="bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-700 hover:to-violet-800 text-white px-8 py-4 text-lg rounded-full shadow-lg shadow-violet-500/25"
         >
           Start Your Path-Finding Journey
           <ArrowRight className="ml-2" size={20} />
@@ -228,7 +228,7 @@ const Index = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-[#0E0E11] to-gray-900 text-white relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Progress Sidebar - Only show when started */}
       {isStarted && (
         <ProgressSidebar currentStep={session.currentStep} totalSteps={totalSteps} />
@@ -238,7 +238,7 @@ const Index = () => {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Animated gradient orbs */}
         <motion.div
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-purple-600/10 to-blue-600/10 rounded-full blur-3xl"
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-violet-600/10 to-blue-600/10 rounded-full blur-3xl"
           animate={{
             x: [0, 100, -50, 0],
             y: [0, -50, 100, 0],
@@ -252,7 +252,7 @@ const Index = () => {
         />
         
         <motion.div
-          className="absolute top-3/4 right-1/4 w-80 h-80 bg-gradient-to-r from-purple-500/8 to-pink-500/8 rounded-full blur-3xl"
+          className="absolute top-3/4 right-1/4 w-80 h-80 bg-gradient-to-r from-violet-500/8 to-pink-500/8 rounded-full blur-3xl"
           animate={{
             x: [0, -80, 60, 0],
             y: [0, 80, -40, 0],
@@ -267,7 +267,7 @@ const Index = () => {
         />
 
         <motion.div
-          className="absolute top-1/2 right-1/3 w-64 h-64 bg-gradient-to-r from-indigo-500/6 to-purple-600/6 rounded-full blur-2xl"
+          className="absolute top-1/2 right-1/3 w-64 h-64 bg-gradient-to-r from-indigo-500/6 to-violet-600/6 rounded-full blur-2xl"
           animate={{
             x: [0, 60, -30, 0],
             y: [0, -60, 30, 0],
@@ -285,7 +285,7 @@ const Index = () => {
         {[...Array(12)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-2 h-2 bg-purple-400/20 rounded-full"
+            className="absolute w-2 h-2 bg-violet-400/20 rounded-full"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
@@ -324,9 +324,9 @@ const Index = () => {
           className="absolute inset-0"
           style={{
             background: `
-              radial-gradient(circle at 20% 80%, rgba(108, 64, 255, 0.15) 0%, transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(143, 108, 255, 0.15) 0%, transparent 50%),
-              radial-gradient(circle at 40% 40%, rgba(108, 64, 255, 0.1) 0%, transparent 50%)
+              radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(167, 139, 250, 0.15) 0%, transparent 50%),
+              radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.1) 0%, transparent 50%)
             `
           }}
         />

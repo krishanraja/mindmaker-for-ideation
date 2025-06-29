@@ -20,7 +20,7 @@ const steps = [
 
 const ProgressSidebar: React.FC<ProgressSidebarProps> = ({ currentStep, totalSteps }) => {
   return (
-    <div className="fixed left-0 top-0 h-full w-80 bg-gray-900/95 backdrop-blur-sm border-r border-purple-500/20 p-6 z-40">
+    <div className="fixed left-0 top-0 h-full w-80 bg-black/95 backdrop-blur-sm border-r border-violet-500/20 p-6 z-40">
       <div className="mb-8">
         <h2 className="text-xl font-bold text-white mb-2">AI Mindset Sprint Canvas</h2>
       </div>
@@ -38,9 +38,9 @@ const ProgressSidebar: React.FC<ProgressSidebarProps> = ({ currentStep, totalSte
               transition={{ delay: index * 0.1 }}
               className={`flex items-center space-x-3 p-3 rounded-lg transition-all ${
                 isCurrent 
-                  ? 'bg-purple-600 text-white' 
+                  ? 'bg-violet-600 text-white' 
                   : isCompleted 
-                    ? 'bg-gray-800 text-gray-300' 
+                    ? 'bg-gray-900 text-gray-300' 
                     : 'bg-transparent text-gray-500'
               }`}
             >
@@ -48,13 +48,13 @@ const ProgressSidebar: React.FC<ProgressSidebarProps> = ({ currentStep, totalSte
                 isCurrent 
                   ? 'border-white bg-white' 
                   : isCompleted 
-                    ? 'border-green-400 bg-green-400' 
+                    ? 'border-violet-400 bg-violet-400' 
                     : 'border-gray-500'
               }`}>
                 {isCompleted ? (
                   <Check className="w-4 h-4 text-white" />
                 ) : isCurrent ? (
-                  <Circle className="w-3 h-3 fill-purple-600 text-purple-600" />
+                  <Circle className="w-3 h-3 fill-violet-600 text-violet-600" />
                 ) : (
                   <span className="text-xs font-medium text-gray-500">{step.id}</span>
                 )}
