@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Brain, Briefcase, Target, Zap } from 'lucide-react';
@@ -9,6 +8,7 @@ import { Card } from '@/components/ui/card';
 import ProgressRing from '@/components/ProgressRing';
 import NeuronLoop from '@/components/NeuronLoop';
 import ConversationStep from '@/components/ConversationStep';
+import ProgressSidebar from '@/components/ProgressSidebar';
 
 interface PathfinderSession {
   id: string;
@@ -32,11 +32,11 @@ const Index = () => {
   const [isStarted, setIsStarted] = useState(false);
   const [inputValue, setInputValue] = useState('');
 
-  const totalSteps = 10;
+  const totalSteps = 7;
 
   const handleStart = () => {
     setIsStarted(true);
-    setSession(prev => ({ ...prev, currentStep: 1, progress: 10 }));
+    setSession(prev => ({ ...prev, currentStep: 1, progress: 14 }));
   };
 
   const handleNext = () => {
@@ -45,7 +45,7 @@ const Index = () => {
         ...prev, 
         name: inputValue,
         currentStep: 2,
-        progress: 20
+        progress: 28
       }));
       setInputValue('');
     } else if (session.currentStep === 2 && inputValue.trim()) {
@@ -53,7 +53,15 @@ const Index = () => {
         ...prev, 
         whyNow: inputValue,
         currentStep: 3,
-        progress: 30
+        progress: 42
+      }));
+      setInputValue('');
+    } else if (session.currentStep === 3 && inputValue.trim()) {
+      setSession(prev => ({ 
+        ...prev, 
+        coreSkills: inputValue.split(',').map(skill => skill.trim()),
+        currentStep: 4,
+        progress: 56
       }));
       setInputValue('');
     }
@@ -164,7 +172,7 @@ const Index = () => {
   );
 
   const renderConversation = () => (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto ml-80"> {/* Add left margin for sidebar */}
       <AnimatePresence mode="wait">
         {session.currentStep === 1 && (
           <ConversationStep
@@ -208,12 +216,24 @@ const Index = () => {
             hint="Think beyond job titles - what are your natural talents?"
           />
         )}
+        
+        {session.currentStep === 4 && (
+          <div className="text-center text-white">
+            <h2 className="text-2xl font-bold mb-4">Coming Soon!</h2>
+            <p>More steps will be added here...</p>
+          </div>
+        )}
       </AnimatePresence>
     </div>
   );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-[#0E0E11] to-gray-900 text-white relative overflow-hidden">
+      {/* Progress Sidebar - Only show when started */}
+      {isStarted && (
+        <ProgressSidebar currentStep={session.currentStep} totalSteps={totalSteps} />
+      )}
+
       {/* Dynamic Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Animated gradient orbs */}
@@ -291,7 +311,7 @@ const Index = () => {
         </div>
       )}
 
-      {/* Main Content - Centered */}
+      {/* Main Content - Centered with conditional margin */}
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-6xl">
           {!isStarted ? renderWelcomeScreen() : renderConversation()}
