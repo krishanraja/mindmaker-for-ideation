@@ -138,10 +138,10 @@ const Index = () => {
         transition={{ delay: 0.3 }}
         className="relative z-10"
       >
-        <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-violet-400 via-violet-500 to-violet-600 bg-clip-text text-transparent mb-4">
+        <h1 className="text-4xl md:text-6xl font-black tracking-tight bg-gradient-to-r from-violet-400 via-violet-500 to-violet-600 bg-clip-text text-transparent mb-4">
           Pathfinder for Individuals
         </h1>
-        <p className="text-xl text-gray-300 mb-8">
+        <p className="text-xl font-light text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
           Turn your ideas and superpowers into agent-powered income streams
         </p>
       </motion.div>

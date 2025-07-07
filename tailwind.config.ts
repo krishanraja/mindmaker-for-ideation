@@ -21,6 +21,15 @@ export default {
 			fontFamily: {
 				sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
 			},
+			fontWeight: {
+				light: '300',
+				normal: '400',
+				medium: '500',
+				semibold: '600',
+				bold: '700',
+				extrabold: '800',
+				black: '900',
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
