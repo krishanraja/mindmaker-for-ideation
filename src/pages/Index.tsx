@@ -15,6 +15,9 @@ interface PathfinderSession {
   name: string;
   whyNow: string;
   coreSkills: string[];
+  capabilityMap: string;
+  habitHooks: string;
+  successNorthStar: string;
   currentStep: number;
   progress: number;
 }
@@ -25,6 +28,9 @@ const Index = () => {
     name: '',
     whyNow: '',
     coreSkills: [],
+    capabilityMap: '',
+    habitHooks: '',
+    successNorthStar: '',
     currentStep: 0,
     progress: 0
   });
@@ -62,6 +68,30 @@ const Index = () => {
         coreSkills: inputValue.split(',').map(skill => skill.trim()),
         currentStep: 4,
         progress: 56
+      }));
+      setInputValue('');
+    } else if (session.currentStep === 4 && inputValue.trim()) {
+      setSession(prev => ({ 
+        ...prev, 
+        capabilityMap: inputValue,
+        currentStep: 5,
+        progress: 70
+      }));
+      setInputValue('');
+    } else if (session.currentStep === 5 && inputValue.trim()) {
+      setSession(prev => ({ 
+        ...prev, 
+        habitHooks: inputValue,
+        currentStep: 6,
+        progress: 84
+      }));
+      setInputValue('');
+    } else if (session.currentStep === 6 && inputValue.trim()) {
+      setSession(prev => ({ 
+        ...prev, 
+        successNorthStar: inputValue,
+        currentStep: 7,
+        progress: 100
       }));
       setInputValue('');
     }
@@ -218,10 +248,83 @@ const Index = () => {
         )}
         
         {session.currentStep === 4 && (
-          <div className="text-center text-white">
-            <h2 className="text-2xl font-bold mb-4">Coming Soon!</h2>
-            <p>More steps will be added here...</p>
-          </div>
+          <ConversationStep
+            key="step4"
+            title="Capability Map 🗺️"
+            subtitle="What unique combinations of skills do you have that others don't? Think intersection of expertise."
+            placeholder="e.g., Finance + AI, Design + Psychology, Data + Storytelling..."
+            value={inputValue}
+            onChange={setInputValue}
+            onNext={handleNext}
+            canProceed={inputValue.trim().length > 15}
+            isTextarea={true}
+            hint="The magic happens at intersections - what makes you uniquely you?"
+          />
+        )}
+        
+        {session.currentStep === 5 && (
+          <ConversationStep
+            key="step5"
+            title="Habit Hooks ⚡"
+            subtitle="What do you do naturally that energizes you? What activities make you lose track of time?"
+            placeholder="e.g., Teaching others, solving puzzles, building systems, creating content..."
+            value={inputValue}
+            onChange={setInputValue}
+            onNext={handleNext}
+            canProceed={inputValue.trim().length > 15}
+            isTextarea={true}
+            hint="These are clues to sustainable income streams - follow your energy!"
+          />
+        )}
+        
+        {session.currentStep === 6 && (
+          <ConversationStep
+            key="step6"
+            title="Success North-Star 🌟"
+            subtitle="What does success look like for you in 12 months? Be specific about lifestyle and impact."
+            placeholder="e.g., $10k/month while traveling, helping 1000 people transition careers..."
+            value={inputValue}
+            onChange={setInputValue}
+            onNext={handleNext}
+            canProceed={inputValue.trim().length > 20}
+            isTextarea={true}
+            hint="Your north star guides all strategic decisions - make it vivid!"
+          />
+        )}
+        
+        {session.currentStep === 7 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center space-y-6"
+          >
+            <Card className="bg-gray-800/50 border-violet-500/20 p-8 backdrop-blur-sm">
+              <h2 className="text-3xl font-bold text-white mb-4">🎉 Your Pathfinder Canvas is Complete!</h2>
+              <p className="text-gray-300 text-lg mb-6">
+                You've mapped your unique journey from {session.name}'s skills to success.
+              </p>
+              <div className="space-y-4 text-left">
+                <div className="bg-gray-900/50 p-4 rounded-lg">
+                  <h3 className="text-violet-400 font-semibold mb-2">Your Driving Force:</h3>
+                  <p className="text-gray-300">{session.whyNow}</p>
+                </div>
+                <div className="bg-gray-900/50 p-4 rounded-lg">
+                  <h3 className="text-violet-400 font-semibold mb-2">Core Skills:</h3>
+                  <p className="text-gray-300">{session.coreSkills.join(', ')}</p>
+                </div>
+                <div className="bg-gray-900/50 p-4 rounded-lg">
+                  <h3 className="text-violet-400 font-semibold mb-2">Your Success Vision:</h3>
+                  <p className="text-gray-300">{session.successNorthStar}</p>
+                </div>
+              </div>
+              <Button 
+                className="mt-6 bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-700 hover:to-violet-800 text-white px-8 py-3 text-lg rounded-full"
+                onClick={() => window.location.reload()}
+              >
+                Start Another Journey
+              </Button>
+            </Card>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
