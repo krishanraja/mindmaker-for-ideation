@@ -10,7 +10,7 @@ import NeuronLoop from '@/components/NeuronLoop';
 import ConversationStep from '@/components/ConversationStep';
 import ProgressSidebar from '@/components/ProgressSidebar';
 
-interface PathfinderSession {
+interface MindmakerSession {
   id: string;
   name: string;
   whyNow: string;
@@ -23,7 +23,7 @@ interface PathfinderSession {
 }
 
 const Index = () => {
-  const [session, setSession] = useState<PathfinderSession>({
+  const [session, setSession] = useState<MindmakerSession>({
     id: '',
     name: '',
     whyNow: '',
@@ -139,7 +139,7 @@ const Index = () => {
         className="relative z-10"
       >
         <h1 className="text-4xl md:text-6xl font-display font-bold tracking-tight bg-gradient-to-r from-violet-400 via-violet-500 to-violet-600 bg-clip-text text-transparent mb-4">
-          Pathfinder for Individuals
+          Mindmaker for Individuals
         </h1>
         <p className="text-xl font-body font-light text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
           Turn your ideas and superpowers into agent-powered income streams
@@ -190,7 +190,7 @@ const Index = () => {
           size="lg"
           className="bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-700 hover:to-violet-800 text-white px-8 py-4 text-lg rounded-full shadow-lg shadow-violet-500/25"
         >
-          Start Your Path-Finding Journey
+          Start Your Mindmaking Journey
           <ArrowRight className="ml-2" size={20} />
         </Button>
       </motion.div>
@@ -299,7 +299,7 @@ const Index = () => {
             className="text-center space-y-6"
           >
             <Card className="bg-gray-800/50 border-violet-500/20 p-8 backdrop-blur-sm">
-              <h2 className="text-3xl font-heading font-bold text-white mb-4">🎉 Your Pathfinder Canvas is Complete!</h2>
+              <h2 className="text-3xl font-heading font-bold text-white mb-4">🎉 Your Mindmaker Canvas is Complete!</h2>
               <p className="text-gray-300 text-lg mb-6">
                 You've mapped your unique journey from {session.name}'s skills to success.
               </p>
