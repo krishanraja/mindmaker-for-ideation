@@ -20,7 +20,9 @@ export default {
 		extend: {
 			fontFamily: {
 				sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-				serif: ['Playfair Display', 'Georgia', 'serif'],
+				display: ['Outfit', 'Inter', 'system-ui', 'sans-serif'],
+				heading: ['Outfit', 'Inter', 'system-ui', 'sans-serif'],
+				body: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
 			},
 			fontWeight: {
 				light: '300',

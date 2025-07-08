@@ -22,7 +22,7 @@ const ProgressSidebar: React.FC<ProgressSidebarProps> = ({ currentStep, totalSte
   return (
     <div className="fixed left-0 top-0 h-full w-80 bg-black/95 backdrop-blur-sm border-r border-violet-500/20 p-6 z-40">
       <div className="mb-8">
-        <h2 className="text-xl font-serif font-bold tracking-tight text-white mb-2">AI Mindset Sprint Canvas</h2>
+        <h2 className="text-xl font-heading font-bold tracking-tight text-white mb-2">AI Mindset Sprint Canvas</h2>
       </div>
       
       <div className="space-y-4">

@@ -138,10 +138,10 @@ const Index = () => {
         transition={{ delay: 0.3 }}
         className="relative z-10"
       >
-        <h1 className="text-4xl md:text-6xl font-serif font-bold tracking-tight bg-gradient-to-r from-violet-400 via-violet-500 to-violet-600 bg-clip-text text-transparent mb-4">
+        <h1 className="text-4xl md:text-6xl font-display font-bold tracking-tight bg-gradient-to-r from-violet-400 via-violet-500 to-violet-600 bg-clip-text text-transparent mb-4">
           Pathfinder for Individuals
         </h1>
-        <p className="text-xl font-light text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-xl font-body font-light text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
           Turn your ideas and superpowers into agent-powered income streams
         </p>
       </motion.div>
@@ -299,7 +299,7 @@ const Index = () => {
             className="text-center space-y-6"
           >
             <Card className="bg-gray-800/50 border-violet-500/20 p-8 backdrop-blur-sm">
-              <h2 className="text-3xl font-serif font-bold text-white mb-4">🎉 Your Pathfinder Canvas is Complete!</h2>
+              <h2 className="text-3xl font-heading font-bold text-white mb-4">🎉 Your Pathfinder Canvas is Complete!</h2>
               <p className="text-gray-300 text-lg mb-6">
                 You've mapped your unique journey from {session.name}'s skills to success.
               </p>
