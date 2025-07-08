@@ -46,7 +46,7 @@ const ConversationStep: React.FC<ConversationStepProps> = ({
     >
       <Card className="bg-gray-800/50 border-purple-500/20 p-8 backdrop-blur-sm">
         <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-white mb-3">
+          <h2 className="text-2xl md:text-3xl font-serif font-bold tracking-tight text-white mb-3">
             {title}
           </h2>
           <p className="text-gray-300 text-lg font-light leading-relaxed">
