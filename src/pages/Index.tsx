@@ -8,16 +8,18 @@ import { Card } from '@/components/ui/card';
 import ProgressRing from '@/components/ProgressRing';
 import NeuronLoop from '@/components/NeuronLoop';
 import ConversationStep from '@/components/ConversationStep';
+import MultiSelectStep from '@/components/MultiSelectStep';
 import ProgressSidebar from '@/components/ProgressSidebar';
 
 interface MindmakerSession {
   id: string;
   name: string;
-  whyNow: string;
+  whyNow: string[];
+  whyNowText?: string;
   coreSkills: string[];
-  capabilityMap: string;
-  habitHooks: string;
-  successNorthStar: string;
+  energizers: string[];
+  aiIdea: string;
+  guideLink: string;
   currentStep: number;
   progress: number;
 }
@@ -26,17 +28,20 @@ const Index = () => {
   const [session, setSession] = useState<MindmakerSession>({
     id: '',
     name: '',
-    whyNow: '',
+    whyNow: [],
+    whyNowText: '',
     coreSkills: [],
-    capabilityMap: '',
-    habitHooks: '',
-    successNorthStar: '',
+    energizers: [],
+    aiIdea: '',
+    guideLink: '',
     currentStep: 0,
     progress: 0
   });
 
   const [isStarted, setIsStarted] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+  const [additionalText, setAdditionalText] = useState('');
 
   const totalSteps = 7;
 
@@ -45,51 +50,76 @@ const Index = () => {
     setSession(prev => ({ ...prev, currentStep: 1, progress: 14 }));
   };
 
+  const whyNowOptions = [
+    "I was laid off recently.",
+    "I want to go fractional/freelance.",
+    "I have an AI idea but I'm not sure where to start.",
+    "I feel stuck and want more clarity.",
+    "I want to build income streams with low effort.",
+    "AI is replacing my job and I need a pivot.",
+    "I'm just curious—show me what's possible."
+  ];
+
+  const generateAIIdea = (whyNow: string[], skills: string[], energizers: string[]) => {
+    // Simple AI idea generation based on inputs
+    const ideas = [
+      "Build a personal AI assistant that automates your most repetitive tasks",
+      "Create a skill-matching chatbot for your network",
+      "Develop an AI-powered content creation system for your expertise",
+      "Design a smart automation workflow for client management",
+      "Build a personalized learning AI agent"
+    ];
+    return ideas[Math.floor(Math.random() * ideas.length)];
+  };
+
   const handleNext = () => {
     if (session.currentStep === 1 && inputValue.trim()) {
       setSession(prev => ({ 
         ...prev, 
         name: inputValue,
         currentStep: 2,
-        progress: 28
+        progress: 14
       }));
       setInputValue('');
-    } else if (session.currentStep === 2 && inputValue.trim()) {
+    } else if (session.currentStep === 2 && selectedOptions.length > 0) {
       setSession(prev => ({ 
         ...prev, 
-        whyNow: inputValue,
+        whyNow: selectedOptions,
+        whyNowText: additionalText,
         currentStep: 3,
-        progress: 42
+        progress: 28
       }));
-      setInputValue('');
+      setSelectedOptions([]);
+      setAdditionalText('');
     } else if (session.currentStep === 3 && inputValue.trim()) {
       setSession(prev => ({ 
         ...prev, 
         coreSkills: inputValue.split(',').map(skill => skill.trim()),
         currentStep: 4,
-        progress: 56
+        progress: 42
       }));
       setInputValue('');
     } else if (session.currentStep === 4 && inputValue.trim()) {
       setSession(prev => ({ 
         ...prev, 
-        capabilityMap: inputValue,
+        energizers: inputValue.split(',').map(item => item.trim()),
         currentStep: 5,
-        progress: 70
+        progress: 56
       }));
       setInputValue('');
     } else if (session.currentStep === 5 && inputValue.trim()) {
+      const aiIdea = generateAIIdea(session.whyNow, session.coreSkills, session.energizers);
       setSession(prev => ({ 
         ...prev, 
-        habitHooks: inputValue,
+        aiIdea: aiIdea,
         currentStep: 6,
-        progress: 84
+        progress: 70
       }));
       setInputValue('');
     } else if (session.currentStep === 6 && inputValue.trim()) {
       setSession(prev => ({ 
         ...prev, 
-        successNorthStar: inputValue,
+        guideLink: inputValue,
         currentStep: 7,
         progress: 100
       }));
@@ -157,22 +187,22 @@ const Index = () => {
           <div className="flex justify-center mb-3">
             <Brain className="text-violet-400" size={32} />
           </div>
-          <h3 className="text-white font-semibold mb-2">AI-Powered Mapping</h3>
-          <p className="text-gray-300 text-sm">Smart algorithms identify your unique skill combinations</p>
+          <h3 className="text-white font-semibold mb-2">AI-Powered Personal Strategy</h3>
+          <p className="text-gray-300 text-sm">Smart algorithms identify your unique skill combinations and motivations</p>
         </Card>
         <Card className="bg-gray-900/50 border-violet-500/20 p-6 hover:bg-gray-900/70 transition-all backdrop-blur-sm">
           <div className="flex justify-center mb-3">
             <Target className="text-violet-400" size={32} />
           </div>
-          <h3 className="text-white font-semibold mb-2">Portfolio Strategy</h3>
-          <p className="text-gray-300 text-sm">Build resilient income streams across multiple sectors</p>
+          <h3 className="text-white font-semibold mb-2">Instant, No-Code Action Plans</h3>
+          <p className="text-gray-300 text-sm">Get practical AI automation ideas you can implement immediately</p>
         </Card>
         <Card className="bg-gray-900/50 border-violet-500/20 p-6 hover:bg-gray-900/70 transition-all backdrop-blur-sm">
           <div className="flex justify-center mb-3">
             <Zap className="text-violet-400" size={32} />
           </div>
-          <h3 className="text-white font-semibold mb-2">Instant Action Plan</h3>
-          <p className="text-gray-300 text-sm">Get your personalized roadmap in just 7 minutes</p>
+          <h3 className="text-white font-semibold mb-2">Visual Summary of Your Path</h3>
+          <p className="text-gray-300 text-sm">See your personalized roadmap and next steps in 7 minutes</p>
         </Card>
       </motion.div>
 
@@ -190,7 +220,7 @@ const Index = () => {
           size="lg"
           className="bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-700 hover:to-violet-800 text-white px-8 py-4 text-lg rounded-full shadow-lg shadow-violet-500/25"
         >
-          Start Your Mindmaking Journey
+          Start My Journey
           <ArrowRight className="ml-2" size={20} />
         </Button>
       </motion.div>
@@ -218,25 +248,25 @@ const Index = () => {
         )}
         
         {session.currentStep === 2 && (
-          <ConversationStep
+          <MultiSelectStep
             key="step2"
-            title={`Hey ${session.name}! Why now? 🤔`}
-            subtitle="In 45 seconds or less, tell us what's driving this pivot in your career."
-            placeholder="I'm pivoting because..."
-            value={inputValue}
-            onChange={setInputValue}
+            title={`Hey ${session.name}! Let's pinpoint what's driving you right now 🎯`}
+            subtitle="Pick all that apply 👇"
+            options={whyNowOptions}
+            selectedOptions={selectedOptions}
+            onOptionsChange={setSelectedOptions}
+            additionalText={additionalText}
+            onAdditionalTextChange={setAdditionalText}
             onNext={handleNext}
-            canProceed={inputValue.trim().length > 10}
-            isTextarea={true}
-            hint="Voice input coming soon! For now, just type your thoughts."
+            canProceed={selectedOptions.length > 0}
           />
         )}
         
         {session.currentStep === 3 && (
           <ConversationStep
             key="step3"
-            title="Your Core Skills Inventory 💪"
-            subtitle="List 5 things people consistently thank you for or come to you for help with."
+            title="What are 5 things people always thank you for? 💪"
+            subtitle="These are your core strengths that others value most."
             placeholder="e.g., Explaining complex things simply, organizing chaos, finding creative solutions..."
             value={inputValue}
             onChange={setInputValue}
@@ -250,45 +280,69 @@ const Index = () => {
         {session.currentStep === 4 && (
           <ConversationStep
             key="step4"
-            title="Capability Map 🗺️"
-            subtitle="What unique combinations of skills do you have that others don't? Think intersection of expertise."
-            placeholder="e.g., Finance + AI, Design + Psychology, Data + Storytelling..."
-            value={inputValue}
-            onChange={setInputValue}
-            onNext={handleNext}
-            canProceed={inputValue.trim().length > 15}
-            isTextarea={true}
-            hint="The magic happens at intersections - what makes you uniquely you?"
-          />
-        )}
-        
-        {session.currentStep === 5 && (
-          <ConversationStep
-            key="step5"
-            title="Habit Hooks ⚡"
-            subtitle="What do you do naturally that energizes you? What activities make you lose track of time?"
+            title="Which activities energize you and make you lose track of time? ⚡"
+            subtitle="These are your natural motivators that lead to sustainable success."
             placeholder="e.g., Teaching others, solving puzzles, building systems, creating content..."
             value={inputValue}
             onChange={setInputValue}
             onNext={handleNext}
             canProceed={inputValue.trim().length > 15}
             isTextarea={true}
-            hint="These are clues to sustainable income streams - follow your energy!"
+            hint="Follow your energy - this reveals your best income opportunities!"
           />
+        )}
+        
+        {session.currentStep === 5 && (
+          <motion.div
+            key="step5"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="space-y-6"
+          >
+            <Card className="bg-gray-800/50 border-violet-500/20 p-8 backdrop-blur-sm">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-heading font-bold text-white mb-3">
+                  🚀 Here's a lightweight AI you could build!
+                </h2>
+                <p className="text-gray-300 text-lg">
+                  Based on your skills and motivations, here's a no-code AI concept designed just for you.
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-r from-violet-900/30 to-blue-900/30 p-6 rounded-lg border border-violet-500/20 mb-6">
+                <h3 className="text-violet-400 font-semibold text-lg mb-3">Your AI Idea:</h3>
+                <p className="text-white text-lg leading-relaxed">
+                  {session.aiIdea || "Generate your personalized AI idea in the next step!"}
+                </p>
+              </div>
+
+              <div className="text-center">
+                <Button
+                  onClick={handleNext}
+                  size="lg"
+                  className="bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-700 hover:to-violet-800 text-white px-8 py-3 rounded-full"
+                >
+                  Explore This Idea Together
+                  <ArrowRight className="ml-2" size={20} />
+                </Button>
+              </div>
+            </Card>
+          </motion.div>
         )}
         
         {session.currentStep === 6 && (
           <ConversationStep
             key="step6"
-            title="Success North-Star 🌟"
-            subtitle="What does success look like for you in 12 months? Be specific about lifestyle and impact."
-            placeholder="e.g., $10k/month while traveling, helping 1000 people transition careers..."
+            title="This could be your quickest win! 🎯"
+            subtitle="Let's make it real. What's your biggest constraint right now?"
+            placeholder="e.g., Time (2 hours/week), Budget ($100), Technical skills (beginner)..."
             value={inputValue}
             onChange={setInputValue}
             onNext={handleNext}
-            canProceed={inputValue.trim().length > 20}
+            canProceed={inputValue.trim().length > 10}
             isTextarea={true}
-            hint="Your north star guides all strategic decisions - make it vivid!"
+            hint="We'll match your constraints to the perfect implementation approach!"
           />
         )}
         
@@ -305,17 +359,43 @@ const Index = () => {
               </p>
               <div className="space-y-4 text-left">
                 <div className="bg-gray-900/50 p-4 rounded-lg">
-                  <h3 className="text-violet-400 font-semibold mb-2">Your Driving Force:</h3>
-                  <p className="text-gray-300">{session.whyNow}</p>
+                  <h3 className="text-violet-400 font-semibold mb-2">Your Driving Forces:</h3>
+                  <p className="text-gray-300">{session.whyNow.join(', ')}</p>
+                  {session.whyNowText && (
+                    <p className="text-gray-400 mt-2 italic">"{session.whyNowText}"</p>
+                  )}
                 </div>
                 <div className="bg-gray-900/50 p-4 rounded-lg">
                   <h3 className="text-violet-400 font-semibold mb-2">Core Skills:</h3>
                   <p className="text-gray-300">{session.coreSkills.join(', ')}</p>
                 </div>
                 <div className="bg-gray-900/50 p-4 rounded-lg">
-                  <h3 className="text-violet-400 font-semibold mb-2">Your Success Vision:</h3>
-                  <p className="text-gray-300">{session.successNorthStar}</p>
+                  <h3 className="text-violet-400 font-semibold mb-2">Energy Sources:</h3>
+                  <p className="text-gray-300">{session.energizers.join(', ')}</p>
                 </div>
+                <div className="bg-gradient-to-r from-violet-900/40 to-blue-900/40 p-4 rounded-lg border border-violet-500/30">
+                  <h3 className="text-violet-300 font-semibold mb-2">🤖 Your AI-Powered Opportunity:</h3>
+                  <p className="text-white font-medium">{session.aiIdea}</p>
+                </div>
+                <div className="bg-gray-900/50 p-4 rounded-lg">
+                  <h3 className="text-violet-400 font-semibold mb-2">Implementation Constraints:</h3>
+                  <p className="text-gray-300">{session.guideLink}</p>
+                </div>
+              </div>
+              
+              <div className="flex gap-4 mt-8">
+                <Button 
+                  className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-full"
+                  onClick={() => window.open('https://lovable.dev', '_blank')}
+                >
+                  🚀 Build This with Lovable
+                </Button>
+                <Button 
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-full"
+                  onClick={() => window.open('https://zapier.com', '_blank')}
+                >
+                  ⚡ Automate with Zapier
+                </Button>
               </div>
               <Button 
                 className="mt-6 bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-700 hover:to-violet-800 text-white px-8 py-3 text-lg rounded-full"
