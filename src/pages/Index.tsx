@@ -65,49 +65,85 @@ const Index = () => {
     }));
   };
 
-  // Mock AI analysis functions
-  const analyzeInput = (input: string) => {
-    // Simulate AI analysis
-    const patterns = [
-      { keywords: ['freelance', 'client', 'customer'], type: 'client_management' },
-      { keywords: ['content', 'write', 'blog', 'social'], type: 'content_creation' },
-      { keywords: ['automate', 'repetitive', 'task', 'workflow'], type: 'automation' },
-      { keywords: ['data', 'analyze', 'report', 'dashboard'], type: 'data_analysis' },
-      { keywords: ['email', 'communication', 'outreach'], type: 'communication' }
-    ];
-
-    const detectedType = patterns.find(pattern => 
-      pattern.keywords.some(keyword => input.toLowerCase().includes(keyword))
-    )?.type || 'general';
-
-    return { type: detectedType, confidence: 0.85 };
+  // Enhanced semantic AI analysis function
+  const analyzeInput = async (input: string): Promise<{ needsClarification: boolean; questions?: string[] }> => {
+    setIsGenerating(true);
+    
+    // Simulate AI processing
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Semantic analysis with contextual understanding
+    const inputLower = input.toLowerCase();
+    const words = inputLower.split(/\s+/);
+    
+    // Analyze intent and context
+    const hasBusinessIntent = /\b(business|startup|company|revenue|monetize|sell|customer|client|market)\b/.test(inputLower);
+    const hasPersonalIntent = /\b(personal|myself|my own|hobby|side project|learning)\b/.test(inputLower);
+    const hasProblemStatement = /\b(problem|issue|challenge|pain|difficult|frustrating|annoying)\b/.test(inputLower);
+    const hasSolutionHint = /\b(solution|solve|fix|help|automate|simplify|streamline|improve)\b/.test(inputLower);
+    const hasTargetAudience = /\b(user|customer|people|team|freelancer|business|developer|designer)\b/.test(inputLower);
+    const hasTechPreference = /\b(app|website|web|mobile|desktop|saas|tool|platform|dashboard|api)\b/.test(inputLower);
+    const hasWorkflow = /\b(process|workflow|automation|integrate|connect|sync|trigger)\b/.test(inputLower);
+    
+    // Contextual question generation based on missing elements
+    const questions = [];
+    const context = { hasBusinessIntent, hasPersonalIntent, hasProblemStatement, hasSolutionHint };
+    
+    if (!hasProblemStatement && !hasSolutionHint) {
+      questions.push("I can sense you have an idea brewing! Can you help me understand the core problem you're trying to solve? What's the pain point that sparked this idea?");
+    }
+    
+    if (!hasTargetAudience) {
+      if (hasBusinessIntent) {
+        questions.push("Who's your ideal customer for this? Are you thinking B2B, B2C, or maybe serving a specific niche like freelancers or small businesses?");
+      } else {
+        questions.push("Who would benefit most from this solution? Are you building this for yourself, your team, or a broader group of people?");
+      }
+    }
+    
+    if (!hasTechPreference) {
+      if (hasWorkflow) {
+        questions.push("This sounds like it could involve some automation! Are you envisioning this as a web dashboard, mobile app, or maybe something that works behind the scenes connecting different tools?");
+      } else {
+        questions.push("How do you picture people interacting with this? A simple web interface, mobile app, or something more complex?");
+      }
+    }
+    
+    setIsGenerating(false);
+    
+    // Need clarification if we're missing key context
+    if (questions.length > 0) {
+      return { needsClarification: true, questions: questions.slice(0, 3) }; // Max 3 questions
+    }
+    
+    return { needsClarification: false };
   };
 
-  const generateClarifyingQuestions = (input: string, analysis: any) => {
-    const questionSets = {
-      client_management: [
-        "Do you want this to send emails automatically, or more of a content generator?",
-        "Should users interact with this on a website, in Slack, or somewhere else?",
-        "Are you thinking lead generation or client retention?"
-      ],
-      content_creation: [
-        "What type of content are you focusing on - social posts, blogs, or something else?",
-        "Do you want AI to write the content or help you brainstorm ideas?",
-        "Should this integrate with specific platforms like LinkedIn or Instagram?"
-      ],
-      automation: [
-        "What specific tasks are eating up most of your time right now?",
-        "Are these tasks mostly data entry, communications, or something else?",
-        "Do you want a web interface or something that runs in the background?"
-      ],
-      general: [
-        "What's the main problem you're trying to solve for people?",
-        "Do you see this as a web app, mobile app, or automation tool?",
-        "Who would be your main users - businesses, individuals, or specific professionals?"
-      ]
-    };
-
-    return questionSets[analysis.type] || questionSets.general;
+  const generateClarifyingQuestions = (responses: string[]): string[] => {
+    // Generate contextual follow-up questions based on previous responses
+    const lastResponse = responses[responses.length - 1]?.toLowerCase() || '';
+    const allResponses = responses.join(' ').toLowerCase();
+    
+    // Smart contextual questions based on conversation flow
+    if (responses.length === 1) {
+      if (lastResponse.includes('automat')) {
+        return ["That's interesting! What manual tasks are eating up most of your time right now that you'd love to automate?"];
+      } else if (lastResponse.includes('data') || lastResponse.includes('track')) {
+        return ["Data-driven thinking, I like it! What specific metrics or insights are you hoping to capture and analyze?"];
+      } else if (lastResponse.includes('team') || lastResponse.includes('collaborat')) {
+        return ["Team productivity is huge! What's the biggest bottleneck in your current collaboration process?"];
+      } else {
+        return ["I'm getting a clearer picture! What would 'success' look like for your users? What's the key outcome they should achieve?"];
+      }
+    } else if (responses.length === 2) {
+      if (allResponses.includes('business') || allResponses.includes('revenue')) {
+        return ["Smart business focus! Any existing tools or platforms you'd want this to integrate with to maximize value?"];
+      } else {
+        return ["Almost there! What's the #1 feature that would make users say 'I can't live without this tool'?"];
+      }
+    }
+    
+    return ["Perfect! I think I have everything I need to create your blueprint."];
   };
 
   const generateBlueprint = (input: string, clarifications: string[]) => {
@@ -223,11 +259,8 @@ ${generateUXDescription(combinedContext)}
     ];
   };
 
-  const handleInputSubmit = () => {
+  const handleInputSubmit = async () => {
     if (!inputValue.trim()) return;
-    
-    const analysis = analyzeInput(inputValue);
-    const questions = generateClarifyingQuestions(inputValue, analysis);
     
     setSession(prev => ({
       ...prev,
@@ -235,19 +268,37 @@ ${generateUXDescription(combinedContext)}
       currentStep: 2
     }));
     
-    setChatMessages([{
-      role: 'ai',
-      content: `Got it! I can see you're interested in ${analysis.type.replace('_', ' ')}. Let me ask a few quick questions to nail down the perfect solution for you.`
-    }]);
+    // Use the semantic analysis
+    const analysis = await analyzeInput(inputValue);
     
-    // Start with first clarifying question
-    setTimeout(() => {
-      setCurrentQuestion(questions[0]);
-      setChatMessages(prev => [...prev, {
+    if (analysis.needsClarification && analysis.questions) {
+      setChatMessages([{
         role: 'ai',
-        content: questions[0]
+        content: "Got it! I understand your concept. Let me ask a few targeted questions to create the perfect blueprint for you."
       }]);
-    }, 1000);
+      
+      // Start with first clarifying question
+      setTimeout(() => {
+        const firstQuestion = analysis.questions![0];
+        setCurrentQuestion(firstQuestion);
+        setChatMessages(prev => [...prev, {
+          role: 'ai',
+          content: firstQuestion
+        }]);
+      }, 1000);
+    } else {
+      // Skip to blueprint generation if no clarification needed
+      setTimeout(() => {
+        const blueprint = generateBlueprint(inputValue, []);
+        setSession(prev => ({
+          ...prev,
+          lovablePrompt: blueprint.lovablePrompt,
+          workflows: blueprint.workflows,
+          agents: blueprint.agents,
+          currentStep: 3
+        }));
+      }, 2000);
+    }
     
     setInputValue('');
   };
@@ -288,10 +339,9 @@ ${generateUXDescription(combinedContext)}
         }, 3000);
       }, 1000);
     } else {
-      // Ask another question
-      const analysis = analyzeInput(session.rawInput);
-      const questions = generateClarifyingQuestions(session.rawInput, analysis);
-      const nextQuestion = questions[newClarifications.length];
+      // Ask another question using the new contextual system
+      const questions = generateClarifyingQuestions(newClarifications);
+      const nextQuestion = questions[0];
       
       setTimeout(() => {
         setChatMessages(prev => [...prev, {
@@ -443,7 +493,7 @@ ${generateUXDescription(combinedContext)}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="e.g., I want to help freelancers get clients by building something that automatically finds potential leads and drafts personalized outreach emails. I'm thinking it could scan LinkedIn and company websites, then use AI to write emails that don't sound like spam..."
-              className="min-h-[200px] text-lg bg-gray-900/50 border-violet-500/30 focus:border-violet-400 resize-none"
+              className="min-h-[200px] text-lg bg-background/50 backdrop-blur-sm border-primary/20 text-foreground placeholder:text-muted-foreground focus:border-primary/40 resize-none"
             />
             <Button
               onClick={toggleSpeechRecognition}
@@ -497,10 +547,10 @@ ${generateUXDescription(combinedContext)}
               className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                className={`max-w-xs lg:max-w-md px-4 py-3 rounded-xl shadow-sm ${
                   message.role === 'user'
-                    ? 'bg-violet-600 text-white'
-                    : 'bg-gray-700 text-gray-100'
+                    ? 'bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-glow))] text-primary-foreground ml-4'
+                    : 'bg-secondary/50 backdrop-blur-sm text-foreground mr-4 border border-border/50'
                 }`}
               >
                 {message.content}
@@ -509,7 +559,7 @@ ${generateUXDescription(combinedContext)}
           ))}
           {isGenerating && (
             <div className="flex justify-start">
-              <div className="bg-gray-700 text-gray-100 px-4 py-2 rounded-lg">
+              <div className="bg-secondary/50 backdrop-blur-sm text-foreground px-4 py-3 rounded-xl border border-border/50 mr-4">
                 <div className="flex items-center space-x-2">
                   <div className="animate-pulse">🧠</div>
                   <span>Generating your blueprint...</span>
@@ -527,7 +577,7 @@ ${generateUXDescription(combinedContext)}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Type your response..."
-                className="min-h-[100px] bg-gray-900/50 border-violet-500/30 focus:border-violet-400"
+                className="min-h-[100px] bg-background/50 backdrop-blur-sm border-primary/20 text-foreground placeholder:text-muted-foreground focus:border-primary/40"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
