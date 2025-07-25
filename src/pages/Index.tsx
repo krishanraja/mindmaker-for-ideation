@@ -65,199 +65,686 @@ const Index = () => {
     }));
   };
 
-  // Enhanced semantic AI analysis function
+  // Advanced semantic analysis using multiple intelligence layers
   const analyzeInput = async (input: string): Promise<{ needsClarification: boolean; questions?: string[] }> => {
     setIsGenerating(true);
     
-    // Simulate AI processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Simulate intelligent processing
+    await new Promise(resolve => setTimeout(resolve, 2500));
     
-    // Semantic analysis with contextual understanding
-    const inputLower = input.toLowerCase();
-    const words = inputLower.split(/\s+/);
-    
-    // Analyze intent and context
-    const hasBusinessIntent = /\b(business|startup|company|revenue|monetize|sell|customer|client|market)\b/.test(inputLower);
-    const hasPersonalIntent = /\b(personal|myself|my own|hobby|side project|learning)\b/.test(inputLower);
-    const hasProblemStatement = /\b(problem|issue|challenge|pain|difficult|frustrating|annoying)\b/.test(inputLower);
-    const hasSolutionHint = /\b(solution|solve|fix|help|automate|simplify|streamline|improve)\b/.test(inputLower);
-    const hasTargetAudience = /\b(user|customer|people|team|freelancer|business|developer|designer)\b/.test(inputLower);
-    const hasTechPreference = /\b(app|website|web|mobile|desktop|saas|tool|platform|dashboard|api)\b/.test(inputLower);
-    const hasWorkflow = /\b(process|workflow|automation|integrate|connect|sync|trigger)\b/.test(inputLower);
-    
-    // Contextual question generation based on missing elements
-    const questions = [];
-    const context = { hasBusinessIntent, hasPersonalIntent, hasProblemStatement, hasSolutionHint };
-    
-    if (!hasProblemStatement && !hasSolutionHint) {
-      questions.push("I can sense you have an idea brewing! Can you help me understand the core problem you're trying to solve? What's the pain point that sparked this idea?");
-    }
-    
-    if (!hasTargetAudience) {
-      if (hasBusinessIntent) {
-        questions.push("Who's your ideal customer for this? Are you thinking B2B, B2C, or maybe serving a specific niche like freelancers or small businesses?");
-      } else {
-        questions.push("Who would benefit most from this solution? Are you building this for yourself, your team, or a broader group of people?");
-      }
-    }
-    
-    if (!hasTechPreference) {
-      if (hasWorkflow) {
-        questions.push("This sounds like it could involve some automation! Are you envisioning this as a web dashboard, mobile app, or maybe something that works behind the scenes connecting different tools?");
-      } else {
-        questions.push("How do you picture people interacting with this? A simple web interface, mobile app, or something more complex?");
-      }
-    }
+    const analysis = performSemanticAnalysis(input);
+    const conceptMap = buildConceptualMap(analysis);
+    const questions = generateIntelligentQuestions(conceptMap, input);
     
     setIsGenerating(false);
     
-    // Need clarification if we're missing key context
-    if (questions.length > 0) {
-      return { needsClarification: true, questions: questions.slice(0, 3) }; // Max 3 questions
+    return {
+      needsClarification: questions.length > 0,
+      questions: questions.slice(0, 2) // Focus on 2 high-impact questions
+    };
+  };
+
+  // Multi-layer semantic analysis system
+  const performSemanticAnalysis = (input: string) => {
+    const text = input.toLowerCase();
+    const sentences = input.split(/[.!?]+/).filter(s => s.trim());
+    const words = text.split(/\s+/);
+    
+    // Domain classification with confidence scoring
+    const domains = {
+      productivity: calculateDomainScore(text, ['productivity', 'efficiency', 'workflow', 'organize', 'manage', 'track', 'automate', 'streamline', 'optimize', 'save time']),
+      business: calculateDomainScore(text, ['business', 'revenue', 'profit', 'sales', 'marketing', 'customer', 'client', 'lead', 'crm', 'invoice', 'payment']),
+      creative: calculateDomainScore(text, ['creative', 'design', 'content', 'art', 'photo', 'video', 'music', 'writing', 'blog', 'social media']),
+      education: calculateDomainScore(text, ['learn', 'teach', 'course', 'student', 'education', 'training', 'skill', 'knowledge', 'tutorial', 'lesson']),
+      health: calculateDomainScore(text, ['health', 'fitness', 'wellness', 'nutrition', 'exercise', 'medical', 'mental health', 'therapy', 'habit']),
+      communication: calculateDomainScore(text, ['chat', 'message', 'email', 'communication', 'social', 'community', 'team', 'collaboration', 'meeting']),
+      data: calculateDomainScore(text, ['data', 'analytics', 'report', 'dashboard', 'chart', 'metric', 'analysis', 'insight', 'visualization'])
+    };
+
+    // Intent analysis with nuanced understanding
+    const intents = {
+      problemSolving: analyzeIntent(text, ['problem', 'issue', 'challenge', 'difficult', 'struggle', 'pain', 'frustrating', 'annoying', 'broken']),
+      improvement: analyzeIntent(text, ['better', 'improve', 'enhance', 'upgrade', 'optimize', 'faster', 'easier', 'simpler', 'more efficient']),
+      creation: analyzeIntent(text, ['create', 'build', 'make', 'develop', 'design', 'launch', 'start', 'new', 'from scratch']),
+      automation: analyzeIntent(text, ['automate', 'automatic', 'schedule', 'trigger', 'workflow', 'process', 'batch', 'bulk']),
+      organization: analyzeIntent(text, ['organize', 'sort', 'categorize', 'structure', 'manage', 'centralize', 'consolidate']),
+      sharing: analyzeIntent(text, ['share', 'collaborate', 'team', 'multiple users', 'public', 'publish', 'distribute'])
+    };
+
+    // Complexity and scope analysis
+    const complexity = {
+      userTypes: analyzeUserComplexity(text),
+      technicalDepth: analyzeTechnicalComplexity(text),
+      integrationNeeds: analyzeIntegrations(text),
+      scaleRequirements: analyzeScale(text)
+    };
+
+    // Context and constraints detection
+    const context = {
+      timeConstraints: analyzeTimeContext(text),
+      budgetIndications: analyzeBudgetContext(text),
+      skillLevel: analyzeSkillLevel(text),
+      urgency: analyzeUrgency(text)
+    };
+
+    return { domains, intents, complexity, context, originalInput: input };
+  };
+
+  const calculateDomainScore = (text: string, keywords: string[]): number => {
+    let score = 0;
+    keywords.forEach(keyword => {
+      const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+      const matches = text.match(regex);
+      if (matches) score += matches.length;
+    });
+    return score;
+  };
+
+  const analyzeIntent = (text: string, indicators: string[]): { present: boolean; strength: number; evidence: string[] } => {
+    const evidence: string[] = [];
+    let strength = 0;
+    
+    indicators.forEach(indicator => {
+      const regex = new RegExp(`\\b${indicator}\\b`, 'gi');
+      if (regex.test(text)) {
+        evidence.push(indicator);
+        strength += 1;
+      }
+    });
+    
+    return { present: strength > 0, strength, evidence };
+  };
+
+  const analyzeUserComplexity = (text: string): string => {
+    if (/\b(enterprise|corporate|organization|department|company-wide)\b/i.test(text)) return 'enterprise';
+    if (/\b(team|group|multiple users|colleagues|staff)\b/i.test(text)) return 'team';
+    if (/\b(personal|myself|my own|individual|solo)\b/i.test(text)) return 'personal';
+    return 'unclear';
+  };
+
+  const analyzeTechnicalComplexity = (text: string): string => {
+    if (/\b(api|integration|webhook|database|sql|algorithm|ml|ai)\b/i.test(text)) return 'high';
+    if (/\b(automation|workflow|process|data|analytics|reports)\b/i.test(text)) return 'medium';
+    return 'low';
+  };
+
+  const analyzeIntegrations = (text: string): string[] => {
+    const integrations = [];
+    if (/\b(google|gmail|drive|sheets|calendar)\b/i.test(text)) integrations.push('Google Workspace');
+    if (/\b(slack|discord|teams|zoom)\b/i.test(text)) integrations.push('Communication Tools');
+    if (/\b(salesforce|hubspot|crm)\b/i.test(text)) integrations.push('CRM');
+    if (/\b(stripe|paypal|payment)\b/i.test(text)) integrations.push('Payment Processing');
+    if (/\b(social|facebook|twitter|instagram|linkedin)\b/i.test(text)) integrations.push('Social Media');
+    return integrations;
+  };
+
+  const analyzeScale = (text: string): string => {
+    if (/\b(thousands|many users|scale|large|enterprise)\b/i.test(text)) return 'large';
+    if (/\b(hundreds|medium|growing|expanding)\b/i.test(text)) return 'medium';
+    return 'small';
+  };
+
+  const analyzeTimeContext = (text: string): string => {
+    if (/\b(urgent|asap|quickly|soon|deadline|rush)\b/i.test(text)) return 'urgent';
+    if (/\b(eventually|future|long term|when I have time)\b/i.test(text)) return 'flexible';
+    return 'normal';
+  };
+
+  const analyzeBudgetContext = (text: string): string => {
+    if (/\b(budget|cost|expensive|cheap|free|money|price)\b/i.test(text)) return 'cost-conscious';
+    if (/\b(premium|high-end|enterprise|investment)\b/i.test(text)) return 'premium';
+    return 'undefined';
+  };
+
+  const analyzeSkillLevel = (text: string): string => {
+    if (/\b(technical|developer|engineer|code|programming)\b/i.test(text)) return 'technical';
+    if (/\b(beginner|new|first time|simple|easy)\b/i.test(text)) return 'beginner';
+    return 'intermediate';
+  };
+
+  const analyzeUrgency = (text: string): string => {
+    if (/\b(urgent|critical|immediately|asap|deadline)\b/i.test(text)) return 'high';
+    if (/\b(eventually|someday|future|long-term)\b/i.test(text)) return 'low';
+    return 'medium';
+  };
+
+  // Build conceptual understanding map
+  const buildConceptualMap = (analysis: any) => {
+    const topDomain = Object.entries(analysis.domains).reduce((a, b) => a[1] > b[1] ? a : b);
+    const primaryIntents = Object.entries(analysis.intents)
+      .filter(([_, data]: [string, any]) => data.present)
+      .sort((a: any, b: any) => b[1].strength - a[1].strength);
+
+    return {
+      primaryDomain: topDomain[0],
+      domainConfidence: topDomain[1],
+      mainIntents: primaryIntents.slice(0, 2).map(([intent, _]) => intent),
+      userProfile: {
+        type: analysis.complexity.userTypes,
+        skillLevel: analysis.context.skillLevel,
+        urgency: analysis.context.urgency
+      },
+      technicalProfile: {
+        complexity: analysis.complexity.technicalDepth,
+        integrations: analysis.complexity.integrationNeeds,
+        scale: analysis.complexity.scaleRequirements
+      },
+      missingElements: identifyMissingElements(analysis)
+    };
+  };
+
+  const identifyMissingElements = (analysis: any) => {
+    const missing = [];
+    
+    // Check for missing problem definition
+    if (!analysis.intents.problemSolving.present && !analysis.intents.improvement.present) {
+      missing.push('problem_definition');
     }
     
-    return { needsClarification: false };
+    // Check for missing user definition
+    if (analysis.complexity.userTypes === 'unclear') {
+      missing.push('target_users');
+    }
+    
+    // Check for missing success metrics
+    if (!/(metric|measure|success|goal|objective|outcome)/i.test(analysis.originalInput)) {
+      missing.push('success_metrics');
+    }
+    
+    // Check for missing technical preferences
+    if (analysis.complexity.technicalDepth === 'low' && analysis.primaryDomain !== 'simple') {
+      missing.push('technical_approach');
+    }
+
+    return missing;
+  };
+
+  // Generate highly contextual questions
+  const generateIntelligentQuestions = (conceptMap: any, originalInput: string): string[] => {
+    const questions = [];
+    const { primaryDomain, mainIntents, userProfile, technicalProfile, missingElements } = conceptMap;
+
+    // Ultra-specific domain and intent-based questions
+    if (missingElements.includes('problem_definition')) {
+      if (primaryDomain === 'productivity' && userProfile.type === 'team') {
+        questions.push(`I see you're thinking about team productivity. What's the specific bottleneck that's costing your team the most time each week? Is it information scattered across tools, repetitive tasks, or something else entirely?`);
+      } else if (primaryDomain === 'business' && mainIntents.includes('automation')) {
+        questions.push(`You mentioned business automation - what's the manual process that you find yourself (or your team) doing over and over that makes you think "there has to be a better way"?`);
+      } else if (primaryDomain === 'creative') {
+        questions.push(`For your creative project, what's the gap between your vision and what current tools let you achieve? What creative workflow step feels unnecessarily complicated?`);
+      } else {
+        questions.push(`What specific pain point or inefficiency sparked this idea? I want to understand the exact moment when you thought "I need a solution for this."`);
+      }
+    }
+
+    if (missingElements.includes('target_users') && questions.length < 2) {
+      if (primaryDomain === 'business') {
+        questions.push(`Who would be the primary decision-maker for adopting this solution? Are you thinking individual professionals, small business owners, department heads, or enterprise buyers?`);
+      } else if (technicalProfile.complexity === 'high') {
+        questions.push(`This sounds technically sophisticated - are you building for developers/power users who want advanced features, or do you need to make complex functionality simple for non-technical users?`);
+      } else {
+        questions.push(`Picture your ideal user facing the problem you mentioned - what's their role, daily challenges, and what would make them say "finally, exactly what I needed"?`);
+      }
+    }
+
+    if (missingElements.includes('success_metrics') && questions.length < 2) {
+      if (userProfile.urgency === 'high') {
+        questions.push(`Since this seems urgent, what's the key outcome that would make this project a success for you? Time saved, revenue gained, or something else measurable?`);
+      } else if (primaryDomain === 'data') {
+        questions.push(`What's the insight or metric you wish you could see in real-time that would change how you make decisions?`);
+      } else {
+        questions.push(`How would you know this solution is working perfectly? What would users be doing differently, or what results would you see?`);
+      }
+    }
+
+    // Advanced contextual follow-ups based on sophisticated analysis
+    if (questions.length === 0) {
+      // Generate highly specific questions based on domain + intent combination
+      if (primaryDomain === 'productivity' && mainIntents.includes('organization')) {
+        questions.push(`I sense you want to organize something complex. What information or process feels chaotic right now that, if perfectly organized, would unlock significant value?`);
+      } else if (primaryDomain === 'communication' && technicalProfile.integrations.length > 0) {
+        questions.push(`With ${technicalProfile.integrations.join(' and ')} in the mix, what communication gap or workflow break happens at the handoff points between these tools?`);
+      }
+    }
+
+    return questions;
   };
 
   const generateClarifyingQuestions = (responses: string[]): string[] => {
-    // Generate contextual follow-up questions based on previous responses
-    const lastResponse = responses[responses.length - 1]?.toLowerCase() || '';
-    const allResponses = responses.join(' ').toLowerCase();
+    // Advanced contextual follow-up generation using semantic analysis
+    const combinedResponses = responses.join(' ');
+    const responseAnalysis = performSemanticAnalysis(combinedResponses);
+    const conceptMap = buildConceptualMap(responseAnalysis);
     
-    // Smart contextual questions based on conversation flow
-    if (responses.length === 1) {
-      if (lastResponse.includes('automat')) {
-        return ["That's interesting! What manual tasks are eating up most of your time right now that you'd love to automate?"];
-      } else if (lastResponse.includes('data') || lastResponse.includes('track')) {
-        return ["Data-driven thinking, I like it! What specific metrics or insights are you hoping to capture and analyze?"];
-      } else if (lastResponse.includes('team') || lastResponse.includes('collaborat')) {
-        return ["Team productivity is huge! What's the biggest bottleneck in your current collaboration process?"];
+    return generateIntelligentFollowUps(conceptMap, responses);
+  };
+
+  const generateIntelligentFollowUps = (conceptMap: any, responses: string[]): string[] => {
+    const { primaryDomain, mainIntents, userProfile, missingElements } = conceptMap;
+    const responseCount = responses.length;
+    const lastResponse = responses[responses.length - 1]?.toLowerCase() || '';
+    
+    // First follow-up: Deep dive into the specific area they mentioned
+    if (responseCount === 1) {
+      if (primaryDomain === 'productivity' && mainIntents.includes('automation')) {
+        if (userProfile.type === 'team') {
+          return ["Excellent! For team automation, what's the specific handoff or approval process that creates the biggest delays? Is it waiting for sign-offs, data entry, or something else entirely?"];
+        } else {
+          return ["Perfect! What's the task you find yourself doing repeatedly that makes you think 'I'm basically a human robot doing this'? That's usually where automation creates the biggest impact."];
+        }
+      } else if (primaryDomain === 'business' && lastResponse.includes('customer')) {
+        return ["Great customer focus! What's the moment in your customer journey where you lose the most potential value? Is it during onboarding, support, sales follow-up, or somewhere else?"];
+      } else if (primaryDomain === 'creative' && mainIntents.includes('organization')) {
+        return ["I love the creative organization angle! What happens to your creative assets after you create them? Do they get lost, become hard to find, or fail to reach the right audiences?"];
+      } else if (primaryDomain === 'data') {
+        return ["Data-driven approach is smart! What decision do you currently make based on gut feeling that you wish you could make with real-time data instead?"];
+      } else if (mainIntents.includes('problemSolving')) {
+        return ["That problem sounds frustrating! When this issue happens, what's the ripple effect? What else breaks down or gets delayed because of this core problem?"];
       } else {
-        return ["I'm getting a clearer picture! What would 'success' look like for your users? What's the key outcome they should achieve?"];
-      }
-    } else if (responses.length === 2) {
-      if (allResponses.includes('business') || allResponses.includes('revenue')) {
-        return ["Smart business focus! Any existing tools or platforms you'd want this to integrate with to maximize value?"];
-      } else {
-        return ["Almost there! What's the #1 feature that would make users say 'I can't live without this tool'?"];
+        return ["I'm seeing the vision! What would be different about your day/work/life if this solution worked perfectly? Paint me a picture of that ideal scenario."];
       }
     }
     
-    return ["Perfect! I think I have everything I need to create your blueprint."];
+    // Second follow-up: Focus on the missing critical element or success metrics
+    if (responseCount === 2) {
+      if (missingElements.includes('success_metrics')) {
+        if (primaryDomain === 'business') {
+          return ["This is coming together nicely! If this solution saved you money or made you money, how would you measure that? Time saved, deals closed faster, costs reduced?"];
+        } else {
+          return ["Almost there! How would you know this is working amazingly well? What would you be able to do that you can't do now, or what would happen faster/better?"];
+        }
+      } else if (userProfile.type === 'unclear' && !missingElements.includes('target_users')) {
+        return ["Got it! One key question: who else would benefit from this solution? Are you thinking just for yourself, your team, or could this help others facing the same challenge?"];
+      } else if (conceptMap.technicalProfile.integrations.length === 0 && primaryDomain !== 'simple') {
+        return ["Perfect! Any existing tools or platforms this would need to work with? Email, Slack, Google Workspace, specific software you use daily?"];
+      } else {
+        return ["Excellent insights! What's the one thing that, if this solution did it perfectly, would make you think 'this is exactly what I needed'?"];
+      }
+    }
+    
+    // Fallback for edge cases
+    return ["Perfect! I have a clear picture now. Let me create your personalized blueprint."];
   };
 
   const generateBlueprint = (input: string, clarifications: string[]) => {
     const combinedContext = `${input} ${clarifications.join(' ')}`;
     
-    // Mock AI generation - in real app this would call an AI service
-    const lovablePrompt = `Create a "${extractTitle(combinedContext)}" web application.
-
-**Core Features:**
-${generateFeatureList(combinedContext)}
-
-**Design Requirements:**
-- Modern, clean interface with dark theme
-- Responsive design for mobile and desktop
-- Intuitive user experience with minimal learning curve
-- Professional color scheme with accent colors
-
-**User Experience:**
-${generateUXDescription(combinedContext)}
-
-**Technical Notes:**
-- Built with React and TypeScript
-- Use Tailwind CSS for styling
-- Include loading states and error handling
-- Implement proper form validation`;
-
-    const workflows = generateWorkflows(combinedContext);
-    const agents = generateAgents(combinedContext);
+    // Perform advanced semantic analysis on combined context
+    const analysis = performSemanticAnalysis(combinedContext);
+    const conceptMap = buildConceptualMap(analysis);
+    
+    // Generate truly personalized blueprint based on deep understanding
+    const lovablePrompt = generatePersonalizedPrompt(conceptMap, combinedContext);
+    const workflows = generateIntelligentWorkflows(conceptMap, combinedContext);
+    const agents = generateContextualAgents(conceptMap, combinedContext);
 
     return { lovablePrompt, workflows, agents };
   };
 
-  const extractTitle = (context: string) => {
-    if (context.toLowerCase().includes('client')) return 'Client Management Hub';
-    if (context.toLowerCase().includes('content')) return 'Content Creation Assistant';
-    if (context.toLowerCase().includes('automat')) return 'Smart Automation Dashboard';
-    return 'AI-Powered Solution';
+  const generatePersonalizedPrompt = (conceptMap: any, context: string): string => {
+    const { primaryDomain, userProfile, technicalProfile } = conceptMap;
+    
+    // Generate domain-specific title and description
+    const title = generateIntelligentTitle(conceptMap, context);
+    const coreFeatures = generatePersonalizedFeatures(conceptMap, context);
+    const uxDescription = generatePersonalizedUX(conceptMap, context);
+    const technicalSpecs = generateTechnicalSpecs(conceptMap);
+    
+    return `Create a "${title}" web application.
+
+**Project Overview:**
+${generateProjectOverview(conceptMap, context)}
+
+**Core Features:**
+${coreFeatures}
+
+**User Experience Design:**
+${uxDescription}
+
+**Technical Requirements:**
+${technicalSpecs}
+
+**Design System:**
+${generateDesignSystem(conceptMap)}
+
+**Success Metrics & Analytics:**
+${generateSuccessMetrics(conceptMap)}`;
   };
 
-  const generateFeatureList = (context: string) => {
-    const features = [
-      '- User dashboard with key metrics and insights',
-      '- Input forms with smart validation',
-      '- Real-time processing and feedback',
-      '- Export and sharing capabilities',
-      '- Settings and customization options'
-    ];
+  const generateProjectOverview = (conceptMap: any, context: string): string => {
+    const { primaryDomain, mainIntents, userProfile } = conceptMap;
     
-    if (context.toLowerCase().includes('client')) {
-      features.unshift('- Client contact management and tracking');
-      features.unshift('- Lead scoring and prioritization');
+    if (primaryDomain === 'productivity' && mainIntents.includes('automation')) {
+      return `A powerful productivity automation platform that eliminates repetitive workflows and saves users significant time. Designed for ${userProfile.type === 'team' ? 'team collaboration' : 'individual efficiency'} with focus on seamless integration and intelligent automation.`;
+    } else if (primaryDomain === 'business' && userProfile.type === 'enterprise') {
+      return `An enterprise-grade business solution that scales with organizational needs. Built to handle complex workflows, multiple user roles, and integration with existing business systems while maintaining security and compliance standards.`;
+    } else if (primaryDomain === 'creative') {
+      return `A creative workflow enhancement tool that bridges the gap between creative vision and technical execution. Streamlines creative processes while maintaining artistic integrity and collaborative capabilities.`;
+    } else if (primaryDomain === 'data') {
+      return `An intelligent data platform that transforms raw information into actionable insights. Features real-time analytics, customizable dashboards, and automated reporting to drive data-driven decision making.`;
     }
     
-    return features.join('\n');
+    return `A specialized solution that addresses specific user needs through intelligent automation and seamless user experience. Built with scalability and user-centric design principles.`;
   };
 
-  const generateUXDescription = (context: string) => {
-    return `Users should be able to quickly input their information, see immediate results, and take action on the insights provided. The interface should guide users through the process step-by-step while allowing power users to access advanced features.`;
+  const generateIntelligentTitle = (conceptMap: any, context: string): string => {
+    const { primaryDomain, mainIntents, technicalProfile } = conceptMap;
+    
+    // Generate sophisticated titles based on semantic understanding
+    if (primaryDomain === 'productivity' && mainIntents.includes('automation')) {
+      return technicalProfile.complexity === 'high' ? 'AI-Powered Workflow Orchestrator' : 'Smart Task Automation Hub';
+    } else if (primaryDomain === 'business' && mainIntents.includes('organization')) {
+      return 'Intelligent Business Operations Platform';
+    } else if (primaryDomain === 'creative' && mainIntents.includes('creation')) {
+      return 'Creative Workflow Studio';
+    } else if (primaryDomain === 'data') {
+      return 'Real-Time Analytics Intelligence Platform';
+    } else if (primaryDomain === 'communication') {
+      return 'Unified Communication & Collaboration Hub';
+    } else if (primaryDomain === 'education') {
+      return 'Adaptive Learning Management System';
+    }
+    
+    // Fallback with intent-based naming
+    if (mainIntents.includes('problemSolving')) return 'Solution Discovery Platform';
+    if (mainIntents.includes('automation')) return 'Intelligent Automation Suite';
+    if (mainIntents.includes('organization')) return 'Smart Organization System';
+    
+    return 'AI-Enhanced Solution Platform';
   };
 
-  const generateWorkflows = (context: string): WorkflowStep[] => {
-    return [
-      {
-        id: 'workflow_1',
-        title: 'Data Collection & Processing',
-        description: 'Automatically collect and structure user input data',
-        tools: ['Zapier', 'Airtable', 'Webhooks'],
-        dataFlow: 'Form Input → Data Validation → Store in Database → Trigger Processing'
-      },
-      {
-        id: 'workflow_2',
-        title: 'AI Analysis & Enhancement',
-        description: 'Process data through AI models for insights',
-        tools: ['OpenAI API', 'Make.com', 'Custom Functions'],
-        dataFlow: 'Raw Data → AI Processing → Generate Insights → Format Results'
-      },
-      {
-        id: 'workflow_3',
-        title: 'Notification & Follow-up',
-        description: 'Automated communication and next steps',
-        tools: ['Email automation', 'Slack integration', 'SMS'],
-        dataFlow: 'Results Ready → Send Notification → Schedule Follow-up → Track Engagement'
-      }
+  const generatePersonalizedFeatures = (conceptMap: any, context: string): string => {
+    const { primaryDomain, mainIntents, userProfile, technicalProfile } = conceptMap;
+    const baseFeatures = [];
+    
+    // Core features based on domain
+    if (primaryDomain === 'productivity') {
+      baseFeatures.push('- Intelligent task prioritization with AI-powered suggestions');
+      baseFeatures.push('- Automated workflow triggers based on user behavior patterns');
+      baseFeatures.push('- Real-time collaboration tools with conflict resolution');
+      baseFeatures.push('- Advanced search and filtering with natural language queries');
+    } else if (primaryDomain === 'business') {
+      baseFeatures.push('- Comprehensive CRM with intelligent lead scoring');
+      baseFeatures.push('- Automated invoice generation and payment tracking');
+      baseFeatures.push('- Advanced analytics dashboard with predictive insights');
+      baseFeatures.push('- Multi-role access control with audit trails');
+    } else if (primaryDomain === 'creative') {
+      baseFeatures.push('- Intelligent asset organization with auto-tagging');
+      baseFeatures.push('- Collaborative review system with version control');
+      baseFeatures.push('- AI-powered creative suggestions and templates');
+      baseFeatures.push('- Seamless export to multiple formats and platforms');
+    } else if (primaryDomain === 'data') {
+      baseFeatures.push('- Real-time data ingestion from multiple sources');
+      baseFeatures.push('- Interactive dashboard builder with drag-and-drop interface');
+      baseFeatures.push('- Automated anomaly detection and alerting');
+      baseFeatures.push('- Advanced data visualization with custom chart types');
+    }
+    
+    // Add features based on intents
+    if (mainIntents.includes('automation')) {
+      baseFeatures.push('- No-code automation builder with conditional logic');
+      baseFeatures.push('- Integration hub with 100+ popular tools and services');
+    }
+    
+    if (mainIntents.includes('sharing')) {
+      baseFeatures.push('- Advanced sharing controls with permission management');
+      baseFeatures.push('- Public gallery and community features');
+    }
+    
+    if (userProfile.type === 'team' || userProfile.type === 'enterprise') {
+      baseFeatures.push('- Team management with role-based permissions');
+      baseFeatures.push('- Advanced reporting and usage analytics');
+    }
+    
+    if (technicalProfile.complexity === 'high') {
+      baseFeatures.push('- RESTful API with comprehensive documentation');
+      baseFeatures.push('- Webhook system for real-time integrations');
+      baseFeatures.push('- Advanced customization with plugin architecture');
+    }
+    
+    return baseFeatures.slice(0, 8).join('\n'); // Limit to 8 most relevant features
+  };
+
+  const generatePersonalizedUX = (conceptMap: any, context: string): string => {
+    const { primaryDomain, userProfile, technicalProfile } = conceptMap;
+    
+    if (primaryDomain === 'productivity' && userProfile.type === 'team') {
+      return `Collaborative interface that reduces cognitive load and enables teams to work in parallel without conflicts. Features progressive disclosure of complexity, with simple actions upfront and power features accessible when needed. Includes real-time activity feeds and smart notifications that respect focus time.`;
+    } else if (primaryDomain === 'business' && technicalProfile.complexity === 'high') {
+      return `Enterprise-grade interface with customizable dashboards, role-based workflows, and extensive reporting capabilities. Supports complex data entry with intelligent auto-completion, bulk operations, and audit trails. Mobile-responsive for executives who need access on-the-go.`;
+    } else if (primaryDomain === 'creative') {
+      return `Visual-first interface that prioritizes creative flow over feature complexity. Drag-and-drop interactions, visual feedback, and seamless asset management. Minimalist design that gets out of the way when users are in creative mode, with collaboration tools that don't interrupt the creative process.`;
+    } else if (userProfile.skillLevel === 'beginner') {
+      return `Guided experience with onboarding flows, contextual help, and progressive feature introduction. Clear visual hierarchy with obvious next steps and helpful explanations. Error prevention over error correction, with smart defaults and confirmation dialogs for irreversible actions.`;
+    } else if (technicalProfile.complexity === 'high') {
+      return `Power-user interface with keyboard shortcuts, bulk operations, and advanced filtering. Customizable workspace with saved views and personal preferences. API access and automation tools for users who want to extend functionality.`;
+    }
+    
+    return `Clean, intuitive interface that guides users through their goals efficiently. Smart defaults reduce decision fatigue while providing clear pathways to advanced features when needed. Responsive design ensures consistent experience across all devices.`;
+  };
+
+  const generateTechnicalSpecs = (conceptMap: any): string => {
+    const { technicalProfile, userProfile } = conceptMap;
+    const specs = [
+      '- Built with React 18+ and TypeScript for type safety',
+      '- Tailwind CSS for consistent, maintainable styling',
+      '- Responsive design with mobile-first approach',
+      '- Progressive Web App (PWA) capabilities',
+      '- Optimized performance with code splitting and lazy loading'
     ];
+
+    if (technicalProfile.complexity === 'high') {
+      specs.push('- RESTful API with OpenAPI documentation');
+      specs.push('- Real-time updates using WebSockets or Server-Sent Events');
+      specs.push('- Advanced caching strategy with service workers');
+      specs.push('- Database integration with proper ORM and migrations');
+    }
+
+    if (userProfile.type === 'enterprise') {
+      specs.push('- SSO integration with SAML/OAuth providers');
+      specs.push('- Comprehensive audit logging and compliance features');
+      specs.push('- Advanced security with RBAC and data encryption');
+      specs.push('- Scalable architecture supporting thousands of users');
+    }
+
+    if (technicalProfile.integrations.length > 0) {
+      specs.push(`- Native integrations with ${technicalProfile.integrations.slice(0, 3).join(', ')}`);
+      specs.push('- Webhook system for third-party service notifications');
+    }
+
+    return specs.join('\n');
   };
 
-  const generateAgents = (context: string): AgentSuggestion[] => {
-    return [
-      {
+  const generateDesignSystem = (conceptMap: any): string => {
+    const { primaryDomain, userProfile } = conceptMap;
+    
+    if (primaryDomain === 'creative') {
+      return `- Color palette inspired by creative tools (deep grays, accent purples, creative highlights)
+- Typography: Clean sans-serif with artistic flair for headings
+- Spacing: Generous whitespace to let creative work breathe
+- Components: Card-based layouts with subtle shadows and rounded corners
+- Animations: Smooth, purposeful transitions that enhance creative flow`;
+    } else if (primaryDomain === 'business' && userProfile.type === 'enterprise') {
+      return `- Professional color scheme with strong brand colors and neutral grays
+- Typography: Corporate-friendly fonts with excellent readability
+- Layout: Dense information display with clear hierarchy
+- Components: Data tables, charts, and forms optimized for business workflows
+- Accessibility: WCAG 2.1 AA compliance with high contrast options`;
+    } else if (primaryDomain === 'productivity') {
+      return `- Clean, distraction-free color palette focusing on usability
+- Typography: Highly readable fonts optimized for extended use
+- Layout: Efficient use of space with collapsible sections
+- Components: Task-oriented interface elements with clear status indicators
+- Dark mode: Optimized for late-night productivity sessions`;
+    }
+    
+    return `- Modern, accessible design system with consistent color tokens
+- Typography scale that works across all screen sizes
+- Component library with consistent interaction patterns
+- Responsive grid system with mobile-first approach
+- Light and dark themes with smooth transitions`;
+  };
+
+  const generateSuccessMetrics = (conceptMap: any): string => {
+    const { primaryDomain, mainIntents, userProfile } = conceptMap;
+    const metrics = [];
+
+    if (primaryDomain === 'productivity') {
+      metrics.push('- Time saved per user per week (target: 5+ hours)');
+      metrics.push('- Task completion rate improvement (target: 30% increase)');
+      metrics.push('- User engagement: Daily active users > 70%');
+    } else if (primaryDomain === 'business') {
+      metrics.push('- Revenue impact: Track deals influenced by the platform');
+      metrics.push('- Process efficiency: Measure workflow completion time reduction');
+      metrics.push('- User adoption: Team rollout success rate > 80%');
+    } else if (primaryDomain === 'creative') {
+      metrics.push('- Creative output: Track projects completed vs. started');
+      metrics.push('- Collaboration efficiency: Reduce review cycles by 50%');
+      metrics.push('- User satisfaction: Net Promoter Score > 70');
+    }
+
+    if (mainIntents.includes('automation')) {
+      metrics.push('- Automation success rate > 95%');
+      metrics.push('- Manual intervention reduction by 80%');
+    }
+
+    if (userProfile.type === 'team' || userProfile.type === 'enterprise') {
+      metrics.push('- Team collaboration: Measure cross-functional project velocity');
+      metrics.push('- Knowledge sharing: Track documentation creation and usage');
+    }
+
+    // Add analytics tracking
+    metrics.push('- Real-time analytics dashboard for all key metrics');
+    metrics.push('- A/B testing framework for continuous optimization');
+    metrics.push('- User feedback collection and analysis system');
+
+    return metrics.join('\n');
+  };
+
+  const generateIntelligentWorkflows = (conceptMap: any, context: string): WorkflowStep[] => {
+    const { primaryDomain, mainIntents, technicalProfile } = conceptMap;
+    const workflows: WorkflowStep[] = [];
+
+    if (primaryDomain === 'productivity' && mainIntents.includes('automation')) {
+      workflows.push({
+        id: 'workflow_1',
+        title: 'Smart Task Automation Pipeline',
+        description: 'Intelligently identifies repetitive tasks and creates automated workflows',
+        tools: ['Zapier', 'Make.com', 'AI Task Detection'],
+        dataFlow: 'Task Pattern Recognition → Automation Suggestion → User Approval → Workflow Deployment → Performance Monitoring'
+      });
+    } else if (primaryDomain === 'business') {
+      workflows.push({
+        id: 'workflow_1',
+        title: 'Lead Intelligence & Nurturing System',
+        description: 'Automatically qualifies leads and triggers personalized nurturing sequences',
+        tools: ['CRM Integration', 'Email Automation', 'Lead Scoring AI'],
+        dataFlow: 'Lead Capture → AI Qualification → Score Assignment → Nurturing Sequence → Sales Handoff'
+      });
+    } else if (primaryDomain === 'creative') {
+      workflows.push({
+        id: 'workflow_1',
+        title: 'Creative Asset Management Flow',
+        description: 'Organizes, tags, and distributes creative assets across platforms',
+        tools: ['AI Tagging', 'Cloud Storage', 'Distribution APIs'],
+        dataFlow: 'Asset Upload → AI Analysis & Tagging → Quality Check → Format Optimization → Multi-platform Distribution'
+      });
+    }
+
+    // Add data processing workflow if high technical complexity
+    if (technicalProfile.complexity === 'high') {
+      workflows.push({
+        id: 'workflow_2',
+        title: 'Advanced Data Processing Pipeline',
+        description: 'Real-time data ingestion, processing, and insight generation',
+        tools: ['Data Pipelines', 'ML Models', 'Real-time Analytics'],
+        dataFlow: 'Data Ingestion → Validation & Cleaning → AI Processing → Insight Generation → Alert System'
+      });
+    }
+
+    // Add integration workflow if integrations are needed
+    if (technicalProfile.integrations.length > 0) {
+      workflows.push({
+        id: 'workflow_3',
+        title: 'Multi-Platform Integration Hub',
+        description: `Seamlessly connects with ${technicalProfile.integrations.join(', ')} and other tools`,
+        tools: ['API Gateway', 'Webhook Manager', 'Data Sync Engine'],
+        dataFlow: 'Platform Event → Integration Router → Data Transformation → Target Platform Update → Sync Confirmation'
+      });
+    }
+
+    return workflows.slice(0, 3); // Limit to 3 most relevant workflows
+  };
+
+  const generateContextualAgents = (conceptMap: any, context: string): AgentSuggestion[] => {
+    const { primaryDomain, mainIntents, technicalProfile, userProfile } = conceptMap;
+    const agents: AgentSuggestion[] = [];
+
+    if (primaryDomain === 'productivity') {
+      agents.push({
         id: 'agent_1',
-        name: 'Content Optimizer',
-        role: 'Content Enhancement',
-        description: 'Reviews and optimizes content for engagement and clarity',
+        name: 'Productivity Intelligence Assistant',
+        role: 'Workflow Optimization',
+        description: 'Analyzes user behavior patterns and suggests productivity improvements and automation opportunities',
         platform: 'Custom GPT',
         deployLink: 'https://chat.openai.com/gpts'
-      },
-      {
-        id: 'agent_2',
-        name: 'Data Analyst Assistant',
-        role: 'Data Processing',
-        description: 'Analyzes patterns and generates actionable insights from user data',
-        platform: 'Claude/Anthropic',
+      });
+    } else if (primaryDomain === 'business') {
+      agents.push({
+        id: 'agent_1',
+        name: 'Business Intelligence Advisor',
+        role: 'Strategic Analysis',
+        description: 'Provides data-driven insights for business decisions and identifies growth opportunities',
+        platform: 'Claude Pro',
         deployLink: 'https://claude.ai'
-      },
-      {
-        id: 'agent_3',
-        name: 'Workflow Coordinator',
-        role: 'Process Management',
-        description: 'Manages multi-step processes and ensures smooth handoffs',
-        platform: 'N8N',
+      });
+    } else if (primaryDomain === 'creative') {
+      agents.push({
+        id: 'agent_1',
+        name: 'Creative Workflow Optimizer',
+        role: 'Creative Process Enhancement',
+        description: 'Understands creative workflows and suggests optimizations while preserving artistic integrity',
+        platform: 'Custom GPT',
+        deployLink: 'https://chat.openai.com/gpts'
+      });
+    }
+
+    if (mainIntents.includes('automation')) {
+      agents.push({
+        id: 'agent_2',
+        name: 'Automation Architect',
+        role: 'Process Automation',
+        description: 'Designs and implements complex automation workflows across multiple platforms and tools',
+        platform: 'N8N with AI',
         deployLink: 'https://n8n.io'
-      }
-    ];
+      });
+    }
+
+    if (technicalProfile.complexity === 'high') {
+      agents.push({
+        id: 'agent_3',
+        name: 'Technical Implementation Specialist',
+        role: 'Development & Integration',
+        description: 'Handles complex technical implementations, API integrations, and system architecture decisions',
+        platform: 'GitHub Copilot + Custom Tools',
+        deployLink: 'https://github.com/features/copilot'
+      });
+    }
+
+    if (userProfile.type === 'team' || userProfile.type === 'enterprise') {
+      agents.push({
+        id: 'agent_4',
+        name: 'Team Coordination Agent',
+        role: 'Collaboration Management',
+        description: 'Facilitates team communication, manages project handoffs, and ensures alignment across stakeholders',
+        platform: 'Slack/Teams Integration',
+        deployLink: 'https://slack.com/apps'
+      });
+    }
+
+    return agents.slice(0, 4); // Limit to 4 most relevant agents
   };
+
 
   const handleInputSubmit = async () => {
     if (!inputValue.trim()) return;
