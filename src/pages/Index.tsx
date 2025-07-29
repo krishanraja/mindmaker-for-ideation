@@ -5,9 +5,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Lightbulb, ArrowRight, Sparkles, Target, Users, Workflow, CheckCircle, Brain, MessageSquare, Rocket, Zap, Cpu, Network, Database } from "lucide-react";
-import { ConversationStep } from "@/components/ConversationStep";
-import { ProgressSidebar } from "@/components/ProgressSidebar";
-import { NeuronLoop } from "@/components/NeuronLoop";
+import ConversationStep from "@/components/ConversationStep";
+import ProgressSidebar from "@/components/ProgressSidebar";
+import NeuronLoop from "@/components/NeuronLoop";
 import { useToast } from "@/hooks/use-toast";
 import OpenAI from 'openai';
 
@@ -495,7 +495,7 @@ const Index = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
         <div className="container mx-auto px-4 py-12 flex flex-col md:flex-row">
-          <ProgressSidebar currentStep="clarification" />
+          <ProgressSidebar currentStep={2} totalSteps={7} />
 
           <motion.div 
             initial={{ opacity: 0, x: 30 }}
@@ -511,11 +511,14 @@ const Index = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 {session.questions.map((question, index) => (
-                  <ConversationStep
-                    key={index}
-                    question={question.question}
-                    rationale={question.rationale}
-                  />
+                  <div key={index} className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+                      {question.question}
+                    </h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {question.rationale}
+                    </p>
+                  </div>
                 ))}
                 <Textarea
                   placeholder="Your response..."
@@ -531,7 +534,7 @@ const Index = () => {
                 >
                   {isGenerating ? (
                     <>
-                      <NeuronLoop className="mr-2 h-5 w-5" />
+                      <Brain className="mr-2 h-5 w-5 animate-spin" />
                       Generating Next Steps...
                     </>
                   ) : (
@@ -555,7 +558,7 @@ const Index = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
         <div className="container mx-auto px-4 py-12 flex flex-col md:flex-row">
-          <ProgressSidebar currentStep="blueprint" />
+          <ProgressSidebar currentStep={7} totalSteps={7} />
 
           <motion.div 
             initial={{ opacity: 0, x: 30 }}
