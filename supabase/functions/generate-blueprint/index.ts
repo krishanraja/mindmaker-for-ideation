@@ -8,6 +8,24 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper function to parse JSON that might be wrapped in markdown
+function parseOpenAIResponse(content: string): any {
+  if (!content) return [];
+  
+  // Remove markdown code blocks if present
+  const cleanedContent = content
+    .replace(/^```json\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
+  
+  try {
+    return JSON.parse(cleanedContent);
+  } catch (error) {
+    console.error('Failed to parse OpenAI response:', { content, cleanedContent, error });
+    throw new Error(`Invalid JSON response: ${error.message}`);
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -121,7 +139,7 @@ serve(async (req) => {
       );
     }
 
-    const workflows = JSON.parse(workflowsData.choices[0].message.content || "[]");
+    const workflows = parseOpenAIResponse(workflowsData.choices[0].message.content || "[]");
 
     // Generate contextual agent suggestions
     const agentsResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -165,7 +183,7 @@ serve(async (req) => {
       );
     }
 
-    const agentSuggestions = JSON.parse(agentsData.choices[0].message.content || "[]");
+    const agentSuggestions = parseOpenAIResponse(agentsData.choices[0].message.content || "[]");
 
     const blueprint = {
       lovablePrompt,

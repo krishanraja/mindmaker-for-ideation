@@ -8,6 +8,24 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper function to parse JSON that might be wrapped in markdown
+function parseOpenAIResponse(content: string): any {
+  if (!content) return {};
+  
+  // Remove markdown code blocks if present
+  const cleanedContent = content
+    .replace(/^```json\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
+  
+  try {
+    return JSON.parse(cleanedContent);
+  } catch (error) {
+    console.error('Failed to parse OpenAI response:', { content, cleanedContent, error });
+    throw new Error(`Invalid JSON response: ${error.message}`);
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -79,7 +97,7 @@ serve(async (req) => {
       );
     }
 
-    const analysis = JSON.parse(analysisData.choices[0].message.content || "{}");
+    const analysis = parseOpenAIResponse(analysisData.choices[0].message.content || "{}");
 
     // Build user profile
     const profileResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -123,7 +141,7 @@ serve(async (req) => {
       );
     }
 
-    const userProfile = JSON.parse(profileData.choices[0].message.content || "{}");
+    const userProfile = parseOpenAIResponse(profileData.choices[0].message.content || "{}");
 
     // Generate AI questions
     const questionsResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -167,7 +185,7 @@ serve(async (req) => {
       );
     }
 
-    const questions = JSON.parse(questionsData.choices[0].message.content || "[]");
+    const questions = parseOpenAIResponse(questionsData.choices[0].message.content || "[]");
 
     console.log('Analysis complete');
 

@@ -8,6 +8,24 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper function to parse JSON that might be wrapped in markdown
+function parseOpenAIResponse(content: string): any {
+  if (!content) return type === 'should_continue' ? {} : [];
+  
+  // Remove markdown code blocks if present
+  const cleanedContent = content
+    .replace(/^```json\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
+  
+  try {
+    return JSON.parse(cleanedContent);
+  } catch (error) {
+    console.error('Failed to parse OpenAI response:', { content, cleanedContent, error });
+    throw new Error(`Invalid JSON response: ${error.message}`);
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -88,7 +106,7 @@ serve(async (req) => {
       );
     }
 
-    const result = JSON.parse(data.choices[0].message.content || (type === 'should_continue' ? '{}' : '[]'));
+    const result = parseOpenAIResponse(data.choices[0].message.content || (type === 'should_continue' ? '{}' : '[]'));
 
     console.log('Questions generated successfully');
 
