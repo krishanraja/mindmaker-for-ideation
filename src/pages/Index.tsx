@@ -346,6 +346,7 @@ const Index = () => {
         <BlueprintResults 
           blueprint={session.blueprint} 
           originalInput={session.originalInput}
+          session={session}
         />
       </div>
     );

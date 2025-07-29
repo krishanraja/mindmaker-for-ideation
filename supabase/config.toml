@@ -1,3 +1,4 @@
+
 project_id = "dtlcprcpvdomrehbejhw"
 
 [functions.analyze-input]
@@ -7,4 +8,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.generate-blueprint]
+verify_jwt = false
+
+[functions.generate-pdf-blueprint]
 verify_jwt = false
