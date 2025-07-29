@@ -9,7 +9,7 @@ import ConversationStep from "@/components/ConversationStep";
 import ProgressSidebar from "@/components/ProgressSidebar";
 import NeuronLoop from "@/components/NeuronLoop";
 import { useToast } from "@/hooks/use-toast";
-import OpenAI from 'openai';
+import { supabase } from "@/integrations/supabase/client";
 
 interface WorkflowStep {
   title: string;
@@ -57,38 +57,7 @@ const Index = () => {
   const [session, setSession] = useState<MindmakerSession | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentResponse, setCurrentResponse] = useState("");
-  const [openaiClient, setOpenaiClient] = useState<OpenAI | null>(null);
-  const [apiKey, setApiKey] = useState("");
-  const [showApiKeyInput, setShowApiKeyInput] = useState(false);
   const { toast } = useToast();
-
-  const initializeOpenAI = () => {
-    if (!apiKey.trim()) {
-      toast({
-        title: "API Key required",
-        description: "Please enter your OpenAI API key to continue.",
-        variant: "destructive",
-      });
-      return false;
-    }
-
-    try {
-      const client = new OpenAI({
-        apiKey: apiKey,
-        dangerouslyAllowBrowser: true
-      });
-      setOpenaiClient(client);
-      setShowApiKeyInput(false);
-      return true;
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to initialize OpenAI client.",
-        variant: "destructive",
-      });
-      return false;
-    }
-  };
 
   const handleStart = async () => {
     if (!userInput.trim()) {
@@ -97,11 +66,6 @@ const Index = () => {
         description: "Please describe your idea before starting.",
         variant: "destructive",
       });
-      return;
-    }
-
-    if (!openaiClient) {
-      setShowApiKeyInput(true);
       return;
     }
 
@@ -121,22 +85,17 @@ const Index = () => {
   };
 
   const analyzeInput = async (input: string) => {
-    if (!openaiClient) return;
-    
     console.log("Starting AI-powered semantic analysis for:", input);
     
     try {
-      // Real semantic analysis using OpenAI
-      const analysis = await performRealSemanticAnalysis(input);
-      console.log("AI semantic analysis complete:", analysis);
-      
-      // Build user profile from analysis
-      const userProfile = await buildUserProfile(input, analysis);
-      console.log("User profile built:", userProfile);
-      
-      // Generate truly intelligent questions
-      const questions = await generateAIQuestions(input, analysis, userProfile);
-      console.log("AI-generated questions:", questions);
+      const { data, error } = await supabase.functions.invoke('analyze-input', {
+        body: { input }
+      });
+
+      if (error) throw error;
+
+      const { analysis, userProfile, questions } = data;
+      console.log("AI analysis complete:", { analysis, userProfile, questions });
 
       const newSession: MindmakerSession = {
         sessionId: Math.random().toString(36).substr(2, 9),
@@ -160,73 +119,9 @@ const Index = () => {
     }
   };
 
-  const performRealSemanticAnalysis = async (text: string) => {
-    if (!openaiClient) throw new Error("OpenAI client not initialized");
-    
-    const completion = await openaiClient.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: `You are an expert semantic analyst. Analyze the user's input and provide a comprehensive JSON analysis. Be extremely thorough and intelligent. If the input is nonsense or gibberish, say so clearly in the analysis.
-          
-          Return JSON with: primaryDomains, intentMapping, complexityAssessment, contextualFactors, technicalRequirements, userPersona, missingInformation, confidenceScore.`
-        },
-        {
-          role: "user",
-          content: text
-        }
-      ],
-      temperature: 0.3,
-    });
-
-    return JSON.parse(completion.choices[0].message.content || "{}");
-  };
-
-  const buildUserProfile = async (input: string, analysis: any) => {
-    if (!openaiClient) throw new Error("OpenAI client not initialized");
-    
-    const completion = await openaiClient.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: `Create a detailed user profile JSON with: expertiseLevel, domain, constraints, goals, previousResponses. Be specific and avoid generic responses.`
-        },
-        {
-          role: "user",
-          content: `Input: ${input}\nAnalysis: ${JSON.stringify(analysis)}`
-        }
-      ],
-      temperature: 0.2,
-    });
-
-    return JSON.parse(completion.choices[0].message.content || "{}");
-  };
-
-  const generateAIQuestions = async (input: string, analysis: any, userProfile: any) => {
-    if (!openaiClient) throw new Error("OpenAI client not initialized");
-    
-    const completion = await openaiClient.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: `Generate 3-4 highly intelligent, contextual questions that show you understand their specific context, not generic template questions. Return JSON array with question, rationale, type, priority.`
-        },
-        {
-          role: "user",
-          content: `Original input: ${input}\n\nSemantic analysis: ${JSON.stringify(analysis)}\n\nUser profile: ${JSON.stringify(userProfile)}`
-        }
-      ],
-      temperature: 0.4,
-    });
-
-    return JSON.parse(completion.choices[0].message.content || "[]");
-  };
 
   const handleClarificationSubmit = async () => {
-    if (!currentResponse.trim() || !session || !openaiClient) return;
+    if (!currentResponse.trim() || !session) return;
 
     setIsGenerating(true);
     try {
@@ -240,12 +135,24 @@ const Index = () => {
         }
       };
 
-      // Generate intelligent follow-up questions or move to blueprint
-      const shouldContinue = await shouldAskMoreQuestions(updatedSession);
+      // Check if more questions are needed
+      const { data: shouldContinueData, error: shouldContinueError } = await supabase.functions.invoke('generate-questions', {
+        body: { session: updatedSession, type: 'should_continue' }
+      });
+
+      if (shouldContinueError) throw shouldContinueError;
+
+      const shouldContinue = shouldContinueData.result.shouldContinue;
       
       if (shouldContinue && updatedSession.questionRound < 3) {
-        const nextQuestions = await generateFollowUpQuestions(updatedSession);
-        updatedSession.questions = nextQuestions;
+        // Generate follow-up questions
+        const { data: questionsData, error: questionsError } = await supabase.functions.invoke('generate-questions', {
+          body: { session: updatedSession, type: 'followup' }
+        });
+
+        if (questionsError) throw questionsError;
+
+        updatedSession.questions = questionsData.result;
         updatedSession.questionRound += 1;
         setSession(updatedSession);
       } else {
@@ -266,142 +173,29 @@ const Index = () => {
     }
   };
 
-  const shouldAskMoreQuestions = async (session: MindmakerSession) => {
-    if (!openaiClient) return false;
-    
-    const completion = await openaiClient.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: `Analyze the conversation and determine if more clarification is needed. Return JSON with shouldContinue, reason, informationGaps. Only continue if there are genuine, important gaps.`
-        },
-        {
-          role: "user",
-          content: `Original input: ${session.originalInput}\nUser responses: ${session.userResponses.join('\n')}\nQuestions asked: ${JSON.stringify(session.questions)}`
-        }
-      ],
-      temperature: 0.2,
-    });
-
-    const result = JSON.parse(completion.choices[0].message.content || "{}");
-    return result.shouldContinue || false;
-  };
-
-  const generateFollowUpQuestions = async (session: MindmakerSession) => {
-    if (!openaiClient) return [];
-    
-    const completion = await openaiClient.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: `Generate intelligent follow-up questions that reference and build on previous responses. Be highly contextual and show understanding.`
-        },
-        {
-          role: "user",
-          content: `Conversation history:\nOriginal: ${session.originalInput}\nPrevious questions: ${JSON.stringify(session.questions)}\nUser responses: ${session.userResponses.join('\n')}`
-        }
-      ],
-      temperature: 0.4,
-    });
-
-    return JSON.parse(completion.choices[0].message.content || "[]");
-  };
 
   const generateIntelligentBlueprint = async (session: MindmakerSession) => {
-    if (!openaiClient) return;
-    
-    // Generate personalized Lovable prompt
-    const lovablePrompt = await generatePersonalizedPrompt(session);
-    
-    // Generate intelligent workflows
-    const workflows = await generateIntelligentWorkflows(session);
-    
-    // Generate contextual agent suggestions
-    const agentSuggestions = await generateContextualAgents(session);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-blueprint', {
+        body: { session }
+      });
 
-    const blueprint = {
-      lovablePrompt,
-      workflows,
-      agentSuggestions
-    };
+      if (error) throw error;
 
-    setSession({
-      ...session,
-      blueprint,
-      currentStep: 'blueprint'
-    });
-  };
+      const { blueprint } = data;
 
-  const generatePersonalizedPrompt = async (session: MindmakerSession) => {
-    if (!openaiClient) return "";
-    
-    const completion = await openaiClient.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: `Create a highly personalized, detailed Lovable prompt that references specific details from the conversation and shows deep understanding of their goals.`
-        },
-        {
-          role: "user",
-          content: `Full conversation:\nOriginal: ${session.originalInput}\nResponses: ${session.userResponses.join('\n')}\nProfile: ${JSON.stringify(session.userProfile)}`
-        }
-      ],
-      temperature: 0.3,
-    });
-
-    return completion.choices[0].message.content || "";
-  };
-
-  const generateIntelligentWorkflows = async (session: MindmakerSession) => {
-    if (!openaiClient) return [];
-    
-    const completion = await openaiClient.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: `Generate a personalized workflow specific to their project, expertise level, and constraints. Return JSON array with title, description, duration, dependencies, deliverables, complexity.`
-        },
-        {
-          role: "user",
-          content: `Context: ${session.originalInput}\nResponses: ${session.userResponses.join('\n')}\nProfile: ${JSON.stringify(session.userProfile)}`
-        }
-      ],
-      temperature: 0.3,
-    });
-
-    return JSON.parse(completion.choices[0].message.content || "[]");
-  };
-
-  const generateContextualAgents = async (session: MindmakerSession) => {
-    if (!openaiClient) return [];
-    
-    const completion = await openaiClient.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: `Suggest AI agents/tools specifically relevant to their project. Only suggest genuinely relevant tools. Return JSON array with name, description, category, relevanceScore, specificUseCase.`
-        },
-        {
-          role: "user",
-          content: `Project: ${session.originalInput}\nDetails: ${session.userResponses.join('\n')}\nDomain: ${session.userProfile.domain}`
-        }
-      ],
-      temperature: 0.4,
-    });
-
-    return JSON.parse(completion.choices[0].message.content || "[]");
-  };
-
-  const handleApiKeySubmit = () => {
-    if (initializeOpenAI()) {
-      handleStart();
+      setSession({
+        ...session,
+        blueprint,
+        currentStep: 'blueprint'
+      });
+    } catch (error) {
+      console.error("Error generating blueprint:", error);
+      throw error;
     }
   };
+
+
 
   const renderWelcomeScreen = () => (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
@@ -447,25 +241,7 @@ const Index = () => {
                 className="min-h-[120px] text-base leading-relaxed resize-none"
                 disabled={isGenerating}
               />
-              {showApiKeyInput && (
-                <div className="mt-4 p-4 border border-yellow-200 bg-yellow-50 rounded-lg">
-                  <h3 className="font-medium mb-2">OpenAI API Key Required</h3>
-                  <p className="text-sm text-gray-600 mb-3">
-                    This app now uses real AI for intelligent analysis. Please enter your OpenAI API key to continue.
-                  </p>
-                  <input
-                    type="password"
-                    placeholder="sk-..."
-                    value={apiKey}
-                    onChange={(e) => setApiKey(e.target.value)}
-                    className="w-full p-2 border rounded mb-2"
-                  />
-                  <Button onClick={handleApiKeySubmit} className="w-full">
-                    Initialize AI & Start
-                  </Button>
-                </div>
-              )}
-              <Button 
+              <Button
                 onClick={handleStart}
                 disabled={!userInput.trim() || isGenerating}
                 className="w-full mt-4 h-12 text-lg font-medium bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl"
@@ -475,12 +251,12 @@ const Index = () => {
                     <Brain className="mr-2 h-5 w-5 animate-spin" />
                     AI Analyzing...
                   </>
-                ) : (
-                  <>
-                    <Sparkles className="mr-2 h-5 w-5" />
-                    Start Real AI Analysis
-                  </>
-                )}
+                 ) : (
+                   <>
+                     <Sparkles className="mr-2 h-5 w-5" />
+                     Start AI Analysis
+                   </>
+                 )}
               </Button>
             </CardContent>
           </Card>
