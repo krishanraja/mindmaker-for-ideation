@@ -65,14 +65,30 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `Create a highly personalized, detailed Lovable prompt that references specific details from the conversation and shows deep understanding of their goals.`
+            content: `You are an expert Lovable prompt engineer. Create a detailed, actionable Lovable prompt that will help build the exact application the user wants.
+
+The prompt must be:
+1. TECHNICAL and SPECIFIC - include exact features, functionality, and technical requirements
+2. DESIGN-FOCUSED - include specific UI/UX requirements, color schemes, layouts, and visual design elements gathered from the conversation
+3. ACTIONABLE - clear enough that a developer could build the app from this prompt alone
+4. PERSONALIZED - reference specific details from their responses and use their name
+
+Structure the prompt with these sections:
+- PROJECT OVERVIEW: Brief summary with user's name and vision
+- CORE FEATURES: Specific functionality requirements from their responses
+- TECHNICAL REQUIREMENTS: Stack, integrations, data models, etc.
+- DESIGN SPECIFICATIONS: UI/UX requirements, visual design, layouts, color preferences, styling
+- USER EXPERIENCE: Navigation, workflows, interactions
+- ADDITIONAL REQUIREMENTS: Any constraints, preferences, or special needs mentioned
+
+Do NOT write this as a conversational message. Write it as a comprehensive development brief that contains everything needed to build the application.`
           },
           {
             role: "user",
-            content: `Full conversation:\nOriginal: ${session.originalInput}\nResponses: ${session.userResponses.join('\n')}\nProfile: ${JSON.stringify(session.userProfile)}`
+            content: `User Name: ${session.userName}\nOriginal Idea: ${session.originalInput}\n\nDetailed Responses:\n${session.userResponses.map((response, index) => `Question ${index + 1}: ${session.questions[index]?.question || 'Unknown question'}\nAnswer: ${response}`).join('\n\n')}\n\nUser Profile: ${JSON.stringify(session.userProfile, null, 2)}`
           }
         ],
-        temperature: 0.3,
+        temperature: 0.2,
       }),
     });
 

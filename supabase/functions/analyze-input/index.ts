@@ -42,7 +42,7 @@ serve(async (req) => {
       );
     }
 
-    const { input } = await req.json();
+    const { input, userName } = await req.json();
 
     if (!input) {
       return new Response(
@@ -160,11 +160,28 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `Generate 3-4 highly intelligent, contextual questions that show you understand their specific context, not generic template questions. Return JSON array with question, rationale, type, priority.`
+            content: `You are an AI analyzer that generates intelligent, contextual questions about development projects. 
+            
+            Based on the user input and analysis, generate 3-4 high-quality questions that will help understand:
+            - Technical requirements and constraints
+            - User experience and design preferences (UI/UX, color schemes, layout styles, visual design)
+            - Business goals and success metrics
+            - Implementation priorities
+            - Design specifications and branding preferences
+            
+            IMPORTANT: Always include at least one question specifically about design preferences, visual style, or UI requirements.
+            
+            Return a JSON array where each question object has:
+            - question: string (the actual question)
+            - rationale: string (why this question is important)
+            - type: string (category like "Technical", "Design", "UX", "Business")
+            - priority: string ("High", "Medium", "Low")
+            
+            Make questions specific and actionable, not generic.`
           },
           {
             role: "user",
-            content: `Original input: ${input}\n\nSemantic analysis: ${JSON.stringify(analysis)}\n\nUser profile: ${JSON.stringify(userProfile)}`
+            content: `User Name: ${userName || 'User'}\nInput: "${input}"\nAnalysis: ${JSON.stringify(analysis)}\nUser Profile: ${JSON.stringify(userProfile)}`
           }
         ],
         temperature: 0.4,

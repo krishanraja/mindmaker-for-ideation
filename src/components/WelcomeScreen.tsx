@@ -3,9 +3,13 @@ import { motion } from 'framer-motion';
 import { Lightbulb, Sparkles, Brain, ArrowRight, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 interface WelcomeScreenProps {
+  userName: string;
+  setUserName: (value: string) => void;
   userInput: string;
   setUserInput: (value: string) => void;
   onStart: () => void;
@@ -13,6 +17,8 @@ interface WelcomeScreenProps {
 }
 
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
+  userName,
+  setUserName,
   userInput,
   setUserInput,
   onStart,
@@ -128,16 +134,36 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             </CardHeader>
             
             <CardContent className="space-y-6">
-              <div className="space-y-3">
-                <Textarea
-                  placeholder="I want to build an app that helps people..."
-                  value={userInput}
-                  onChange={(e) => setUserInput(e.target.value)}
-                  className="min-h-[150px] text-base leading-relaxed resize-none bg-input/50 border-border/50 focus:border-primary/50 focus:bg-input transition-all duration-300"
-                  disabled={isGenerating}
-                />
-                <div className="text-sm text-muted-foreground">
-                  💡 Try to include: your target audience, main features, technology preferences, and any constraints
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="userName" className="text-sm font-medium text-foreground">
+                    Your Name
+                  </Label>
+                  <Input
+                    id="userName"
+                    placeholder="Enter your name..."
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
+                    className="bg-input/50 border-border/50 focus:border-primary/50 focus:bg-input transition-all duration-300"
+                    disabled={isGenerating}
+                  />
+                </div>
+                
+                <div className="space-y-3">
+                  <Label htmlFor="userInput" className="text-sm font-medium text-foreground">
+                    Describe Your Vision
+                  </Label>
+                  <Textarea
+                    id="userInput"
+                    placeholder="I want to build an app that helps people..."
+                    value={userInput}
+                    onChange={(e) => setUserInput(e.target.value)}
+                    className="min-h-[150px] text-base leading-relaxed resize-none bg-input/50 border-border/50 focus:border-primary/50 focus:bg-input transition-all duration-300"
+                    disabled={isGenerating}
+                  />
+                  <div className="text-sm text-muted-foreground">
+                    💡 Try to include: your target audience, main features, technology preferences, design preferences, and any constraints
+                  </div>
                 </div>
               </div>
               
@@ -147,7 +173,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               >
                 <Button
                   onClick={onStart}
-                  disabled={!userInput.trim() || isGenerating}
+                  disabled={!userName.trim() || !userInput.trim() || isGenerating}
                   className="w-full h-14 text-lg font-medium bg-gradient-to-r from-primary to-primary-glow hover:from-primary/90 hover:to-primary-glow/90 text-primary-foreground shadow-elegant transition-all duration-300"
                 >
                   {isGenerating ? (
