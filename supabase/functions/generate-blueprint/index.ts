@@ -15,6 +15,15 @@ serve(async (req) => {
   }
 
   try {
+    // Check if OpenAI API key is available
+    if (!openAIApiKey) {
+      console.error('OpenAI API key not found in environment variables');
+      return new Response(
+        JSON.stringify({ error: 'OpenAI API key not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { session } = await req.json();
 
     if (!session) {
@@ -50,6 +59,24 @@ serve(async (req) => {
     });
 
     const promptData = await promptResponse.json();
+    console.log('OpenAI Prompt Response:', promptData);
+
+    if (promptData.error) {
+      console.error('OpenAI API Error in prompt generation:', promptData.error);
+      return new Response(
+        JSON.stringify({ error: `OpenAI API Error: ${promptData.error.message || 'Unknown error'}` }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!promptData.choices || !promptData.choices[0] || !promptData.choices[0].message) {
+      console.error('Invalid OpenAI prompt response structure:', promptData);
+      return new Response(
+        JSON.stringify({ error: 'Invalid response from OpenAI API' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const lovablePrompt = promptData.choices[0].message.content || "";
 
     // Generate intelligent workflows
@@ -76,6 +103,24 @@ serve(async (req) => {
     });
 
     const workflowsData = await workflowsResponse.json();
+    console.log('OpenAI Workflows Response:', workflowsData);
+
+    if (workflowsData.error) {
+      console.error('OpenAI API Error in workflows generation:', workflowsData.error);
+      return new Response(
+        JSON.stringify({ error: `OpenAI API Error: ${workflowsData.error.message || 'Unknown error'}` }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!workflowsData.choices || !workflowsData.choices[0] || !workflowsData.choices[0].message) {
+      console.error('Invalid OpenAI workflows response structure:', workflowsData);
+      return new Response(
+        JSON.stringify({ error: 'Invalid response from OpenAI API' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const workflows = JSON.parse(workflowsData.choices[0].message.content || "[]");
 
     // Generate contextual agent suggestions
@@ -102,6 +147,24 @@ serve(async (req) => {
     });
 
     const agentsData = await agentsResponse.json();
+    console.log('OpenAI Agents Response:', agentsData);
+
+    if (agentsData.error) {
+      console.error('OpenAI API Error in agents generation:', agentsData.error);
+      return new Response(
+        JSON.stringify({ error: `OpenAI API Error: ${agentsData.error.message || 'Unknown error'}` }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!agentsData.choices || !agentsData.choices[0] || !agentsData.choices[0].message) {
+      console.error('Invalid OpenAI agents response structure:', agentsData);
+      return new Response(
+        JSON.stringify({ error: 'Invalid response from OpenAI API' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const agentSuggestions = JSON.parse(agentsData.choices[0].message.content || "[]");
 
     const blueprint = {

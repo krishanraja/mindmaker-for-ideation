@@ -61,6 +61,24 @@ serve(async (req) => {
     });
 
     const analysisData = await analysisResponse.json();
+    console.log('OpenAI Analysis Response:', analysisData);
+
+    if (analysisData.error) {
+      console.error('OpenAI API Error:', analysisData.error);
+      return new Response(
+        JSON.stringify({ error: `OpenAI API Error: ${analysisData.error.message || 'Unknown error'}` }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!analysisData.choices || !analysisData.choices[0] || !analysisData.choices[0].message) {
+      console.error('Invalid OpenAI response structure:', analysisData);
+      return new Response(
+        JSON.stringify({ error: 'Invalid response from OpenAI API' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const analysis = JSON.parse(analysisData.choices[0].message.content || "{}");
 
     // Build user profile
@@ -87,6 +105,24 @@ serve(async (req) => {
     });
 
     const profileData = await profileResponse.json();
+    console.log('OpenAI Profile Response:', profileData);
+
+    if (profileData.error) {
+      console.error('OpenAI API Error in profile generation:', profileData.error);
+      return new Response(
+        JSON.stringify({ error: `OpenAI API Error: ${profileData.error.message || 'Unknown error'}` }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!profileData.choices || !profileData.choices[0] || !profileData.choices[0].message) {
+      console.error('Invalid OpenAI profile response structure:', profileData);
+      return new Response(
+        JSON.stringify({ error: 'Invalid response from OpenAI API' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const userProfile = JSON.parse(profileData.choices[0].message.content || "{}");
 
     // Generate AI questions
@@ -113,6 +149,24 @@ serve(async (req) => {
     });
 
     const questionsData = await questionsResponse.json();
+    console.log('OpenAI Questions Response:', questionsData);
+
+    if (questionsData.error) {
+      console.error('OpenAI API Error in questions generation:', questionsData.error);
+      return new Response(
+        JSON.stringify({ error: `OpenAI API Error: ${questionsData.error.message || 'Unknown error'}` }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!questionsData.choices || !questionsData.choices[0] || !questionsData.choices[0].message) {
+      console.error('Invalid OpenAI questions response structure:', questionsData);
+      return new Response(
+        JSON.stringify({ error: 'Invalid response from OpenAI API' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const questions = JSON.parse(questionsData.choices[0].message.content || "[]");
 
     console.log('Analysis complete');

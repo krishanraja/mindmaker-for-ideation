@@ -15,6 +15,15 @@ serve(async (req) => {
   }
 
   try {
+    // Check if OpenAI API key is available
+    if (!openAIApiKey) {
+      console.error('OpenAI API key not found in environment variables');
+      return new Response(
+        JSON.stringify({ error: 'OpenAI API key not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { session, type = 'followup' } = await req.json();
 
     if (!session) {
@@ -61,6 +70,24 @@ serve(async (req) => {
     });
 
     const data = await response.json();
+    console.log('OpenAI Generate Questions Response:', data);
+
+    if (data.error) {
+      console.error('OpenAI API Error:', data.error);
+      return new Response(
+        JSON.stringify({ error: `OpenAI API Error: ${data.error.message || 'Unknown error'}` }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('Invalid OpenAI response structure:', data);
+      return new Response(
+        JSON.stringify({ error: 'Invalid response from OpenAI API' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const result = JSON.parse(data.choices[0].message.content || (type === 'should_continue' ? '{}' : '[]'));
 
     console.log('Questions generated successfully');
