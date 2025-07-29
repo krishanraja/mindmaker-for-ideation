@@ -141,7 +141,12 @@ serve(async (req) => {
       );
     }
 
-    const userProfile = parseOpenAIResponse(profileData.choices[0].message.content || "{}");
+    const rawUserProfile = parseOpenAIResponse(profileData.choices[0].message.content || "{}");
+    
+    // Extract the actual userProfile if it's nested
+    const userProfile = rawUserProfile?.userProfile || rawUserProfile;
+    
+    console.log('Processed user profile:', userProfile);
 
     // Generate AI questions
     const questionsResponse = await fetch('https://api.openai.com/v1/chat/completions', {

@@ -40,10 +40,14 @@ interface IdeaForgeSession {
   conversationContext: string[];
   userProfile: {
     expertiseLevel: string;
-    domain: string;
-    constraints: string[];
+    domain: string[];
+    constraints: {
+      budget: string;
+      timeline: string;
+      resources: string;
+    };
     goals: string[];
-    previousResponses: string[];
+    previousResponses: any[];
   };
   blueprint: {
     lovablePrompt: string;
@@ -97,8 +101,19 @@ const Index = () => {
 
       if (error) throw error;
 
-      const { analysis, userProfile, questions } = data;
-      console.log("AI analysis complete:", { analysis, userProfile, questions });
+      const { analysis, userProfile: rawUserProfile, questions } = data;
+      console.log("AI analysis complete:", { analysis, rawUserProfile, questions });
+
+      // Handle potential nested userProfile structure
+      const actualUserProfile = rawUserProfile?.userProfile || rawUserProfile;
+      
+      // Ensure previousResponses is initialized as an array
+      const safeUserProfile = {
+        ...actualUserProfile,
+        previousResponses: actualUserProfile?.previousResponses || []
+      };
+
+      console.log("Processed user profile:", safeUserProfile);
 
       // Set up initial session with analysis phase
       setSession({
@@ -108,7 +123,7 @@ const Index = () => {
         questions: [],
         userResponses: [],
         conversationContext: [input],
-        userProfile,
+        userProfile: safeUserProfile,
         blueprint: null,
         currentStep: 'analysis',
         currentQuestionIndex: 0,
@@ -124,7 +139,7 @@ const Index = () => {
           questions,
           userResponses: [],
           conversationContext: [input],
-          userProfile,
+          userProfile: safeUserProfile,
           blueprint: null,
           currentStep: 'questions',
           currentQuestionIndex: 0,
@@ -152,7 +167,14 @@ const Index = () => {
         conversationContext: [...session.conversationContext, currentQuestionResponse],
         userProfile: {
           ...session.userProfile,
-          previousResponses: [...session.userProfile.previousResponses, currentQuestionResponse]
+          previousResponses: [
+            ...(session.userProfile?.previousResponses || []), 
+            { 
+              response: currentQuestionResponse,
+              questionIndex: session.currentQuestionIndex,
+              round: session.questionRound
+            }
+          ]
         }
       };
 
