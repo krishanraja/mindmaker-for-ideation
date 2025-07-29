@@ -1,0 +1,131 @@
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { ArrowRight, ArrowLeft, HelpCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+
+interface Question {
+  question: string;
+  rationale: string;
+  category?: string;
+}
+
+interface QuestionCardProps {
+  question: Question;
+  questionNumber: number;
+  totalQuestions: number;
+  value: string;
+  onChange: (value: string) => void;
+  onNext: () => void;
+  onPrevious?: () => void;
+  canProceed: boolean;
+  isGenerating?: boolean;
+  showPrevious?: boolean;
+}
+
+const QuestionCard: React.FC<QuestionCardProps> = ({
+  question,
+  questionNumber,
+  totalQuestions,
+  value,
+  onChange,
+  onNext,
+  onPrevious,
+  canProceed,
+  isGenerating = false,
+  showPrevious = false,
+}) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 50 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -50 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="w-full max-w-2xl mx-auto"
+    >
+      <Card className="bg-gradient-to-br from-card to-card/80 border border-border/50 shadow-card backdrop-blur-sm">
+        <CardHeader className="text-center pb-6">
+          <div className="flex items-center justify-center mb-4">
+            <HelpCircle className="w-8 h-8 text-primary mr-3" />
+            <div>
+              <Badge variant="secondary" className="mb-2">
+                Question {questionNumber} of {totalQuestions}
+              </Badge>
+              {question.category && (
+                <Badge variant="outline" className="ml-2">
+                  {question.category}
+                </Badge>
+              )}
+            </div>
+          </div>
+          
+          <h2 className="text-2xl font-bold text-foreground leading-tight">
+            {question.question}
+          </h2>
+          
+          <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
+            {question.rationale}
+          </p>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-foreground">
+              Your Response
+            </label>
+            <Textarea
+              placeholder="Share your thoughts in detail..."
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              className="min-h-[120px] resize-none bg-input/50 border-border/50 focus:border-primary/50 focus:bg-input transition-all duration-300"
+              disabled={isGenerating}
+            />
+            <div className="text-xs text-muted-foreground">
+              💡 The more detail you provide, the better your blueprint will be
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            {showPrevious && onPrevious && (
+              <Button
+                onClick={onPrevious}
+                variant="outline"
+                className="flex-1 h-12 bg-transparent border-border/50 hover:bg-secondary/50"
+                disabled={isGenerating}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Previous
+              </Button>
+            )}
+            
+            <Button
+              onClick={onNext}
+              disabled={!canProceed || isGenerating}
+              className="flex-1 h-12 bg-gradient-to-r from-primary to-primary-glow hover:from-primary/90 hover:to-primary-glow/90 text-primary-foreground shadow-elegant transition-all duration-300"
+            >
+              {isGenerating ? (
+                <>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="w-4 h-4 mr-2 border-2 border-primary-foreground border-t-transparent rounded-full"
+                  />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  {questionNumber === totalQuestions ? 'Generate Blueprint' : 'Continue'}
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+};
+
+export default QuestionCard;
