@@ -190,9 +190,9 @@ ${blueprint.agentSuggestions.map((agent, index) => `
           const logoImg = new Image();
           logoImg.onload = () => {
             // Calculate logo dimensions (maintain aspect ratio)
-            const logoWidth = 25;
+            const logoWidth = 30;
             const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
-            const logoX = margin; // Exact same position as text
+            const logoX = margin + 3; // Align with text position
             
             pdf.addImage(logoImg, 'PNG', logoX, margin - 5, logoWidth, logoHeight);
           };
@@ -210,9 +210,9 @@ ${blueprint.agentSuggestions.map((agent, index) => `
         logoImg.onload = () => {
           try {
             // Calculate logo dimensions (maintain aspect ratio)
-            const logoWidth = 25;
+            const logoWidth = 30;
             const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
-            const logoX = margin; // Exact same position as text margin
+            const logoX = margin + 3; // Align with text position
             
             pdf.addImage(logoImg, 'PNG', logoX, yPosition, logoWidth, logoHeight);
             yPosition += logoHeight + 8;
