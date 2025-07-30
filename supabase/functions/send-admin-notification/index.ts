@@ -57,7 +57,7 @@ serve(async (req) => {
     const emailData = {
       from: 'FractionalAI Blueprint System <noreply@fractionl.ai>',
       to: ['krish@fractionl.ai'],
-      subject: `New Blueprint Generated - ${session?.userName || 'Unknown User'}`,
+      subject: `Ideation Blueprint - ${session?.userName || 'Unknown User'}`,
       html: `
         <div style="font-family: 'Inter', Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f8fafc;">
           <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
@@ -99,12 +99,66 @@ serve(async (req) => {
               <p style="margin: 5px 0;"><strong>Timeline:</strong> ${session?.userProfile?.constraints?.timeline || 'Not specified'}</p>
             </div>
 
+            ${blueprint?.lovablePrompt ? `
             <div style="background: #f3e8ff; border-radius: 8px; padding: 20px; margin: 20px 0; border-left: 4px solid #a855f7;">
-              <h2 style="color: #374151; font-size: 18px; margin-bottom: 10px;">Blueprint Summary</h2>
-              <p style="margin: 5px 0;"><strong>Workflows Generated:</strong> ${blueprint?.workflows?.length || 0}</p>
-              <p style="margin: 5px 0;"><strong>Agent Suggestions:</strong> ${blueprint?.agentSuggestions?.length || 0}</p>
-              <p style="margin: 5px 0;"><strong>Lovable Prompt Length:</strong> ${blueprint?.lovablePrompt?.length || 0} characters</p>
+              <h2 style="color: #374151; font-size: 18px; margin-bottom: 10px;">Lovable Prompt</h2>
+              <div style="background: white; border-radius: 6px; padding: 15px; font-family: monospace; white-space: pre-wrap; line-height: 1.5; color: #374151; border: 1px solid #e5e7eb;">
+                ${blueprint.lovablePrompt}
+              </div>
             </div>
+            ` : ''}
+
+            ${blueprint?.workflows && blueprint.workflows.length > 0 ? `
+            <div style="background: #ecfdf5; border-radius: 8px; padding: 20px; margin: 20px 0; border-left: 4px solid #10b981;">
+              <h2 style="color: #374151; font-size: 18px; margin-bottom: 15px;">Development Workflows (${blueprint.workflows.length})</h2>
+              ${blueprint.workflows.map((workflow: any, index: number) => `
+                <div style="background: white; border-radius: 8px; padding: 15px; margin-bottom: 15px; border: 1px solid #d1fae5;">
+                  <h3 style="color: #065f46; font-size: 16px; margin-bottom: 10px; font-weight: 600;">${workflow.title || `Workflow ${index + 1}`}</h3>
+                  <p style="color: #374151; margin-bottom: 10px; line-height: 1.6;">${workflow.description || 'No description provided'}</p>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <p style="margin: 0; font-size: 14px;"><strong>Duration:</strong> ${workflow.duration || 'Not specified'}</p>
+                    <p style="margin: 0; font-size: 14px;"><strong>Dependencies:</strong> ${workflow.dependencies || 'None'}</p>
+                  </div>
+                  ${workflow.deliverables && workflow.deliverables.length > 0 ? `
+                    <div style="margin-top: 10px;">
+                      <strong style="color: #065f46; font-size: 14px;">Deliverables:</strong>
+                      <ul style="margin: 5px 0 0 20px; color: #374151; font-size: 14px;">
+                        ${workflow.deliverables.map((deliverable: string) => `<li style="margin-bottom: 3px;">${deliverable}</li>`).join('')}
+                      </ul>
+                    </div>
+                  ` : ''}
+                </div>
+              `).join('')}
+            </div>
+            ` : ''}
+
+            ${blueprint?.agentSuggestions && blueprint.agentSuggestions.length > 0 ? `
+            <div style="background: #fef3c7; border-radius: 8px; padding: 20px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+              <h2 style="color: #374151; font-size: 18px; margin-bottom: 15px;">AI Agent Suggestions (${blueprint.agentSuggestions.length})</h2>
+              ${blueprint.agentSuggestions.map((agent: any, index: number) => `
+                <div style="background: white; border-radius: 8px; padding: 15px; margin-bottom: 15px; border: 1px solid #fde68a;">
+                  <h3 style="color: #92400e; font-size: 16px; margin-bottom: 8px; font-weight: 600;">${agent.name || `Agent ${index + 1}`}</h3>
+                  <p style="color: #374151; margin-bottom: 10px; line-height: 1.6;">${agent.description || 'No description provided'}</p>
+                  ${agent.useCases && agent.useCases.length > 0 ? `
+                    <div style="margin-bottom: 10px;">
+                      <strong style="color: #92400e; font-size: 14px;">Use Cases:</strong>
+                      <ul style="margin: 5px 0 0 20px; color: #374151; font-size: 14px;">
+                        ${agent.useCases.map((useCase: string) => `<li style="margin-bottom: 3px;">${useCase}</li>`).join('')}
+                      </ul>
+                    </div>
+                  ` : ''}
+                  ${agent.benefits && agent.benefits.length > 0 ? `
+                    <div>
+                      <strong style="color: #92400e; font-size: 14px;">Benefits:</strong>
+                      <ul style="margin: 5px 0 0 20px; color: #374151; font-size: 14px;">
+                        ${agent.benefits.map((benefit: string) => `<li style="margin-bottom: 3px;">${benefit}</li>`).join('')}
+                      </ul>
+                    </div>
+                  ` : ''}
+                </div>
+              `).join('')}
+            </div>
+            ` : ''}
 
             <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
               <p style="color: #9ca3af; font-size: 14px; margin: 0;">
