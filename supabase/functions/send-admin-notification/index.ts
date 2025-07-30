@@ -31,7 +31,7 @@ serve(async (req) => {
 
     // Send comprehensive session data to admin
     const adminEmailResponse = await resend.emails.send({
-      from: 'FractionalAI <onboarding@resend.dev>',
+      from: 'FractionalAI <hello@krishraja.com>',
       to: ['krish@fractionl.ai'],
       subject: `New Blueprint Generated - ${session?.userName || 'Unknown User'}`,
       html: `

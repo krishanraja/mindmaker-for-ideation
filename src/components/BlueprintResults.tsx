@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 interface WorkflowStep {
   title: string;
@@ -111,40 +110,129 @@ ${blueprint.agentSuggestions.map((agent, index) => `
   const handlePDFDownload = async () => {
     setIsGeneratingPDF(true);
     try {
-      // Create a temporary container for PDF generation
-      const tempContainer = document.createElement('div');
-      tempContainer.style.position = 'absolute';
-      tempContainer.style.left = '-9999px';
-      tempContainer.style.top = '0';
-      tempContainer.style.width = '800px';
-      tempContainer.style.backgroundColor = 'white';
-      document.body.appendChild(tempContainer);
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 15;
+      const contentWidth = pageWidth - (margin * 2);
+      let yPosition = margin;
 
-      // Create PDF content HTML
-      const htmlContent = createPDFTemplate();
-      tempContainer.innerHTML = htmlContent;
+      // Helper function to add text with auto-wrap and pagination
+      const addTextToPDF = (text: string, fontSize: number, isBold: boolean = false, color: string = '#000000') => {
+        pdf.setFontSize(fontSize);
+        pdf.setFont('helvetica', isBold ? 'bold' : 'normal');
+        pdf.setTextColor(color);
+        
+        const lines = pdf.splitTextToSize(text, contentWidth);
+        
+        for (const line of lines) {
+          if (yPosition > pageHeight - margin - 10) {
+            pdf.addPage();
+            yPosition = margin;
+          }
+          pdf.text(line, margin, yPosition);
+          yPosition += fontSize * 0.4;
+        }
+        yPosition += 5; // Extra spacing after text block
+      };
 
-      // Generate canvas from HTML
-      const canvas = await html2canvas(tempContainer, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff'
+      // Helper function to add section header
+      const addSectionHeader = (title: string, emoji: string) => {
+        if (yPosition > pageHeight - margin - 20) {
+          pdf.addPage();
+          yPosition = margin;
+        }
+        
+        // Add some space before section
+        yPosition += 8;
+        
+        // Add colored background for header
+        pdf.setFillColor(240, 245, 255);
+        pdf.rect(margin, yPosition - 8, contentWidth, 12, 'F');
+        
+        // Add header text
+        pdf.setFontSize(16);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor('#1f2937');
+        pdf.text(`${emoji} ${title}`, margin + 3, yPosition);
+        yPosition += 15;
+      };
+
+      // Add logo and header
+      pdf.setFontSize(24);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor('#1f2937');
+      pdf.text(`${session?.userName || 'User'}'s AI-Powered Blueprint`, margin, yPosition);
+      yPosition += 12;
+      
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor('#6b7280');
+      pdf.text(`Generated on ${new Date().toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })}`, margin, yPosition);
+      yPosition += 15;
+
+      // Add horizontal line
+      pdf.setDrawColor('#e5e7eb');
+      pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 10;
+
+      // Original Vision Section
+      addSectionHeader('Original Vision', '💡');
+      addTextToPDF(originalInput || 'No vision provided', 11, false, '#374151');
+
+      // Q&A Section
+      if (session?.questions && session.questions.length > 0) {
+        addSectionHeader('Discovery Questions & Answers', '❓');
+        session.questions.forEach((q: any, index: number) => {
+          addTextToPDF(`Q${index + 1}: ${q.question}`, 11, true, '#374151');
+          addTextToPDF(`A: ${session.userResponses?.[index] || 'No response provided'}`, 10, false, '#6b7280');
+          yPosition += 3;
+        });
+      }
+
+      // Lovable Prompt Section
+      addSectionHeader('Ready-to-Use Lovable Prompt', '🚀');
+      addTextToPDF(blueprint.lovablePrompt, 9, false, '#374151');
+
+      // Workflows Section
+      addSectionHeader('Development Workflows', '⚡');
+      blueprint.workflows.forEach((workflow: any, index: number) => {
+        addTextToPDF(`${index + 1}. ${workflow.title}`, 12, true, '#374151');
+        addTextToPDF(`Duration: ${workflow.duration} | Complexity: ${workflow.complexity}`, 10, false, '#6b7280');
+        addTextToPDF(workflow.description, 10, false, '#374151');
+        if (workflow.deliverables && workflow.deliverables.length > 0) {
+          addTextToPDF(`Deliverables: ${workflow.deliverables.join(', ')}`, 10, false, '#6b7280');
+        }
+        yPosition += 5;
       });
 
-      // Create PDF
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      
-      // Download PDF
-      const fileName = `${session?.userName.replace(/\s+/g, '_') || 'User'}_Blueprint.pdf`;
-      pdf.save(fileName);
+      // Agent Suggestions Section
+      addSectionHeader('AI Agent Suggestions', '🤖');
+      blueprint.agentSuggestions.forEach((agent: any) => {
+        addTextToPDF(`${agent.name} (${agent.relevanceScore}/10)`, 12, true, '#374151');
+        addTextToPDF(`Category: ${agent.category}`, 10, false, '#6b7280');
+        addTextToPDF(agent.description, 10, false, '#374151');
+        addTextToPDF(`Use Case: ${agent.specificUseCase}`, 10, false, '#6b7280');
+        yPosition += 5;
+      });
 
-      // Clean up
-      document.body.removeChild(tempContainer);
+      // Footer
+      if (yPosition > pageHeight - margin - 30) {
+        pdf.addPage();
+        yPosition = margin;
+      }
+      yPosition = pageHeight - margin - 10;
+      pdf.setFontSize(10);
+      pdf.setTextColor('#9ca3af');
+      pdf.text('Generated with ❤️ by FractionalAI | Ready to build? Visit lovable.dev', margin, yPosition);
+
+      // Download PDF
+      const fileName = `${session?.userName?.replace(/\s+/g, '_') || 'User'}_Blueprint.pdf`;
+      pdf.save(fileName);
 
       // Send admin notification
       await sendAdminNotification();
