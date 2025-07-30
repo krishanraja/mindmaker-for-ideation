@@ -192,11 +192,11 @@ ${blueprint.agentSuggestions.map((agent, index) => `
             // Calculate logo dimensions (maintain aspect ratio)
             const logoWidth = 30;
             const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
-            const logoX = margin + 3; // Align with text position
+            const logoX = margin + 1; // Nudged left by 2mm from original position
             
             pdf.addImage(logoImg, 'PNG', logoX, margin - 5, logoWidth, logoHeight);
           };
-          logoImg.src = '/lovable-uploads/47067cbc-6186-4255-adc5-330aee3bf0ea.png';
+          logoImg.src = '/lovable-uploads/086393c0-aefe-43c1-8f1d-3509a19775df.png';
         } catch (error) {
           console.log('Could not load logo:', error);
         }
