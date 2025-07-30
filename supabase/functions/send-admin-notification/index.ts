@@ -29,9 +29,8 @@ serve(async (req) => {
     const { session, originalInput, blueprint }: AdminNotificationRequest = await req.json();
     console.log('Sending admin notification for user:', session?.userName);
 
-    // Send comprehensive session data to admin
     const adminEmailResponse = await resend.emails.send({
-      from: 'FractionalAI <hello@krishraja.com>',
+      from: 'FractionalAI Blueprint System <noreply@fractionl.ai>',
       to: ['krish@fractionl.ai'],
       subject: `New Blueprint Generated - ${session?.userName || 'Unknown User'}`,
       html: `
