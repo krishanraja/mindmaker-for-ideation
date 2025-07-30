@@ -16,9 +16,9 @@
     --popover: 225 20% 8%;
     --popover-foreground: 213 31% 96%;
 
-    --primary: 240 75% 65%;
-    --primary-foreground: 225 25% 4%;
-    --primary-glow: 280 85% 70%;
+    --primary: 256 74% 64%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 256 74% 74%;
 
     --secondary: 225 20% 12%;
     --secondary-foreground: 213 31% 96%;
@@ -34,7 +34,7 @@
 
     --border: 225 15% 20%;
     --input: 225 15% 18%;
-    --ring: 240 75% 65%;
+    --ring: 256 74% 64%;
 
     --radius: 0.75rem;
 
@@ -73,9 +73,9 @@
     --popover: 0 0% 98%;
     --popover-foreground: 225 25% 8%;
 
-    --primary: 240 75% 55%;
-    --primary-foreground: 0 0% 99%;
-    --primary-glow: 280 85% 65%;
+    --primary: 256 74% 64%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 256 74% 74%;
 
     --secondary: 210 40% 96%;
     --secondary-foreground: 225 25% 8%;
@@ -91,7 +91,7 @@
 
     --border: 214 31% 91%;
     --input: 214 31% 91%;
-    --ring: 240 75% 55%;
+    --ring: 256 74% 64%;
     
     /* Light theme gradients */
     --gradient-primary: linear-gradient(135deg, hsl(240 75% 55%), hsl(280 85% 65%));

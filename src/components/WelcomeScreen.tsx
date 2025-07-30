@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Lightbulb, Sparkles, Brain, ArrowRight, Zap } from 'lucide-react';
+import fractionlLogo from '@/assets/fractionl-ai-logo.png';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -36,20 +37,15 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         >
           <div className="flex items-center justify-center mb-8">
             <motion.div 
-              className="relative"
-              animate={{ rotate: [0, 360] }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
             >
-              <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary-glow rounded-full flex items-center justify-center shadow-glow">
-                <Brain className="w-10 h-10 text-primary-foreground" />
-              </div>
-              <motion.div
-                className="absolute -top-2 -right-2"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <Sparkles className="w-6 h-6 text-primary-glow" />
-              </motion.div>
+              <img 
+                src={fractionlLogo} 
+                alt="FractionalAI Logo" 
+                className="w-24 h-24 object-contain"
+              />
             </motion.div>
           </div>
           
@@ -59,7 +55,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
           >
-            IdeaForge AI
+            Ideation Blueprint
           </motion.h1>
           
           <motion.p 
