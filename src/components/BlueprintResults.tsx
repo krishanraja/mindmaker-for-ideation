@@ -186,15 +186,15 @@ ${blueprint.agentSuggestions.map((agent, index) => `
       // Function to add logo to page
       const addLogoToPage = () => {
         try {
-          // Add the FractionalAI logo image at the top - left aligned
+          // Add the FractionalAI logo image at the top - perfectly aligned with text
           const logoImg = new Image();
           logoImg.onload = () => {
             // Calculate logo dimensions (maintain aspect ratio)
-            const logoWidth = 30;
+            const logoWidth = 25;
             const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
-            const logoX = margin; // Left align with margin
+            const logoX = margin; // Exact same position as text
             
-            pdf.addImage(logoImg, 'PNG', logoX, margin - 10, logoWidth, logoHeight);
+            pdf.addImage(logoImg, 'PNG', logoX, margin - 5, logoWidth, logoHeight);
           };
           logoImg.src = '/lovable-uploads/47067cbc-6186-4255-adc5-330aee3bf0ea.png';
         } catch (error) {
@@ -210,12 +210,12 @@ ${blueprint.agentSuggestions.map((agent, index) => `
         logoImg.onload = () => {
           try {
             // Calculate logo dimensions (maintain aspect ratio)
-            const logoWidth = 30;
+            const logoWidth = 25;
             const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
-            const logoX = margin; // Left align with margin
+            const logoX = margin; // Exact same position as text margin
             
             pdf.addImage(logoImg, 'PNG', logoX, yPosition, logoWidth, logoHeight);
-            yPosition += logoHeight + 10;
+            yPosition += logoHeight + 8;
             resolve(true);
           } catch (error) {
             console.log('Error adding logo:', error);
