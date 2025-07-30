@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Lightbulb, Sparkles, Brain, ArrowRight, Zap } from 'lucide-react';
-import fractionlLogo from '@/assets/fractionl-ai-logo.png';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -42,7 +41,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               transition={{ duration: 0.6 }}
             >
               <img 
-                src={fractionlLogo} 
+                src="/lovable-uploads/6e675002-23f2-405d-91fe-2e2b48323d6c.png" 
                 alt="FractionalAI Logo" 
                 className="w-24 h-24 object-contain"
               />
