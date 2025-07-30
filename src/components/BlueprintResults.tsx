@@ -137,7 +137,7 @@ ${blueprint.agentSuggestions.map((agent, index) => `
       };
 
       // Helper function to add section header
-      const addSectionHeader = (title: string, emoji: string) => {
+      const addSectionHeader = (title: string) => {
         if (yPosition > pageHeight - margin - 20) {
           pdf.addPage();
           yPosition = margin;
@@ -154,7 +154,7 @@ ${blueprint.agentSuggestions.map((agent, index) => `
         pdf.setFontSize(16);
         pdf.setFont('helvetica', 'bold');
         pdf.setTextColor('#1f2937');
-        pdf.text(`${emoji} ${title}`, margin + 3, yPosition);
+        pdf.text(title, margin + 3, yPosition);
         yPosition += 15;
       };
 
@@ -177,12 +177,12 @@ ${blueprint.agentSuggestions.map((agent, index) => `
       yPosition += 10;
 
       // Original Vision Section
-      addSectionHeader('Original Vision', '💡');
+      addSectionHeader('Original Vision');
       addTextToPDF(originalInput || 'No vision provided', 11, false, '#374151');
 
       // Q&A Section
       if (session?.questions && session.questions.length > 0) {
-        addSectionHeader('Discovery Questions & Answers', '❓');
+        addSectionHeader('Discovery Questions & Answers');
         session.questions.forEach((q: any, index: number) => {
           addTextToPDF(`Q${index + 1}: ${q.question}`, 11, true, '#374151');
           addTextToPDF(`A: ${session.userResponses?.[index] || 'No response provided'}`, 10, false, '#6b7280');
@@ -191,11 +191,11 @@ ${blueprint.agentSuggestions.map((agent, index) => `
       }
 
       // Lovable Prompt Section
-      addSectionHeader('Ready-to-Use Lovable Prompt', '🚀');
+      addSectionHeader('Ready-to-Use Lovable Prompt');
       addTextToPDF(blueprint.lovablePrompt, 9, false, '#374151');
 
       // Workflows Section
-      addSectionHeader('Development Workflows', '⚡');
+      addSectionHeader('Development Workflows');
       blueprint.workflows.forEach((workflow: any, index: number) => {
         addTextToPDF(`${index + 1}. ${workflow.title}`, 12, true, '#374151');
         addTextToPDF(`Duration: ${workflow.duration} | Complexity: ${workflow.complexity}`, 10, false, '#6b7280');
@@ -207,7 +207,7 @@ ${blueprint.agentSuggestions.map((agent, index) => `
       });
 
       // Agent Suggestions Section
-      addSectionHeader('AI Agent Suggestions', '🤖');
+      addSectionHeader('AI Agent Suggestions');
       blueprint.agentSuggestions.forEach((agent: any) => {
         addTextToPDF(`${agent.name} (${agent.relevanceScore}/10)`, 12, true, '#374151');
         addTextToPDF(`Category: ${agent.category}`, 10, false, '#6b7280');
