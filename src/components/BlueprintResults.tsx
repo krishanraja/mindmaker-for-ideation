@@ -205,7 +205,7 @@ ${blueprint.agentSuggestions.map((agent, index) => `
           console.log('Could not load logo image');
           resolve(true); // Continue without logo
         };
-        logoImg.src = '/lovable-uploads/086393c0-aefe-43c1-8f1d-3509a19775df.png';
+        logoImg.src = '/lovable-uploads/fff497b2-2ddb-4e3b-bb5e-690f05f7422a.png';
       });
 
       // Add main title
