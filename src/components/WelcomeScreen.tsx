@@ -41,7 +41,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               transition={{ duration: 0.6 }}
             >
               <img 
-                src="/lovable-uploads/885013b9-e26e-452e-924e-bc957d377b2d.png" 
+                src="/lovable-uploads/a9a8850e-efa8-4ff3-be18-e9ca23a403a2.png" 
                 alt="FractionalAI Logo" 
                 className="w-24 h-24 object-contain"
               />
