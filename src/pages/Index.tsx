@@ -34,6 +34,7 @@ interface Question {
 interface IdeaForgeSession {
   sessionId: string;
   userName: string;
+  userEmail: string;
   originalInput: string;
   semanticAnalysis: any;
   questions: Question[];
@@ -62,6 +63,7 @@ interface IdeaForgeSession {
 
 const Index = () => {
   const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [userInput, setUserInput] = useState("");
   const [session, setSession] = useState<IdeaForgeSession | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -69,10 +71,10 @@ const Index = () => {
   const { toast } = useToast();
 
   const handleStart = async () => {
-    if (!userName.trim() || !userInput.trim()) {
+    if (!userName.trim() || !userEmail.trim() || !userInput.trim()) {
       toast({
         title: "Input required",
-        description: "Please enter your name and describe your idea before starting.",
+        description: "Please enter your name, email, and describe your idea before starting.",
         variant: "destructive",
       });
       return;
@@ -80,7 +82,7 @@ const Index = () => {
 
     setIsGenerating(true);
     try {
-      await analyzeInput(userInput, userName);
+      await analyzeInput(userInput, userName, userEmail);
     } catch (error) {
       console.error("Error starting analysis:", error);
       toast({
@@ -93,7 +95,7 @@ const Index = () => {
     }
   };
 
-  const analyzeInput = async (input: string, name: string) => {
+  const analyzeInput = async (input: string, name: string, email: string) => {
     console.log("Starting AI-powered semantic analysis for:", input);
     
     try {
@@ -121,6 +123,7 @@ const Index = () => {
       setSession({
         sessionId: Math.random().toString(36).substr(2, 9),
         userName: name,
+        userEmail: email,
         originalInput: input,
         semanticAnalysis: analysis,
         questions: [],
@@ -138,6 +141,7 @@ const Index = () => {
         const newSession: IdeaForgeSession = {
           sessionId: Math.random().toString(36).substr(2, 9),
           userName: name,
+          userEmail: email,
           originalInput: input,
           semanticAnalysis: analysis,
           questions,
@@ -357,6 +361,8 @@ const Index = () => {
       <WelcomeScreen
         userName={userName}
         setUserName={setUserName}
+        userEmail={userEmail}
+        setUserEmail={setUserEmail}
         userInput={userInput}
         setUserInput={setUserInput}
         onStart={handleStart}

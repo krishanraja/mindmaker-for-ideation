@@ -10,6 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 interface WelcomeScreenProps {
   userName: string;
   setUserName: (value: string) => void;
+  userEmail: string;
+  setUserEmail: (value: string) => void;
   userInput: string;
   setUserInput: (value: string) => void;
   onStart: () => void;
@@ -19,6 +21,8 @@ interface WelcomeScreenProps {
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   userName,
   setUserName,
+  userEmail,
+  setUserEmail,
   userInput,
   setUserInput,
   onStart,
@@ -130,18 +134,35 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             
             <CardContent className="space-y-6">
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="userName" className="text-sm font-medium text-foreground">
-                    Your Name
-                  </Label>
-                  <Input
-                    id="userName"
-                    placeholder="Enter your name..."
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                    className="bg-input/50 border-border/50 focus:border-primary/50 focus:bg-input transition-all duration-300"
-                    disabled={isGenerating}
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="userName" className="text-sm font-medium text-foreground">
+                      Your Name
+                    </Label>
+                    <Input
+                      id="userName"
+                      placeholder="Enter your name..."
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      className="bg-input/50 border-border/50 focus:border-primary/50 focus:bg-input transition-all duration-300"
+                      disabled={isGenerating}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="userEmail" className="text-sm font-medium text-foreground">
+                      Your Email
+                    </Label>
+                    <Input
+                      id="userEmail"
+                      type="email"
+                      placeholder="your.email@example.com"
+                      value={userEmail}
+                      onChange={(e) => setUserEmail(e.target.value)}
+                      className="bg-input/50 border-border/50 focus:border-primary/50 focus:bg-input transition-all duration-300"
+                      disabled={isGenerating}
+                    />
+                  </div>
                 </div>
                 
                 <div className="space-y-3">
@@ -168,7 +189,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               >
                 <Button
                   onClick={onStart}
-                  disabled={!userName.trim() || !userInput.trim() || isGenerating}
+                  disabled={!userName.trim() || !userEmail.trim() || !userInput.trim() || isGenerating}
                   className="w-full h-14 text-lg font-medium bg-gradient-to-r from-primary to-primary-glow hover:from-primary/90 hover:to-primary-glow/90 text-primary-foreground shadow-elegant transition-all duration-300"
                 >
                   {isGenerating ? (

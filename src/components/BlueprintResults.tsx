@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Download, Lightbulb, Workflow, Users, CheckCircle, ExternalLink } from 'lucide-react';
+import { Copy, Download, Lightbulb, Workflow, Users, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import EmailCollectionModal from './EmailCollectionModal';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface WorkflowStep {
   title: string;
@@ -41,7 +42,6 @@ interface BlueprintResultsProps {
 
 const BlueprintResults: React.FC<BlueprintResultsProps> = ({ blueprint, originalInput, session }) => {
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
-  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const { toast } = useToast();
 
@@ -108,40 +108,52 @@ ${blueprint.agentSuggestions.map((agent, index) => `
     });
   };
 
-  const handlePDFGeneration = async (userEmail: string) => {
+  const handlePDFDownload = async () => {
     setIsGeneratingPDF(true);
     try {
-      // Use session data if available, otherwise create minimal session structure
-      const sessionData = session || {
-        userName: "User",
-        originalInput,
-        questions: [],
-        userResponses: [],
-        blueprint,
-        sessionId: Math.random().toString(36).substr(2, 9),
-        userProfile: {
-          expertiseLevel: 'Unknown',
-          domain: [],
-          constraints: {},
-          goals: []
-        }
-      };
+      // Create a temporary container for PDF generation
+      const tempContainer = document.createElement('div');
+      tempContainer.style.position = 'absolute';
+      tempContainer.style.left = '-9999px';
+      tempContainer.style.top = '0';
+      tempContainer.style.width = '800px';
+      tempContainer.style.backgroundColor = 'white';
+      document.body.appendChild(tempContainer);
 
-      const { data, error } = await supabase.functions.invoke('generate-pdf-blueprint', {
-        body: {
-          session: sessionData,
-          userEmail
-        }
+      // Create PDF content HTML
+      const htmlContent = createPDFTemplate();
+      tempContainer.innerHTML = htmlContent;
+
+      // Generate canvas from HTML
+      const canvas = await html2canvas(tempContainer, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff'
       });
 
-      if (error) throw error;
+      // Create PDF
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      
+      // Download PDF
+      const fileName = `${session?.userName.replace(/\s+/g, '_') || 'User'}_Blueprint.pdf`;
+      pdf.save(fileName);
+
+      // Clean up
+      document.body.removeChild(tempContainer);
+
+      // Send admin notification
+      await sendAdminNotification();
 
       toast({
-        title: "PDF Generated Successfully! 🎉",
-        description: `Your blueprint PDF has been sent to ${userEmail}`,
+        title: "PDF Downloaded! 🎉",
+        description: "Your blueprint has been downloaded to your computer.",
       });
 
-      setIsEmailModalOpen(false);
     } catch (error) {
       console.error('Error generating PDF:', error);
       toast({
@@ -151,6 +163,125 @@ ${blueprint.agentSuggestions.map((agent, index) => `
       });
     } finally {
       setIsGeneratingPDF(false);
+    }
+  };
+
+  const createPDFTemplate = () => {
+    const { userName, originalInput, questions, userResponses } = session || {};
+    const { lovablePrompt, workflows, agentSuggestions } = blueprint;
+
+    return `
+      <div style="font-family: 'Inter', Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; background: white;">
+        <!-- Header -->
+        <div style="text-align: center; border-bottom: 3px solid #3b82f6; padding-bottom: 30px; margin-bottom: 40px;">
+          <img src="/lovable-uploads/a9a8850e-efa8-4ff3-be18-e9ca23a403a2.png" alt="FractionalAI Logo" style="width: 80px; height: 80px; margin: 0 auto 20px; display: block;" />
+          <h1 style="font-size: 32px; font-weight: 700; color: #1f2937; margin-bottom: 8px;">${userName || 'User'}'s AI-Powered Blueprint</h1>
+          <p style="font-size: 18px; color: #6b7280; font-weight: 400;">Your personalized development roadmap</p>
+          <p style="color: #6b7280; font-size: 14px; margin-top: 10px;">Generated on ${new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })}</p>
+        </div>
+
+        <!-- Original Vision -->
+        <div style="margin-bottom: 40px; padding: 30px; background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-radius: 12px; border-left: 4px solid #0ea5e9;">
+          <h2 style="font-size: 24px; font-weight: 600; color: #1f2937; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+            <span style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #6366f1); border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 16px;">💡</span>
+            Original Vision
+          </h2>
+          <p style="font-size: 16px; line-height: 1.6; color: #374151;">${originalInput || 'No vision provided'}</p>
+        </div>
+
+        <!-- Q&A Section -->
+        ${questions && questions.length > 0 ? `
+        <div style="margin-bottom: 40px; padding: 30px; background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-radius: 12px; border-left: 4px solid #22c55e;">
+          <h2 style="font-size: 24px; font-weight: 600; color: #1f2937; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+            <span style="width: 32px; height: 32px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 16px;">❓</span>
+            Discovery Questions & Answers
+          </h2>
+          ${questions.map((q: any, index: number) => `
+            <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+              <div style="font-weight: 600; color: #374151; margin-bottom: 8px; font-size: 16px;">Q${index + 1}: ${q.question}</div>
+              <div style="color: #6b7280; font-size: 15px; line-height: 1.6; padding-left: 16px; border-left: 2px solid #e5e7eb;">${userResponses?.[index] || 'No response provided'}</div>
+            </div>
+          `).join('')}
+        </div>
+        ` : ''}
+
+        <!-- Lovable Prompt -->
+        <div style="margin-bottom: 40px; padding: 30px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 12px; border-left: 4px solid #f59e0b;">
+          <h2 style="font-size: 24px; font-weight: 600; color: #1f2937; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+            <span style="width: 32px; height: 32px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 16px;">🚀</span>
+            Ready-to-Use Lovable Prompt
+          </h2>
+          <div style="background: white; border: 1px solid #d1d5db; border-radius: 8px; padding: 24px; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 14px; line-height: 1.5; color: #374151; white-space: pre-wrap; word-wrap: break-word;">${lovablePrompt}</div>
+        </div>
+
+        <!-- Workflows -->
+        <div style="margin-bottom: 40px; padding: 30px; background: linear-gradient(135deg, #f3e8ff, #e9d5ff); border-radius: 12px; border-left: 4px solid #a855f7;">
+          <h2 style="font-size: 24px; font-weight: 600; color: #1f2937; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+            <span style="width: 32px; height: 32px; background: linear-gradient(135deg, #a855f7, #9333ea); border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 16px;">⚡</span>
+            Development Workflows
+          </h2>
+          ${workflows.map((workflow: any, index: number) => `
+            <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+              <div style="font-weight: 600; font-size: 18px; color: #374151; margin-bottom: 8px;">${index + 1}. ${workflow.title}</div>
+              <div style="display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap;">
+                <span style="background: #f3f4f6; padding: 4px 12px; border-radius: 16px; font-size: 12px; color: #6b7280; font-weight: 500;">⏱️ ${workflow.duration}</span>
+                <span style="background: #f3f4f6; padding: 4px 12px; border-radius: 16px; font-size: 12px; color: #6b7280; font-weight: 500;">📊 ${workflow.complexity}</span>
+              </div>
+              <p style="color: #6b7280; font-size: 15px; line-height: 1.6;">${workflow.description}</p>
+              ${workflow.deliverables && workflow.deliverables.length > 0 
+                ? `<div style="margin-top: 12px;"><strong style="font-size: 14px; color: #374151;">Deliverables:</strong> ${workflow.deliverables.join(', ')}</div>` 
+                : ''
+              }
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- Agent Suggestions -->
+        <div style="margin-bottom: 40px; padding: 30px; background: linear-gradient(135deg, #fce7f3, #fbcfe8); border-radius: 12px; border-left: 4px solid #ec4899;">
+          <h2 style="font-size: 24px; font-weight: 600; color: #1f2937; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+            <span style="width: 32px; height: 32px; background: linear-gradient(135deg, #ec4899, #db2777); border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 16px;">🤖</span>
+            AI Agent Suggestions
+          </h2>
+          ${agentSuggestions.map((agent: any) => `
+            <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div style="font-weight: 600; font-size: 16px; color: #374151;">${agent.name}</div>
+                <div style="background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">${agent.relevanceScore}/10</div>
+              </div>
+              <p style="color: #6b7280; font-size: 14px; margin-bottom: 8px;">${agent.description}</p>
+              <div style="background: #f8fafc; padding: 12px; border-radius: 6px; font-size: 14px; color: #6b7280; margin-top: 8px;">
+                <strong style="font-size: 13px; color: #374151;">Specific Use Case:</strong><br>
+                ${agent.specificUseCase}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 40px; padding-top: 30px; border-top: 1px solid #e5e7eb; color: #9ca3af; font-size: 14px;">
+          <p>Generated with ❤️ by FractionalAI</p>
+          <p>Ready to bring your vision to life? Start building at <strong>lovable.dev</strong></p>
+        </div>
+      </div>
+    `;
+  };
+
+  const sendAdminNotification = async () => {
+    try {
+      await supabase.functions.invoke('send-admin-notification', {
+        body: {
+          session,
+          originalInput,
+          blueprint
+        }
+      });
+    } catch (error) {
+      console.error('Error sending admin notification:', error);
+      // Don't show error to user as this is secondary functionality
     }
   };
 
@@ -165,9 +296,11 @@ ${blueprint.agentSuggestions.map((agent, index) => `
             className="text-center mb-12"
           >
             <div className="flex items-center justify-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary-glow rounded-full flex items-center justify-center shadow-glow">
-                <CheckCircle className="w-8 h-8 text-primary-foreground" />
-              </div>
+              <img 
+                src="/lovable-uploads/a9a8850e-efa8-4ff3-be18-e9ca23a403a2.png" 
+                alt="FractionalAI Logo" 
+                className="w-16 h-16 object-contain"
+              />
             </div>
             
             <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
@@ -180,11 +313,12 @@ ${blueprint.agentSuggestions.map((agent, index) => `
 
             <div className="flex gap-3 justify-center mt-6">
               <Button 
-                onClick={() => setIsEmailModalOpen(true)} 
+                onClick={handlePDFDownload} 
+                disabled={isGeneratingPDF}
                 className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary-glow hover:from-primary/90 hover:to-primary-glow/90"
               >
                 <Download className="w-4 h-4" />
-                Get Beautiful PDF
+                {isGeneratingPDF ? 'Generating PDF...' : 'Download PDF'}
               </Button>
               <Button onClick={exportBlueprint} variant="outline" className="flex items-center gap-2">
                 <Download className="w-4 h-4" />
@@ -236,11 +370,7 @@ ${blueprint.agentSuggestions.map((agent, index) => `
                         size="sm"
                         className="flex items-center gap-2"
                       >
-                        {copiedItem === "Lovable Prompt" ? (
-                          <CheckCircle className="w-4 h-4 text-primary" />
-                        ) : (
-                          <Copy className="w-4 h-4" />
-                        )}
+                        {copiedItem === "Lovable Prompt" ? "✓" : <Copy className="w-4 h-4" />}
                         {copiedItem === "Lovable Prompt" ? "Copied!" : "Copy"}
                       </Button>
                     </CardTitle>
@@ -357,14 +487,6 @@ ${blueprint.agentSuggestions.map((agent, index) => `
           </motion.div>
         </div>
       </div>
-
-      <EmailCollectionModal
-        isOpen={isEmailModalOpen}
-        onClose={() => setIsEmailModalOpen(false)}
-        onSubmit={handlePDFGeneration}
-        isGenerating={isGeneratingPDF}
-        userName={session?.userName || "User"}
-      />
     </>
   );
 };
