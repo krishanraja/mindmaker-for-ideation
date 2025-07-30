@@ -262,11 +262,35 @@ const Index = () => {
 
       const { blueprint } = data;
 
-      setSession({
+      const updatedSession = {
         ...session,
         blueprint,
-        currentStep: 'blueprint'
-      });
+        currentStep: 'blueprint' as const
+      };
+
+      setSession(updatedSession);
+
+      // Send admin notification when blueprint is generated
+      try {
+        console.log('🔔 Sending admin notification for new blueprint...');
+        const notificationResponse = await supabase.functions.invoke('send-admin-notification', {
+          body: {
+            session: updatedSession,
+            originalInput: userInput,
+            blueprint
+          }
+        });
+        
+        if (notificationResponse.error) {
+          console.error('❌ Admin notification failed:', notificationResponse.error);
+        } else {
+          console.log('✅ Admin notification sent successfully!');
+        }
+      } catch (notificationError) {
+        console.error('❌ Error sending admin notification:', notificationError);
+        // Don't block the main flow if notification fails
+      }
+
     } catch (error) {
       console.error("Error generating blueprint:", error);
       throw error;

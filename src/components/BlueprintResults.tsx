@@ -356,16 +356,34 @@ ${blueprint.agentSuggestions.map((agent, index) => `
 
   const sendAdminNotification = async () => {
     try {
-      await supabase.functions.invoke('send-admin-notification', {
+      console.log('🔔 Attempting to send admin notification...');
+      const response = await supabase.functions.invoke('send-admin-notification', {
         body: {
           session,
           originalInput,
           blueprint
         }
       });
+      
+      console.log('📧 Admin notification response:', response);
+      
+      if (response.error) {
+        console.error('❌ Admin notification failed:', response.error);
+        throw new Error(response.error.message || 'Failed to send admin notification');
+      }
+      
+      console.log('✅ Admin notification sent successfully!');
+      return response;
+      
     } catch (error) {
-      console.error('Error sending admin notification:', error);
-      // Don't show error to user as this is secondary functionality
+      console.error('❌ Error sending admin notification:', error);
+      // Add user-visible feedback for email delivery issues
+      toast({
+        title: "Note",
+        description: "Your blueprint was generated successfully, but we couldn't send the admin notification.",
+        variant: "default"
+      });
+      throw error;
     }
   };
 
