@@ -130,8 +130,7 @@ ${blueprint.agentSuggestions.map((agent, index) => `
           // Check if we need a new page (leaving space for footer)
           if (yPosition > pageHeight - margin - 20) {
             pdf.addPage();
-            yPosition = margin + 40; // Leave space for logo on new pages
-            addLogoToPage(); // Add logo to new page
+            yPosition = margin + 40; // Leave space for new page
           }
           pdf.text(line, margin, yPosition);
           yPosition += fontSize * 0.4;
@@ -152,7 +151,6 @@ ${blueprint.agentSuggestions.map((agent, index) => `
           if (yPosition > pageHeight - margin - 15) {
             pdf.addPage();
             yPosition = margin + 40;
-            addLogoToPage();
           }
           pdf.text(line, margin, yPosition);
           yPosition += fontSize * 0.4;
@@ -165,7 +163,6 @@ ${blueprint.agentSuggestions.map((agent, index) => `
         if (yPosition > pageHeight - margin - 25) {
           pdf.addPage();
           yPosition = margin + 40;
-          addLogoToPage();
         }
         
         // Add some space before section
@@ -183,24 +180,6 @@ ${blueprint.agentSuggestions.map((agent, index) => `
         yPosition += 15;
       };
 
-      // Function to add logo to page
-      const addLogoToPage = () => {
-        try {
-          // Add the FractionalAI logo image at the top - perfectly aligned with text
-          const logoImg = new Image();
-          logoImg.onload = () => {
-            // Calculate logo dimensions (maintain aspect ratio)
-            const logoWidth = 30;
-            const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
-            const logoX = margin + 1; // Nudged left by 2mm from original position
-            
-            pdf.addImage(logoImg, 'PNG', logoX, margin - 5, logoWidth, logoHeight);
-          };
-          logoImg.src = '/lovable-uploads/086393c0-aefe-43c1-8f1d-3509a19775df.png';
-        } catch (error) {
-          console.log('Could not load logo:', error);
-        }
-      };
 
       // Load and add logo to first page
       const logoImg = new Image();
@@ -209,10 +188,10 @@ ${blueprint.agentSuggestions.map((agent, index) => `
       await new Promise((resolve, reject) => {
         logoImg.onload = () => {
           try {
-            // Calculate logo dimensions (maintain aspect ratio)
-            const logoWidth = 30;
+            // Calculate logo dimensions (maintain aspect ratio) - 30% smaller
+            const logoWidth = 21;
             const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
-            const logoX = margin + 1; // Nudged left by 2mm from original position
+            const logoX = margin + 0.5; // Move left by 0.5mm
             
             pdf.addImage(logoImg, 'PNG', logoX, yPosition, logoWidth, logoHeight);
             yPosition += logoHeight + 8;
@@ -297,7 +276,6 @@ ${blueprint.agentSuggestions.map((agent, index) => `
       if (yPosition > pageHeight - margin - 30) {
         pdf.addPage();
         yPosition = margin + 40;
-        addLogoToPage();
       }
       yPosition = pageHeight - margin - 15;
       pdf.setFontSize(10);
