@@ -113,22 +113,25 @@ ${blueprint.agentSuggestions.map((agent, index) => `
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 15;
+      const margin = 20; // Increased margin for better text wrapping
       const contentWidth = pageWidth - (margin * 2);
       let yPosition = margin;
 
-      // Helper function to add text with auto-wrap and pagination
+      // Helper function to add text with proper wrapping and pagination
       const addTextToPDF = (text: string, fontSize: number, isBold: boolean = false, color: string = '#000000') => {
         pdf.setFontSize(fontSize);
         pdf.setFont('helvetica', isBold ? 'bold' : 'normal');
         pdf.setTextColor(color);
         
+        // Use jsPDF's splitTextToSize for proper text wrapping within content width
         const lines = pdf.splitTextToSize(text, contentWidth);
         
         for (const line of lines) {
-          if (yPosition > pageHeight - margin - 10) {
+          // Check if we need a new page (leaving space for footer)
+          if (yPosition > pageHeight - margin - 20) {
             pdf.addPage();
-            yPosition = margin;
+            yPosition = margin + 40; // Leave space for logo on new pages
+            addLogoToPage(); // Add logo to new page
           }
           pdf.text(line, margin, yPosition);
           yPosition += fontSize * 0.4;
@@ -136,11 +139,33 @@ ${blueprint.agentSuggestions.map((agent, index) => `
         yPosition += 5; // Extra spacing after text block
       };
 
+      // Helper function to add wrapped text that respects margins
+      const addWrappedText = (text: string, fontSize: number, isBold: boolean = false, color: string = '#000000') => {
+        pdf.setFontSize(fontSize);
+        pdf.setFont('helvetica', isBold ? 'bold' : 'normal');
+        pdf.setTextColor(color);
+        
+        // Split text to fit within content width
+        const lines = pdf.splitTextToSize(text, contentWidth);
+        
+        lines.forEach((line: string) => {
+          if (yPosition > pageHeight - margin - 15) {
+            pdf.addPage();
+            yPosition = margin + 40;
+            addLogoToPage();
+          }
+          pdf.text(line, margin, yPosition);
+          yPosition += fontSize * 0.4;
+        });
+        yPosition += 3;
+      };
+
       // Helper function to add section header
       const addSectionHeader = (title: string) => {
-        if (yPosition > pageHeight - margin - 20) {
+        if (yPosition > pageHeight - margin - 25) {
           pdf.addPage();
-          yPosition = margin;
+          yPosition = margin + 40;
+          addLogoToPage();
         }
         
         // Add some space before section
@@ -158,18 +183,70 @@ ${blueprint.agentSuggestions.map((agent, index) => `
         yPosition += 15;
       };
 
-      // Add logo and header
+      // Function to add logo to page
+      const addLogoToPage = () => {
+        try {
+          // Add the FractionalAI logo image at the top
+          const logoImg = new Image();
+          logoImg.onload = () => {
+            // Calculate logo dimensions (maintain aspect ratio)
+            const logoWidth = 30;
+            const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
+            const logoX = (pageWidth - logoWidth) / 2; // Center the logo
+            
+            pdf.addImage(logoImg, 'PNG', logoX, margin - 10, logoWidth, logoHeight);
+          };
+          logoImg.src = '/lovable-uploads/47067cbc-6186-4255-adc5-330aee3bf0ea.png';
+        } catch (error) {
+          console.log('Could not load logo:', error);
+        }
+      };
+
+      // Load and add logo to first page
+      const logoImg = new Image();
+      logoImg.crossOrigin = 'anonymous';
+      
+      await new Promise((resolve, reject) => {
+        logoImg.onload = () => {
+          try {
+            // Calculate logo dimensions (maintain aspect ratio)
+            const logoWidth = 30;
+            const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
+            const logoX = (pageWidth - logoWidth) / 2; // Center the logo
+            
+            pdf.addImage(logoImg, 'PNG', logoX, yPosition, logoWidth, logoHeight);
+            yPosition += logoHeight + 10;
+            resolve(true);
+          } catch (error) {
+            console.log('Error adding logo:', error);
+            resolve(true); // Continue without logo
+          }
+        };
+        logoImg.onerror = () => {
+          console.log('Could not load logo image');
+          resolve(true); // Continue without logo
+        };
+        logoImg.src = '/lovable-uploads/47067cbc-6186-4255-adc5-330aee3bf0ea.png';
+      });
+
+      // Add main title
       pdf.setFontSize(24);
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor('#1f2937');
-      pdf.text(`${session?.userName || 'User'}'s AI-Powered Blueprint`, margin, yPosition);
-      yPosition += 12;
+      const titleText = `${session?.userName || 'User'}'s AI-Powered Blueprint`;
+      const titleLines = pdf.splitTextToSize(titleText, contentWidth);
+      titleLines.forEach((line: string) => {
+        pdf.text(line, margin, yPosition);
+        yPosition += 10;
+      });
+      yPosition += 5;
       
+      // Add subtitle with proper wrapping
       pdf.setFontSize(12);
       pdf.setFont('helvetica', 'normal');
       pdf.setTextColor('#6b7280');
-      pdf.text('Generated by Fractionl AI\'s Ideation Blueprint Tool. Contact mindmaker@fractionl.ai for a more extensive human-in-the-loop AI strategy', margin, yPosition);
-      yPosition += 15;
+      addWrappedText('Generated by Fractionl AI\'s Ideation Blueprint Tool', 12, false, '#6b7280');
+      yPosition += 5;
 
       // Add horizontal line
       pdf.setDrawColor('#e5e7eb');
@@ -216,15 +293,22 @@ ${blueprint.agentSuggestions.map((agent, index) => `
         yPosition += 5;
       });
 
-      // Footer
+      // Footer with proper wrapping
       if (yPosition > pageHeight - margin - 30) {
         pdf.addPage();
-        yPosition = margin;
+        yPosition = margin + 40;
+        addLogoToPage();
       }
-      yPosition = pageHeight - margin - 10;
+      yPosition = pageHeight - margin - 15;
       pdf.setFontSize(10);
       pdf.setTextColor('#9ca3af');
-      pdf.text('Generated by Fractionl AI\'s Ideation Blueprint Tool. Contact mindmaker@fractionl.ai for a more extensive human-in-the-loop AI strategy', margin, yPosition);
+      const footerText = 'Generated by Fractionl AI\'s Ideation Blueprint Tool. Contact mindmaker@fractionl.ai for a more extensive human-in-the-loop AI strategy';
+      const footerLines = pdf.splitTextToSize(footerText, contentWidth);
+      let footerY = yPosition;
+      footerLines.forEach((line: string) => {
+        pdf.text(line, margin, footerY);
+        footerY += 4;
+      });
 
       // Download PDF
       const fileName = `${session?.userName?.replace(/\s+/g, '_') || 'User'}_Blueprint.pdf`;
