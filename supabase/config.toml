@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.process-google-sheets-sync]
 verify_jwt = false
+
+[functions.test-google-sheets-integration]
+verify_jwt = false
