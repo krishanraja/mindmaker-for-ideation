@@ -1,413 +1,318 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Brain } from "lucide-react";
-import WelcomeScreen from "@/components/WelcomeScreen";
-import ModernProgressTracker from "@/components/ModernProgressTracker";
-import QuestionCard from "@/components/QuestionCard";
-import BlueprintResults from "@/components/BlueprintResults";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/components/ui/use-toast';
+import { useNavigate } from 'react-router-dom';
+import { User as UserIcon, MessageCircle, BarChart3, History, LogOut, UserCircle } from 'lucide-react';
+import type { User, Session } from '@supabase/supabase-js';
 
-interface WorkflowStep {
-  title: string;
-  description: string;
-  duration: string;
-  dependencies: string[];
-  deliverables: string[];
-  complexity: string;
-}
-
-interface AgentSuggestion {
-  name: string;
-  description: string;
-  category: string;
-  relevanceScore: number;
-  specificUseCase: string;
-}
-
-interface Question {
-  question: string;
-  rationale: string;
-  category?: string;
-}
-
-interface IdeaForgeSession {
-  sessionId: string;
-  userName: string;
-  userEmail: string;
-  originalInput: string;
-  semanticAnalysis: any;
-  questions: Question[];
-  userResponses: string[];
-  conversationContext: string[];
-  userProfile: {
-    expertiseLevel: string;
-    domain: string[];
-    constraints: {
-      budget: string;
-      timeline: string;
-      resources: string;
-    };
-    goals: string[];
-    previousResponses: any[];
-  };
-  blueprint: {
-    lovablePrompt: string;
-    workflows: WorkflowStep[];
-    agentSuggestions: AgentSuggestion[];
-  } | null;
-  currentStep: 'input' | 'analysis' | 'questions' | 'blueprint';
-  currentQuestionIndex: number;
-  questionRound: number;
-}
+import ChatInterface from '@/components/ChatInterface';
+import BusinessInsights from '@/components/BusinessInsights';
 
 const Index = () => {
-  const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
-  const [userInput, setUserInput] = useState("");
-  const [session, setSession] = useState<IdeaForgeSession | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [currentQuestionResponse, setCurrentQuestionResponse] = useState("");
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [currentSessionId, setCurrentSessionId] = useState<string | undefined>();
+  const [activeTab, setActiveTab] = useState('chat');
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const handleStart = async () => {
-    if (!userName.trim() || !userEmail.trim() || !userInput.trim()) {
-      toast({
-        title: "Input required",
-        description: "Please enter your name, email, and describe your idea before starting.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsGenerating(true);
-    try {
-      await analyzeInput(userInput, userName, userEmail);
-    } catch (error) {
-      console.error("Error starting analysis:", error);
-      toast({
-        title: "Error",
-        description: "Failed to start analysis. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const analyzeInput = async (input: string, name: string, email: string) => {
-    console.log("Starting AI-powered semantic analysis for:", input);
-    
-    try {
-      const { data, error } = await supabase.functions.invoke('analyze-input', {
-        body: { input, userName: name }
-      });
-
-      if (error) throw error;
-
-      const { analysis, userProfile: rawUserProfile, questions } = data;
-      console.log("AI analysis complete:", { analysis, rawUserProfile, questions });
-
-      // Handle potential nested userProfile structure
-      const actualUserProfile = rawUserProfile?.userProfile || rawUserProfile;
-      
-      // Ensure previousResponses is initialized as an array
-      const safeUserProfile = {
-        ...actualUserProfile,
-        previousResponses: actualUserProfile?.previousResponses || []
-      };
-
-      console.log("Processed user profile:", safeUserProfile);
-
-      // Set up initial session with analysis phase
-      setSession({
-        sessionId: Math.random().toString(36).substr(2, 9),
-        userName: name,
-        userEmail: email,
-        originalInput: input,
-        semanticAnalysis: analysis,
-        questions: [],
-        userResponses: [],
-        conversationContext: [input],
-        userProfile: safeUserProfile,
-        blueprint: null,
-        currentStep: 'analysis',
-        currentQuestionIndex: 0,
-        questionRound: 1,
-      });
-
-      // Brief delay to show analysis step, then load questions
-      setTimeout(() => {
-        const newSession: IdeaForgeSession = {
-          sessionId: Math.random().toString(36).substr(2, 9),
-          userName: name,
-          userEmail: email,
-          originalInput: input,
-          semanticAnalysis: analysis,
-          questions,
-          userResponses: [],
-          conversationContext: [input],
-          userProfile: safeUserProfile,
-          blueprint: null,
-          currentStep: 'questions',
-          currentQuestionIndex: 0,
-          questionRound: 1,
-        };
-        setSession(newSession);
-      }, 2000);
-
-    } catch (error) {
-      console.error("Error in AI analysis:", error);
-      throw error;
-    }
-  };
-
-
-  const handleQuestionResponse = async () => {
-    if (!currentQuestionResponse.trim() || !session) return;
-
-    setIsGenerating(true);
-    try {
-      const updatedResponses = [...session.userResponses, currentQuestionResponse];
-      const updatedSession = {
-        ...session,
-        userResponses: updatedResponses,
-        conversationContext: [...session.conversationContext, currentQuestionResponse],
-        userProfile: {
-          ...session.userProfile,
-          previousResponses: [
-            ...(session.userProfile?.previousResponses || []), 
-            { 
-              response: currentQuestionResponse,
-              questionIndex: session.currentQuestionIndex,
-              round: session.questionRound
-            }
-          ]
-        }
-      };
-
-      // Check if this is the last question
-      if (session.currentQuestionIndex >= session.questions.length - 1) {
-        // Check if more questions are needed
-        const { data: shouldContinueData, error: shouldContinueError } = await supabase.functions.invoke('generate-questions', {
-          body: { session: updatedSession, type: 'should_continue' }
-        });
-
-        if (shouldContinueError) throw shouldContinueError;
-
-        const shouldContinue = shouldContinueData.result.shouldContinue;
+  useEffect(() => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log('Auth state changed:', event, session);
+        setSession(session);
+        setUser(session?.user ?? null);
         
-        if (shouldContinue && updatedSession.questionRound < 3) {
-          // Generate follow-up questions
-          const { data: questionsData, error: questionsError } = await supabase.functions.invoke('generate-questions', {
-            body: { session: updatedSession, type: 'followup' }
-          });
-
-          if (questionsError) throw questionsError;
-
-          setSession({
-            ...updatedSession,
-            questions: questionsData.result,
-            questionRound: updatedSession.questionRound + 1,
-            currentQuestionIndex: 0
-          });
-        } else {
-          // Generate the blueprint
-          await generateIntelligentBlueprint(updatedSession);
+        if (!session && event !== 'INITIAL_SESSION') {
+          navigate('/auth');
         }
-      } else {
-        // Move to next question
-        setSession({
-          ...updatedSession,
-          currentQuestionIndex: session.currentQuestionIndex + 1
-        });
+        
+        setLoading(false);
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      if (!session) {
+        navigate('/auth');
       }
       
-      setCurrentQuestionResponse("");
-    } catch (error) {
-      console.error("Error in question response:", error);
-      toast({
-        title: "Error",
-        description: "Failed to process response. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const handlePreviousQuestion = () => {
-    if (!session || session.currentQuestionIndex <= 0) return;
-    
-    // Remove the last response and go back to previous question
-    const updatedResponses = session.userResponses.slice(0, -1);
-    setSession({
-      ...session,
-      userResponses: updatedResponses,
-      currentQuestionIndex: session.currentQuestionIndex - 1
+      setLoading(false);
     });
-    
-    // Set the previous response as current response for editing
-    setCurrentQuestionResponse(session.userResponses[session.currentQuestionIndex - 1] || "");
-  };
 
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
-  const generateIntelligentBlueprint = async (session: IdeaForgeSession) => {
+  const handleSignOut = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('generate-blueprint', {
-        body: { session }
-      });
-
+      const { error } = await supabase.auth.signOut();
       if (error) throw error;
-
-      const { blueprint } = data;
-
-      const updatedSession = {
-        ...session,
-        blueprint,
-        currentStep: 'blueprint' as const
-      };
-
-      setSession(updatedSession);
-
-      // Send admin notification when blueprint is generated
-      try {
-        console.log('🔔 Sending admin notification for new blueprint...');
-        const notificationResponse = await supabase.functions.invoke('send-admin-notification', {
-          body: {
-            session: updatedSession,
-            originalInput: userInput,
-            blueprint
-          }
-        });
-        
-        if (notificationResponse.error) {
-          console.error('❌ Admin notification failed:', notificationResponse.error);
-        } else {
-          console.log('✅ Admin notification sent successfully!');
-        }
-      } catch (notificationError) {
-        console.error('❌ Error sending admin notification:', notificationError);
-        // Don't block the main flow if notification fails
-      }
-
-    } catch (error) {
-      console.error("Error generating blueprint:", error);
-      throw error;
+      
+      toast({
+        title: "Signed out",
+        description: "You have been successfully signed out.",
+      });
+      
+      navigate('/auth');
+    } catch (error: any) {
+      console.error('Sign out error:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to sign out",
+        variant: "destructive",
+      });
     }
   };
 
+  const handleSessionCreated = (sessionId: string) => {
+    setCurrentSessionId(sessionId);
+    
+    // Log session start analytics
+    if (user) {
+      supabase
+        .from('engagement_analytics')
+        .insert({
+          user_id: user.id,
+          session_id: sessionId,
+          event_type: 'session_start',
+          event_data: { tab: activeTab },
+          page_url: window.location.href,
+          user_agent: navigator.userAgent
+        })
+        .then(({ error }) => {
+          if (error) console.error('Error logging session start:', error);
+        });
+    }
+  };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading your AI business strategist...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const renderAnalysisStep = () => (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-card flex items-center justify-center">
-      <div className="text-center">
-        <ModernProgressTracker currentStep={2} totalSteps={4} />
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="mb-8"
-        >
-          <div className="w-24 h-24 bg-gradient-to-br from-primary to-primary-glow rounded-full flex items-center justify-center shadow-glow mx-auto mb-6">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            >
-              <Brain className="w-12 h-12 text-primary-foreground" />
-            </motion.div>
+  if (!user || !session) {
+    return null; // Will redirect to auth
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+      {/* Header */}
+      <header className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img 
+                src="/lovable-uploads/1a44052c-3861-4484-ab2d-b5b970c1f7c1.png" 
+                alt="AI Business Strategist" 
+                className="h-8 w-8"
+              />
+              <div>
+                <h1 className="text-xl font-bold text-foreground">AI Business Strategist</h1>
+                <p className="text-sm text-muted-foreground">Transform your ideas into AI solutions</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <UserCircle className="h-4 w-4" />
+                <span>{user.email}</span>
+              </div>
+              <Button 
+                onClick={handleSignOut} 
+                variant="outline" 
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </Button>
+            </div>
           </div>
-          <h2 className="text-3xl font-bold mb-4 text-foreground">
-            AI Analyzing Your Vision
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-md mx-auto">
-            Our advanced AI is processing your idea and preparing intelligent questions to refine your blueprint.
-          </p>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-6 max-w-7xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="h-[calc(100vh-200px)]"
+        >
+          <Card className="h-full shadow-xl border-2">
+            <CardContent className="p-0 h-full">
+              <Tabs 
+                value={activeTab} 
+                onValueChange={setActiveTab} 
+                className="h-full flex flex-col"
+              >
+                <div className="border-b px-6 py-4">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="chat" className="flex items-center gap-2">
+                      <MessageCircle className="h-4 w-4" />
+                      AI Chat
+                    </TabsTrigger>
+                    <TabsTrigger value="insights" className="flex items-center gap-2">
+                      <BarChart3 className="h-4 w-4" />
+                      Business Insights
+                    </TabsTrigger>
+                    <TabsTrigger value="history" className="flex items-center gap-2">
+                      <History className="h-4 w-4" />
+                      Conversation History
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
+
+                <div className="flex-1 min-h-0">
+                  <TabsContent value="chat" className="h-full m-0 p-0">
+                    <ChatInterface 
+                      sessionId={currentSessionId}
+                      onSessionCreated={handleSessionCreated}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="insights" className="h-full m-0 p-6 overflow-auto">
+                    <BusinessInsights />
+                  </TabsContent>
+
+                  <TabsContent value="history" className="h-full m-0 p-6">
+                    <ConversationHistory 
+                      userId={user.id}
+                      onSessionSelect={(sessionId) => {
+                        setCurrentSessionId(sessionId);
+                        setActiveTab('chat');
+                      }}
+                    />
+                  </TabsContent>
+                </div>
+              </Tabs>
+            </CardContent>
+          </Card>
         </motion.div>
       </div>
     </div>
   );
+};
 
-  const renderQuestionsStep = () => {
-    if (!session || session.questions.length === 0) return null;
+// Simple conversation history component
+const ConversationHistory: React.FC<{
+  userId: string;
+  onSessionSelect: (sessionId: string) => void;
+}> = ({ userId, onSessionSelect }) => {
+  const [sessions, setSessions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    const currentQuestion = session.questions[session.currentQuestionIndex];
-    
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-card">
-        <div className="container mx-auto px-4 py-12">
-          <ModernProgressTracker currentStep={3} totalSteps={4} />
-          
-          <AnimatePresence mode="wait">
-            <QuestionCard
-              key={session.currentQuestionIndex}
-              question={currentQuestion}
-              questionNumber={session.currentQuestionIndex + 1}
-              totalQuestions={session.questions.length}
-              value={currentQuestionResponse}
-              onChange={setCurrentQuestionResponse}
-              onNext={handleQuestionResponse}
-              onPrevious={session.currentQuestionIndex > 0 ? handlePreviousQuestion : undefined}
-              canProceed={currentQuestionResponse.trim().length > 0}
-              isGenerating={isGenerating}
-              showPrevious={session.currentQuestionIndex > 0}
-            />
-          </AnimatePresence>
-          
-          <div className="text-center mt-8">
-            <p className="text-muted-foreground text-sm">
-              Round {session.questionRound} • {session.userResponses.length} responses collected
-            </p>
-          </div>
-        </div>
-      </div>
-    );
+  useEffect(() => {
+    loadSessions();
+  }, [userId]);
+
+  const loadSessions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('conversation_sessions')
+        .select('*')
+        .eq('user_id', userId)
+        .order('updated_at', { ascending: false });
+
+      if (error) throw error;
+      setSessions(data || []);
+    } catch (error) {
+      console.error('Error loading sessions:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const renderBlueprintStep = () => {
-    if (!session || !session.blueprint) return null;
-
+  if (loading) {
     return (
-      <div>
-        <div className="container mx-auto px-4 py-12">
-          <ModernProgressTracker currentStep={4} totalSteps={4} />
-        </div>
-        <BlueprintResults 
-          blueprint={session.blueprint} 
-          originalInput={session.originalInput}
-          session={session}
-        />
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="animate-pulse">
+            <CardContent className="p-4">
+              <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+              <div className="h-3 bg-muted rounded w-1/2"></div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     );
-  };
+  }
 
-  if (!session) {
+  if (sessions.length === 0) {
     return (
-      <WelcomeScreen
-        userName={userName}
-        setUserName={setUserName}
-        userEmail={userEmail}
-        setUserEmail={setUserEmail}
-        userInput={userInput}
-        setUserInput={setUserInput}
-        onStart={handleStart}
-        isGenerating={isGenerating}
-      />
+      <div className="text-center py-12">
+        <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-lg font-semibold mb-2">No conversations yet</h3>
+        <p className="text-muted-foreground">Start a conversation in the AI Chat tab to see your history here.</p>
+      </div>
     );
   }
 
-  if (session.currentStep === 'analysis') {
-    return renderAnalysisStep();
-  }
-
-  if (session.currentStep === 'questions') {
-    return renderQuestionsStep();
-  }
-
-  if (session.currentStep === 'blueprint') {
-    return renderBlueprintStep();
-  }
-
-  return null;
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Your Conversations</h3>
+        <p className="text-sm text-muted-foreground">{sessions.length} sessions</p>
+      </div>
+      
+      <div className="space-y-3">
+        {sessions.map((session) => (
+          <motion.div
+            key={session.id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Card 
+              className="cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => onSessionSelect(session.id)}
+            >
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base">{session.title}</CardTitle>
+                  <div className="flex items-center gap-2">
+                    {session.lead_qualified && (
+                      <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    )}
+                    <span className="text-xs text-muted-foreground capitalize">
+                      {session.status}
+                    </span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <span>{session.total_messages || 0} messages</span>
+                  <span>{new Date(session.updated_at).toLocaleDateString()}</span>
+                </div>
+                {session.summary && (
+                  <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                    {session.summary}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default Index;

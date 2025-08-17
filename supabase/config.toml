@@ -1,6 +1,9 @@
 
 project_id = "dtlcprcpvdomrehbejhw"
 
+[functions.ai-business-chat]
+verify_jwt = true
+
 [functions.analyze-input]
 verify_jwt = false
 
