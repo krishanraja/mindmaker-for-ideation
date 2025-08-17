@@ -4,13 +4,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { User as UserIcon, MessageCircle, BarChart3, History, LogOut, UserCircle } from 'lucide-react';
+import { User as UserIcon, MessageCircle, BarChart3, History, LogOut, UserCircle, Target } from 'lucide-react';
 import type { User, Session } from '@supabase/supabase-js';
 
 import ChatInterface from '@/components/ChatInterface';
 import BusinessInsights from '@/components/BusinessInsights';
+import ConversationHistory from '@/components/ConversationHistory';
+import LeadQualificationDashboard from '@/components/LeadQualificationDashboard';
 
 const Index = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -94,6 +96,16 @@ const Index = () => {
     }
   };
 
+  const handleSessionSelect = (sessionId: string) => {
+    setCurrentSessionId(sessionId);
+    setActiveTab('chat');
+  };
+
+  const handleNewConversation = () => {
+    setCurrentSessionId(undefined);
+    setActiveTab('chat');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 flex items-center justify-center">
@@ -162,7 +174,7 @@ const Index = () => {
                 className="h-full flex flex-col"
               >
                 <div className="border-b px-6 py-4">
-                  <TabsList className="grid w-full grid-cols-3">
+                  <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="chat" className="flex items-center gap-2">
                       <MessageCircle className="h-4 w-4" />
                       AI Chat
@@ -171,9 +183,13 @@ const Index = () => {
                       <BarChart3 className="h-4 w-4" />
                       Business Insights
                     </TabsTrigger>
+                    <TabsTrigger value="qualification" className="flex items-center gap-2">
+                      <Target className="h-4 w-4" />
+                      Lead Qualification
+                    </TabsTrigger>
                     <TabsTrigger value="history" className="flex items-center gap-2">
                       <History className="h-4 w-4" />
-                      Conversation History
+                      History
                     </TabsTrigger>
                   </TabsList>
                 </div>
@@ -190,13 +206,15 @@ const Index = () => {
                     <BusinessInsights />
                   </TabsContent>
 
+                  <TabsContent value="qualification" className="h-full m-0 p-6 overflow-auto">
+                    <LeadQualificationDashboard />
+                  </TabsContent>
+
                   <TabsContent value="history" className="h-full m-0 p-6">
                     <ConversationHistory 
-                      userId={user.id}
-                      onSessionSelect={(sessionId) => {
-                        setCurrentSessionId(sessionId);
-                        setActiveTab('chat');
-                      }}
+                      onSessionSelect={handleSessionSelect}
+                      onNewConversation={handleNewConversation}
+                      currentSessionId={currentSessionId}
                     />
                   </TabsContent>
                 </div>
@@ -204,112 +222,6 @@ const Index = () => {
             </CardContent>
           </Card>
         </motion.div>
-      </div>
-    </div>
-  );
-};
-
-// Simple conversation history component
-const ConversationHistory: React.FC<{
-  userId: string;
-  onSessionSelect: (sessionId: string) => void;
-}> = ({ userId, onSessionSelect }) => {
-  const [sessions, setSessions] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadSessions();
-  }, [userId]);
-
-  const loadSessions = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('conversation_sessions')
-        .select('*')
-        .eq('user_id', userId)
-        .order('updated_at', { ascending: false });
-
-      if (error) throw error;
-      setSessions(data || []);
-    } catch (error) {
-      console.error('Error loading sessions:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        {[1, 2, 3].map((i) => (
-          <Card key={i} className="animate-pulse">
-            <CardContent className="p-4">
-              <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-              <div className="h-3 bg-muted rounded w-1/2"></div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
-  }
-
-  if (sessions.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-        <h3 className="text-lg font-semibold mb-2">No conversations yet</h3>
-        <p className="text-muted-foreground">Start a conversation in the AI Chat tab to see your history here.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Your Conversations</h3>
-        <p className="text-sm text-muted-foreground">{sessions.length} sessions</p>
-      </div>
-      
-      <div className="space-y-3">
-        {sessions.map((session) => (
-          <motion.div
-            key={session.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Card 
-              className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => onSessionSelect(session.id)}
-            >
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">{session.title}</CardTitle>
-                  <div className="flex items-center gap-2">
-                    {session.lead_qualified && (
-                      <div className="w-2 h-2 bg-primary rounded-full"></div>
-                    )}
-                    <span className="text-xs text-muted-foreground capitalize">
-                      {session.status}
-                    </span>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>{session.total_messages || 0} messages</span>
-                  <span>{new Date(session.updated_at).toLocaleDateString()}</span>
-                </div>
-                {session.summary && (
-                  <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                    {session.summary}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
       </div>
     </div>
   );
