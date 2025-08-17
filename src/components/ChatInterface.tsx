@@ -21,9 +21,10 @@ interface ChatInterfaceProps {
   sessionId?: string;
   onSessionCreated?: (sessionId: string) => void;
   anonymousSessionId?: string;
+  initialMessage?: string;
 }
 
-const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreated, anonymousSessionId }) => {
+const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreated, anonymousSessionId, initialMessage }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -41,6 +42,69 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Auto-send initial message when provided
+  useEffect(() => {
+    if (initialMessage && messages.length === 0 && !isLoading) {
+      setInput(initialMessage);
+      // Small delay to ensure the UI is ready
+      setTimeout(() => {
+        const userMessage: Message = {
+          id: Date.now().toString(),
+          role: 'user',
+          content: initialMessage.trim(),
+          timestamp: new Date(),
+          type: 'text'
+        };
+
+        setMessages(prev => [...prev, userMessage]);
+        setInput('');
+        setIsLoading(true);
+
+        // Send the message
+        supabase.functions.invoke('ai-business-chat', {
+          body: {
+            message: userMessage.content,
+            sessionId: currentSessionId,
+            messageType: 'text',
+            anonymousSessionId: anonymousSessionId
+          }
+        }).then(response => {
+          if (response.error) {
+            throw new Error(response.error.message || 'Failed to send message');
+          }
+
+          const { response: aiResponse, sessionId: newSessionId } = response.data;
+
+          // Update session ID if this was the first message
+          if (!currentSessionId && newSessionId) {
+            setCurrentSessionId(newSessionId);
+            onSessionCreated?.(newSessionId);
+          }
+
+          const assistantMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: aiResponse,
+            timestamp: new Date(),
+            type: 'text'
+          };
+
+          setMessages(prev => [...prev, assistantMessage]);
+        }).catch(error => {
+          console.error('Error sending initial message:', error);
+          toast({
+            title: "Error",
+            description: error.message || "Failed to send message. Please try again.",
+            variant: "destructive",
+          });
+          setMessages(prev => prev.filter(msg => msg.id !== userMessage.id));
+        }).finally(() => {
+          setIsLoading(false);
+        });
+      }, 500);
+    }
+  }, [initialMessage, messages.length, currentSessionId, anonymousSessionId, onSessionCreated, toast, isLoading]);
 
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
