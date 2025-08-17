@@ -27,7 +27,7 @@ export type Database = {
           response_time_ms: number | null
           session_id: string
           tokens_used: number | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           ai_model?: string | null
@@ -41,7 +41,7 @@ export type Database = {
           response_time_ms?: number | null
           session_id: string
           tokens_used?: number | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           ai_model?: string | null
@@ -55,7 +55,7 @@ export type Database = {
           response_time_ms?: number | null
           session_id?: string
           tokens_used?: number | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -78,7 +78,7 @@ export type Database = {
           role: string
           session_id: string
           tokens_used: number | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           content: string
@@ -90,7 +90,7 @@ export type Database = {
           role: string
           session_id: string
           tokens_used?: number | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           content?: string
@@ -102,7 +102,7 @@ export type Database = {
           role?: string
           session_id?: string
           tokens_used?: number | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -128,7 +128,7 @@ export type Database = {
           title: string
           total_messages: number | null
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -143,7 +143,7 @@ export type Database = {
           title?: string
           total_messages?: number | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -158,12 +158,13 @@ export type Database = {
           title?: string
           total_messages?: number | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
       engagement_analytics: {
         Row: {
+          anonymous_session_id: string | null
           created_at: string
           engagement_duration_seconds: number | null
           event_data: Json | null
@@ -173,9 +174,10 @@ export type Database = {
           page_url: string | null
           session_id: string | null
           user_agent: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
+          anonymous_session_id?: string | null
           created_at?: string
           engagement_duration_seconds?: number | null
           event_data?: Json | null
@@ -185,9 +187,10 @@ export type Database = {
           page_url?: string | null
           session_id?: string | null
           user_agent?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
+          anonymous_session_id?: string | null
           created_at?: string
           engagement_duration_seconds?: number | null
           event_data?: Json | null
@@ -197,7 +200,7 @@ export type Database = {
           page_url?: string | null
           session_id?: string | null
           user_agent?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -303,6 +306,7 @@ export type Database = {
       }
       lead_qualification_data: {
         Row: {
+          anonymous_session_id: string | null
           authority_level: number | null
           budget_qualified: boolean | null
           conversion_probability: number | null
@@ -319,9 +323,10 @@ export type Database = {
           session_id: string | null
           timeline_qualified: boolean | null
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
+          anonymous_session_id?: string | null
           authority_level?: number | null
           budget_qualified?: boolean | null
           conversion_probability?: number | null
@@ -338,9 +343,10 @@ export type Database = {
           session_id?: string | null
           timeline_qualified?: boolean | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
+          anonymous_session_id?: string | null
           authority_level?: number | null
           budget_qualified?: boolean | null
           conversion_probability?: number | null
@@ -357,7 +363,7 @@ export type Database = {
           session_id?: string | null
           timeline_qualified?: boolean | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -410,6 +416,7 @@ export type Database = {
       }
       user_business_context: {
         Row: {
+          anonymous_session_id: string | null
           confidence_score: number | null
           context_key: string
           context_type: string
@@ -418,9 +425,10 @@ export type Database = {
           id: string
           source: string | null
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
+          anonymous_session_id?: string | null
           confidence_score?: number | null
           context_key: string
           context_type: string
@@ -429,9 +437,10 @@ export type Database = {
           id?: string
           source?: string | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
+          anonymous_session_id?: string | null
           confidence_score?: number | null
           context_key?: string
           context_type?: string
@@ -440,7 +449,7 @@ export type Database = {
           id?: string
           source?: string | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }

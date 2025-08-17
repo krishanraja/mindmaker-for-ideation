@@ -42,49 +42,71 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     
-    // Get the authorization header
-    const authorization = req.headers.get('Authorization');
-    if (!authorization) {
-      throw new Error('No authorization header');
-    }
-
-    // Verify JWT token
-    const token = authorization.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    
-    if (authError || !user) {
-      throw new Error('Invalid or expired token');
-    }
-
-    const { message, sessionId, messageType = 'text' } = await req.json();
+    const { message, sessionId, messageType = 'text', anonymousSessionId } = await req.json();
 
     if (!message) {
       throw new Error('Message is required');
     }
 
-    console.log('Processing message for user:', user.id);
+    console.log('Processing message with anonymousSessionId:', anonymousSessionId);
 
-    // Get or create conversation session
+    // For anonymous users, we don't require authentication
+    let userId = null;
+    
+    // Try to get user from auth if authorization header exists
+    const authorization = req.headers.get('Authorization');
+    if (authorization) {
+      try {
+        const token = authorization.replace('Bearer ', '');
+        const { data: { user } } = await supabase.auth.getUser(token);
+        userId = user?.id || null;
+        console.log('Authenticated user found:', userId);
+      } catch (authError) {
+        console.log('No valid auth token, proceeding as anonymous user');
+      }
+    }
+
+    // Get or create conversation session (supports anonymous users)
     let session;
     if (sessionId) {
-      const { data, error } = await supabase
+      const query = supabase
         .from('conversation_sessions')
         .select('*')
-        .eq('id', sessionId)
-        .eq('user_id', user.id)
-        .single();
+        .eq('id', sessionId);
+      
+      if (userId) {
+        query.eq('user_id', userId);
+      }
+      
+      const { data, error } = await query.single();
       
       if (error) {
         console.error('Error fetching session:', error);
-        throw new Error('Failed to fetch conversation session');
+        // Create new session if not found
+        const { data: newSession, error: createError } = await supabase
+          .from('conversation_sessions')
+          .insert({
+            user_id: userId,
+            title: 'AI Business Strategy Session',
+            session_type: 'idea_analysis',
+            status: 'active'
+          })
+          .select()
+          .single();
+        
+        if (createError) {
+          throw new Error('Failed to create conversation session');
+        }
+        session = newSession;
+      } else {
+        session = data;
       }
-      session = data;
     } else {
       // Create new session
       const { data, error } = await supabase
         .from('conversation_sessions')
         .insert({
-          user_id: user.id,
+          user_id: userId,
           title: 'AI Business Strategy Session',
           session_type: 'idea_analysis',
           status: 'active'
@@ -99,17 +121,24 @@ serve(async (req) => {
       session = data;
     }
 
-    // Get user profile and business context
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('*')
-      .eq('user_id', user.id)
-      .single();
+    // Get user profile and business context (only if authenticated)
+    let profile = null;
+    let businessContext = [];
+    
+    if (userId) {
+      const { data: profileData } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+      profile = profileData;
 
-    const { data: businessContext } = await supabase
-      .from('user_business_context')
-      .select('*')
-      .eq('user_id', user.id);
+      const { data: contextData } = await supabase
+        .from('user_business_context')
+        .select('*')
+        .eq('user_id', userId);
+      businessContext = contextData || [];
+    }
 
     // Get recent conversation history
     const { data: recentMessages } = await supabase
@@ -135,9 +164,9 @@ Budget Range: ${profile.budget_range || 'Not specified'}
 Timeline: ${profile.timeline || 'Not specified'}
 Lead Score: ${profile.lead_score || 0}
 Qualification Status: ${profile.qualification_status || 'unqualified'}
-` : '';
+` : 'New visitor (anonymous)';
 
-    // System prompt for AI Business Strategist
+    // System prompt for AI Business Strategist (optimized for lead capture)
     const systemPrompt = `You are an AI Business Strategist, a world-class consultant specializing in transforming ideas into actionable AI tool implementations. Your role is to help users identify opportunities, create strategic frameworks, and develop practical implementation plans.
 
 PERSONALITY & APPROACH:
@@ -146,6 +175,7 @@ PERSONALITY & APPROACH:
 - Provide immediate value through insights and frameworks
 - Guide conversations toward actionable next steps
 - Naturally qualify leads for services without being pushy
+- Focus on understanding their business challenges deeply
 
 CURRENT USER CONTEXT:
 ${userProfile}
@@ -153,19 +183,29 @@ ${userProfile}
 BUSINESS CONTEXT:
 ${contextInfo}
 
-CONVERSATION OBJECTIVES:
+CONVERSATION OBJECTIVES (CRITICAL FOR LEAD CAPTURE):
 1. Understand their specific business challenge or opportunity
 2. Identify AI/automation potential in their situation
 3. Provide immediate strategic insights and frameworks
 4. Qualify their readiness for implementation (budget, timeline, authority)
-5. Guide toward consultation if they're a qualified prospect
+5. Capture contact information naturally during conversation
+6. Guide toward consultation if they're a qualified prospect
 
-QUALIFICATION CRITERIA (assess during conversation):
+QUALIFICATION CRITERIA (assess and capture during conversation):
 - Pain Point Severity: How critical is their challenge? (1-10)
 - Budget Readiness: Do they have resources for implementation?
 - Timeline Urgency: When do they need results?
 - Authority Level: Are they a decision maker?
+- Contact Information: Email, company name, phone
 - Implementation Readiness: Do they have the capacity to execute?
+
+LEAD CAPTURE STRATEGY:
+- Ask for email naturally (for sending resources, follow-up materials)
+- Inquire about company name and role
+- Understand their decision-making authority
+- Probe budget ranges without being direct
+- Assess timeline and urgency
+- Identify specific pain points and their business impact
 
 CONVERSATION STYLE:
 - Ask open-ended, consultative questions
@@ -174,8 +214,9 @@ CONVERSATION STYLE:
 - Share mini case studies or examples when relevant
 - Gradually uncover budget, timeline, and decision-making authority
 - Offer immediate value through actionable recommendations
+- Request contact info for sharing resources or follow-up
 
-Always end responses with a thoughtful follow-up question that deepens the conversation and uncovers more qualifying information.`;
+Always end responses with a thoughtful follow-up question that deepens the conversation and uncovers more qualifying information. Prioritize capturing email addresses and understanding their business context.`;
 
     // Build messages array for OpenAI
     const messages: ChatMessage[] = [
@@ -217,24 +258,24 @@ Always end responses with a thoughtful follow-up question that deepens the conve
 
     console.log('OpenAI response received, processing time:', processingTime + 'ms');
 
-    // Store user message
+    // Store user message (supports anonymous users)
     await supabase
       .from('chat_messages')
       .insert({
         session_id: session.id,
-        user_id: user.id,
+        user_id: userId,
         role: 'user',
         content: message,
         message_type: messageType,
         processing_time_ms: processingTime
       });
 
-    // Store AI response
+    // Store AI response (supports anonymous users)
     await supabase
       .from('chat_messages')
       .insert({
         session_id: session.id,
-        user_id: user.id,
+        user_id: userId,
         role: 'assistant',
         content: aiResponse,
         message_type: 'text',
@@ -242,12 +283,12 @@ Always end responses with a thoughtful follow-up question that deepens the conve
         processing_time_ms: processingTime
       });
 
-    // Store AI conversation record
+    // Store AI conversation record (supports anonymous users)
     await supabase
       .from('ai_conversations')
       .insert({
         session_id: session.id,
-        user_id: user.id,
+        user_id: userId,
         question: message,
         response: aiResponse,
         ai_model: 'gpt-5-2025-08-07',
@@ -264,12 +305,13 @@ Always end responses with a thoughtful follow-up question that deepens the conve
       })
       .eq('id', session.id);
 
-    // Log engagement analytics
+    // Log engagement analytics (supports anonymous users)
     await supabase
       .from('engagement_analytics')
       .insert({
-        user_id: user.id,
+        user_id: userId,
         session_id: session.id,
+        anonymous_session_id: anonymousSessionId,
         event_type: 'message_sent',
         event_data: {
           message_length: message.length,
@@ -278,33 +320,8 @@ Always end responses with a thoughtful follow-up question that deepens the conve
         }
       });
 
-    // Basic lead qualification analysis
-    const lowercaseMessage = message.toLowerCase();
-    const budgetKeywords = ['budget', 'cost', 'price', 'investment', 'spend'];
-    const urgencyKeywords = ['urgent', 'asap', 'quickly', 'immediately', 'soon'];
-    const authorityKeywords = ['decide', 'decision', 'approve', 'budget', 'ceo', 'founder', 'owner'];
-
-    const hasBudgetSignals = budgetKeywords.some(keyword => lowercaseMessage.includes(keyword));
-    const hasUrgencySignals = urgencyKeywords.some(keyword => lowercaseMessage.includes(keyword));
-    const hasAuthoritySignals = authorityKeywords.some(keyword => lowercaseMessage.includes(keyword));
-
-    if (hasBudgetSignals || hasUrgencySignals || hasAuthoritySignals) {
-      // Update lead qualification data
-      await supabase
-        .from('lead_qualification_data')
-        .upsert({
-          user_id: user.id,
-          session_id: session.id,
-          qualification_criteria: {
-            has_budget_signals: hasBudgetSignals,
-            has_urgency_signals: hasUrgencySignals,
-            has_authority_signals: hasAuthoritySignals
-          },
-          budget_qualified: hasBudgetSignals,
-          conversion_probability: (hasBudgetSignals ? 0.3 : 0) + (hasUrgencySignals ? 0.3 : 0) + (hasAuthoritySignals ? 0.2 : 0),
-          updated_at: new Date().toISOString()
-        });
-    }
+    // Enhanced lead qualification analysis for anonymous users
+    await analyzeForLeadQualification(supabase, message, aiResponse, session.id, userId, anonymousSessionId);
 
     return new Response(JSON.stringify({
       response: aiResponse,
@@ -327,3 +344,170 @@ Always end responses with a thoughtful follow-up question that deepens the conve
     });
   }
 });
+
+// Enhanced lead qualification analysis function
+async function analyzeForLeadQualification(
+  supabase: any, 
+  userMessage: string, 
+  aiResponse: string, 
+  sessionId: string, 
+  userId: string | null, 
+  anonymousSessionId?: string
+) {
+  try {
+    const message = userMessage.toLowerCase();
+    
+    // Enhanced qualification criteria
+    const qualifyingIndicators = {
+      email: userMessage.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/),
+      company: message.match(/\b(company|business|startup|enterprise|llc|inc|corp|firm|organization)\b/i),
+      budget: message.match(/\$[\d,]+|budget|invest|spend|cost|expensive|price|funding|revenue/i),
+      timeline: message.match(/\b(urgent|asap|this month|next month|soon|immediate|quickly|deadline)\b/i),
+      painPoints: message.match(/\b(problem|issue|challenge|difficult|struggle|bottleneck|frustrat|inefficient|manual|time-consuming)\b/i),
+      employees: message.match(/\b(\d+)\s*(employee|person|people|staff|team|worker|hire)/i),
+      decision: message.match(/\b(decide|decision|approve|authorize|ceo|founder|owner|director|manager|vp|president)\b/i),
+      industry: message.match(/\b(healthcare|finance|tech|retail|manufacturing|education|legal|real estate|consulting)\b/i),
+      urgency: message.match(/\b(losing money|competitive|behind|struggling|desperate|need help|critical)\b/i)
+    };
+
+    // Calculate qualification scores
+    let leadScore = 0;
+    let painPointSeverity = 1;
+    let urgencyLevel = 1;
+    let authorityLevel = 1;
+
+    // Email is the most valuable indicator
+    if (qualifyingIndicators.email) {
+      leadScore += 30;
+      console.log('Email detected:', qualifyingIndicators.email[0]);
+    }
+    
+    if (qualifyingIndicators.company) leadScore += 20;
+    if (qualifyingIndicators.budget) leadScore += 25;
+    if (qualifyingIndicators.timeline) {
+      leadScore += 15;
+      urgencyLevel = 7;
+    }
+    if (qualifyingIndicators.painPoints) {
+      leadScore += 15;
+      painPointSeverity = 6;
+    }
+    if (qualifyingIndicators.employees) {
+      leadScore += 10;
+      authorityLevel = 5;
+    }
+    if (qualifyingIndicators.decision) {
+      leadScore += 20;
+      authorityLevel = 8;
+    }
+    if (qualifyingIndicators.industry) leadScore += 10;
+    if (qualifyingIndicators.urgency) {
+      leadScore += 15;
+      urgencyLevel = 9;
+      painPointSeverity = 8;
+    }
+
+    // If this looks like a qualified lead, store the data
+    if (leadScore >= 25) { // Lower threshold for capturing more leads
+      console.log(`Lead qualification triggered with score: ${leadScore}/100`);
+      
+      // Extract contact information
+      const email = qualifyingIndicators.email ? qualifyingIndicators.email[0] : null;
+      const companyMatch = qualifyingIndicators.company;
+      
+      // Store lead qualification data
+      const qualificationData = {
+        user_id: userId,
+        session_id: sessionId,
+        anonymous_session_id: anonymousSessionId,
+        qualification_criteria: {
+          indicators: qualifyingIndicators,
+          conversation_snippet: userMessage.substring(0, 500),
+          email_captured: !!email,
+          company_mentioned: !!companyMatch
+        },
+        pain_point_severity: painPointSeverity,
+        budget_qualified: !!qualifyingIndicators.budget,
+        timeline_qualified: !!qualifyingIndicators.timeline,
+        authority_level: authorityLevel,
+        need_urgency: urgencyLevel,
+        fit_score: Math.min(leadScore / 100, 1.0),
+        conversion_probability: Math.min(leadScore / 100, 0.95),
+        recommended_service: leadScore > 60 ? 'Premium AI Strategy Consultation' : 'Basic AI Assessment',
+        next_action: leadScore > 60 ? 'Schedule discovery call' : 'Continue nurturing conversation',
+        notes: `Auto-generated from conversation. Lead score: ${leadScore}/100. Email: ${email || 'Not captured'}`,
+        follow_up_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days from now
+      };
+
+      const { error: qualError } = await supabase
+        .from('lead_qualification_data')
+        .insert(qualificationData);
+      
+      if (qualError) {
+        console.error('Error storing lead qualification:', qualError);
+      } else {
+        console.log('Lead qualification data stored successfully');
+      }
+
+      // Store business context for anonymous users
+      if (email || companyMatch || qualifyingIndicators.industry) {
+        const contextEntries = [];
+        
+        if (email) {
+          contextEntries.push({
+            user_id: userId,
+            anonymous_session_id: anonymousSessionId,
+            context_type: 'contact',
+            context_key: 'email',
+            context_value: email,
+            confidence_score: 1.0,
+            source: 'conversation'
+          });
+        }
+        
+        if (qualifyingIndicators.industry) {
+          contextEntries.push({
+            user_id: userId,
+            anonymous_session_id: anonymousSessionId,
+            context_type: 'business',
+            context_key: 'industry',
+            context_value: qualifyingIndicators.industry[0],
+            confidence_score: 0.8,
+            source: 'conversation'
+          });
+        }
+        
+        if (qualifyingIndicators.employees) {
+          const employeeCount = parseInt(qualifyingIndicators.employees[1]);
+          let companySize = 'small';
+          if (employeeCount >= 50) companySize = 'medium';
+          if (employeeCount >= 200) companySize = 'large';
+          
+          contextEntries.push({
+            user_id: userId,
+            anonymous_session_id: anonymousSessionId,
+            context_type: 'business',
+            context_key: 'company_size',
+            context_value: companySize,
+            confidence_score: 0.9,
+            source: 'conversation'
+          });
+        }
+
+        if (contextEntries.length > 0) {
+          const { error: contextError } = await supabase
+            .from('user_business_context')
+            .insert(contextEntries);
+          
+          if (contextError) {
+            console.error('Error storing business context:', contextError);
+          } else {
+            console.log('Business context stored for anonymous user');
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error in lead qualification analysis:', error);
+  }
+}

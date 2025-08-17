@@ -20,9 +20,10 @@ interface Message {
 interface ChatInterfaceProps {
   sessionId?: string;
   onSessionCreated?: (sessionId: string) => void;
+  anonymousSessionId?: string;
 }
 
-const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreated }) => {
+const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreated, anonymousSessionId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -71,11 +72,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
       setMessages(formattedMessages);
     } catch (error) {
       console.error('Error loading conversation history:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load conversation history",
-        variant: "destructive",
-      });
     }
   };
 
@@ -95,16 +91,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onSessionCreat
     setIsLoading(true);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error('No active session');
-      }
-
       const response = await supabase.functions.invoke('ai-business-chat', {
         body: {
           message: userMessage.content,
           sessionId: currentSessionId,
-          messageType: 'text'
+          messageType: 'text',
+          anonymousSessionId: anonymousSessionId
         }
       });
 
