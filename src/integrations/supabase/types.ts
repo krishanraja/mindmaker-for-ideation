@@ -209,6 +209,98 @@ export type Database = {
           },
         ]
       }
+      google_oauth_tokens: {
+        Row: {
+          access_token: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          refresh_token: string | null
+          scope: string | null
+          token_type: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          refresh_token?: string | null
+          scope?: string | null
+          token_type?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          refresh_token?: string | null
+          scope?: string | null
+          token_type?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      google_sheets_sync_log: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          lead_qualification_id: string | null
+          processing_time_ms: number | null
+          retry_count: number | null
+          sheet_row_number: number | null
+          status: string
+          sync_data: Json | null
+          sync_type: string
+          user_id: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          lead_qualification_id?: string | null
+          processing_time_ms?: number | null
+          retry_count?: number | null
+          sheet_row_number?: number | null
+          status?: string
+          sync_data?: Json | null
+          sync_type: string
+          user_id?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          lead_qualification_id?: string | null
+          processing_time_ms?: number | null
+          retry_count?: number | null
+          sheet_row_number?: number | null
+          status?: string
+          sync_data?: Json | null
+          sync_type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "google_sheets_sync_log_lead_qualification_id_fkey"
+            columns: ["lead_qualification_id"]
+            isOneToOne: false
+            referencedRelation: "lead_qualification_data"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_qualification_data: {
         Row: {
           authority_level: number | null
