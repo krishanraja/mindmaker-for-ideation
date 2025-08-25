@@ -62,7 +62,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           </motion.h1>
           
           <motion.p 
-            className="text-base text-muted-foreground max-w-lg mx-auto"
+            className="text-base text-muted-foreground max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
