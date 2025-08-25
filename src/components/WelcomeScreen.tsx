@@ -30,159 +30,110 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
 }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-background/95">
-      <div className="container mx-auto px-6 py-16 max-w-6xl">
-        {/* Hero Section */}
+      <div className="container mx-auto px-6 py-8 max-w-4xl">
+        {/* Compact Hero Section */}
         <motion.div 
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-20"
+          transition={{ duration: 0.6 }}
+          className="text-center mb-8"
         >
-          <div className="flex items-center justify-center mb-12">
+          <div className="flex items-center justify-center mb-4">
             <motion.div 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6 }}
-              className="relative"
+              transition={{ duration: 0.5 }}
             >
               <img 
                 src="/lovable-uploads/a9a8850e-efa8-4ff3-be18-e9ca23a403a2.png" 
                 alt="FractionalAI Logo" 
-                className="w-20 h-20 object-contain mx-auto"
+                className="w-12 h-12 object-contain mx-auto"
               />
             </motion.div>
           </div>
           
           <motion.h1 
-            className="text-5xl md:text-6xl font-bold mb-8 text-foreground tracking-tight"
-            initial={{ opacity: 0, y: 20 }}
+            className="text-3xl md:text-4xl font-bold mb-3 text-foreground tracking-tight"
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
           >
             Ideation Blueprint
           </motion.h1>
           
           <motion.p 
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
+            className="text-base text-muted-foreground max-w-lg mx-auto"
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
           >
-            Transform your ideas into actionable development blueprints. 
-            Get AI-powered analysis, intelligent workflows, and personalized Lovable prompts 
-            to bring your vision to life.
+            Transform your ideas into actionable development blueprints with AI
           </motion.p>
         </motion.div>
 
-        {/* Features */}
-        <motion.div 
-          className="grid md:grid-cols-3 gap-8 mb-20 max-w-4xl mx-auto"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.8 }}
-        >
-          {[
-            {
-              icon: Brain,
-              title: 'AI Analysis',
-              description: 'Advanced semantic analysis of your ideas with context-aware understanding'
-            },
-            {
-              icon: Zap,
-              title: 'Smart Workflows',
-              description: 'Intelligent step-by-step development workflows tailored to your project'
-            },
-            {
-              icon: Lightbulb,
-              title: 'Lovable Prompts',
-              description: 'Ready-to-use prompts optimized for the Lovable development platform'
-            }
-          ].map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 + index * 0.1, duration: 0.6 }}
-            >
-              <Card className="bg-card/50 backdrop-blur-sm border-border/30 hover:border-border/60 transition-all duration-300 group h-full">
-                <CardContent className="p-8 text-center h-full flex flex-col items-center justify-start">
-                  <div className="w-14 h-14 flex items-center justify-center mb-6">
-                    <feature.icon className="w-12 h-12 text-primary group-hover:scale-110 transition-transform duration-300" />
-                  </div>
-                  <h3 className="font-semibold text-xl mb-3 text-foreground">{feature.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Input Section */}
+        {/* Main Input Section - The Star */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1, duration: 0.8 }}
-          className="max-w-4xl mx-auto"
+          transition={{ delay: 0.4, duration: 0.8 }}
+          className="mb-12"
         >
-          <Card className="bg-card/60 backdrop-blur-sm border border-border/40 shadow-lg">
-            <CardHeader className="text-center pb-8">
-              <CardTitle className="text-2xl md:text-3xl font-bold mb-4 text-foreground">
+          <Card className="bg-card border-2 border-primary/20 shadow-2xl shadow-primary/5 hover:border-primary/30 transition-all duration-300">
+            <CardHeader className="text-center pb-6">
+              <CardTitle className="text-2xl font-bold mb-3 text-foreground">
                 Describe Your Vision
               </CardTitle>
-              <CardDescription className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto">
-                Share your idea, project concept, or development challenge. 
-                The more details you provide, the better your blueprint will be.
+              <CardDescription className="text-muted-foreground">
+                Share your idea and get a personalized development blueprint
               </CardDescription>
             </CardHeader>
             
-            <CardContent className="space-y-8 px-8 pb-8">
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-3">
-                    <Label htmlFor="userName" className="text-sm font-medium text-foreground">
-                      Your Name
-                    </Label>
-                    <Input
-                      id="userName"
-                      placeholder="Enter your name..."
-                      value={userName}
-                      onChange={(e) => setUserName(e.target.value)}
-                      className="h-12 bg-background/50 border-border/60 focus:border-primary/50 focus:bg-background transition-all duration-300"
-                      disabled={isGenerating}
-                    />
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <Label htmlFor="userEmail" className="text-sm font-medium text-foreground">
-                      Your Email
-                    </Label>
-                    <Input
-                      id="userEmail"
-                      type="email"
-                      placeholder="your.email@example.com"
-                      value={userEmail}
-                      onChange={(e) => setUserEmail(e.target.value)}
-                      className="h-12 bg-background/50 border-border/60 focus:border-primary/50 focus:bg-background transition-all duration-300"
-                      disabled={isGenerating}
-                    />
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  <Label htmlFor="userInput" className="text-sm font-medium text-foreground">
-                    Describe Your Vision
+            <CardContent className="space-y-6 px-8 pb-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="userName" className="text-sm font-medium text-foreground">
+                    Your Name
                   </Label>
-                  <Textarea
-                    id="userInput"
-                    placeholder="I want to build an app that helps people..."
-                    value={userInput}
-                    onChange={(e) => setUserInput(e.target.value)}
-                    className="min-h-[140px] text-base leading-relaxed resize-none bg-background/50 border-border/60 focus:border-primary/50 focus:bg-background transition-all duration-300"
+                  <Input
+                    id="userName"
+                    placeholder="Enter your name..."
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
+                    className="h-11 bg-background border-border/60 focus:border-primary transition-all duration-300"
                     disabled={isGenerating}
                   />
-                  <div className="text-sm text-muted-foreground/80 bg-muted/20 p-3 rounded-lg">
-                    💡 <strong>Tip:</strong> Include your target audience, main features, technology preferences, and any design constraints
-                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="userEmail" className="text-sm font-medium text-foreground">
+                    Your Email
+                  </Label>
+                  <Input
+                    id="userEmail"
+                    type="email"
+                    placeholder="your.email@example.com"
+                    value={userEmail}
+                    onChange={(e) => setUserEmail(e.target.value)}
+                    className="h-11 bg-background border-border/60 focus:border-primary transition-all duration-300"
+                    disabled={isGenerating}
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <Label htmlFor="userInput" className="text-sm font-medium text-foreground">
+                  Your Project Vision
+                </Label>
+                <Textarea
+                  id="userInput"
+                  placeholder="I want to build an app that helps people..."
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  className="min-h-[120px] text-base resize-none bg-background border-border/60 focus:border-primary transition-all duration-300"
+                  disabled={isGenerating}
+                />
+                <div className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-md">
+                  💡 <strong>Tip:</strong> Include your target audience, key features, and any technical preferences
                 </div>
               </div>
               
@@ -194,7 +145,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 <Button
                   onClick={onStart}
                   disabled={!userName.trim() || !userEmail.trim() || !userInput.trim() || isGenerating}
-                  className="w-full h-14 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
+                  className="w-full h-12 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
                 >
                   {isGenerating ? (
                     <>
@@ -203,19 +154,61 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                         className="w-5 h-5 mr-3 border-2 border-primary-foreground border-t-transparent rounded-full"
                       />
-                      AI Analyzing Your Vision...
+                      Creating Your Blueprint...
                     </>
                   ) : (
                     <>
-                      <Sparkles className="mr-3 h-5 w-5" />
-                      Start Your Journey
-                      <ArrowRight className="ml-3 h-5 w-5" />
+                      <Sparkles className="mr-2 h-5 w-5" />
+                      Generate My Blueprint
+                      <ArrowRight className="ml-2 h-5 w-5" />
                     </>
                   )}
                 </Button>
               </motion.div>
             </CardContent>
           </Card>
+        </motion.div>
+
+        {/* Features as Social Proof - Subtle and Below */}
+        <motion.div 
+          className="grid md:grid-cols-3 gap-4 max-w-3xl mx-auto opacity-80"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 0.8, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+        >
+          {[
+            {
+              icon: Brain,
+              title: 'AI Analysis',
+              description: 'Smart analysis of your ideas'
+            },
+            {
+              icon: Zap,
+              title: 'Custom Workflows',
+              description: 'Tailored development steps'
+            },
+            {
+              icon: Lightbulb,
+              title: 'Lovable Ready',
+              description: 'Optimized for rapid development'
+            }
+          ].map((feature, index) => (
+            <motion.div
+              key={feature.title}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9 + index * 0.1, duration: 0.5 }}
+              className="text-center"
+            >
+              <div className="bg-card/30 backdrop-blur-sm border border-border/20 rounded-lg p-4 hover:bg-card/40 transition-all duration-300">
+                <div className="w-8 h-8 flex items-center justify-center mx-auto mb-2">
+                  <feature.icon className="w-6 h-6 text-primary/80" />
+                </div>
+                <h3 className="font-medium text-sm mb-1 text-foreground/90">{feature.title}</h3>
+                <p className="text-xs text-muted-foreground/80">{feature.description}</p>
+              </div>
+            </motion.div>
+          ))}
         </motion.div>
       </div>
     </div>
