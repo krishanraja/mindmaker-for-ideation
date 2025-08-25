@@ -105,8 +105,10 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               transition={{ delay: 0.8 + index * 0.1, duration: 0.6 }}
             >
               <Card className="bg-card/50 backdrop-blur-sm border-border/30 hover:border-border/60 transition-all duration-300 group h-full">
-                <CardContent className="p-8 text-center h-full flex flex-col items-center justify-center">
-                  <feature.icon className="w-14 h-14 text-primary mb-6 mx-auto group-hover:scale-110 transition-transform duration-300" />
+                <CardContent className="p-8 text-center h-full flex flex-col items-center justify-start">
+                  <div className="w-14 h-14 flex items-center justify-center mb-6">
+                    <feature.icon className="w-12 h-12 text-primary group-hover:scale-110 transition-transform duration-300" />
+                  </div>
                   <h3 className="font-semibold text-xl mb-3 text-foreground">{feature.title}</h3>
                   <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
                 </CardContent>
@@ -120,7 +122,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1, duration: 0.8 }}
-          className="max-w-3xl mx-auto"
+          className="max-w-4xl mx-auto"
         >
           <Card className="bg-card/60 backdrop-blur-sm border border-border/40 shadow-lg">
             <CardHeader className="text-center pb-8">
