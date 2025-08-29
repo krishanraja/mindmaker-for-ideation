@@ -6,112 +6,187 @@
 
 @layer base {
   :root {
-    /* Modern gradient design system */
-    --background: 225 25% 4%;
-    --foreground: 213 31% 96%;
+    /* NYC Editorial Color System - Dark Theme */
+    --background: 0 0% 6.7%;           /* #111111 - Dark background */
+    --foreground: 0 0% 98%;            /* #FAFAFA - Light text */
 
-    --card: 225 20% 8%;
-    --card-foreground: 213 31% 96%;
+    --card: 0 0% 8%;                   /* #141414 - Dark cards */
+    --card-foreground: 0 0% 98%;       /* #FAFAFA - Light text */
 
-    --popover: 225 20% 8%;
-    --popover-foreground: 213 31% 96%;
+    --popover: 0 0% 8%;                /* #141414 - Dark popover */
+    --popover-foreground: 0 0% 98%;    /* #FAFAFA - Light text */
 
-    --primary: 256 74% 64%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 256 74% 74%;
+    --primary: 221 100% 58%;           /* #2A6AFF - Bright blue accent */
+    --primary-foreground: 0 0% 100%;   /* Pure white text */
 
-    --secondary: 225 20% 12%;
-    --secondary-foreground: 213 31% 96%;
+    --secondary: 0 0% 12%;             /* #1F1F1F - Dark muted backgrounds */
+    --secondary-foreground: 0 0% 98%;  /* #FAFAFA - Light text */
 
-    --muted: 225 15% 15%;
-    --muted-foreground: 215 16% 57%;
+    --muted: 0 0% 12%;                 /* #1F1F1F - Dark muted backgrounds */
+    --muted-foreground: 0 0% 60%;      /* #999999 - Dark secondary text */
 
-    --accent: 260 60% 45%;
-    --accent-foreground: 213 31% 96%;
+    --accent: 221 100% 58%;            /* Same blue as primary */
+    --accent-foreground: 0 0% 100%;    /* Pure white text */
 
-    --destructive: 0 75% 55%;
-    --destructive-foreground: 213 31% 96%;
+    --destructive: 0 75% 55%;          /* Red for errors */
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 225 15% 20%;
-    --input: 225 15% 18%;
-    --ring: 256 74% 64%;
+    --border: 0 0% 15%;                /* #262626 - Dark borders */
+    --input: 0 0% 12%;                 /* #1F1F1F - Dark inputs */
+    --ring: 221 100% 58%;              /* Blue focus ring */
 
     --radius: 0.75rem;
 
-    /* Beautiful gradient system */
-    --gradient-primary: linear-gradient(135deg, hsl(240 75% 65%), hsl(280 85% 70%));
-    --gradient-hero: linear-gradient(135deg, hsl(225 25% 4%) 0%, hsl(240 30% 8%) 50%, hsl(260 40% 12%) 100%);
-    --gradient-card: linear-gradient(135deg, hsl(225 20% 8% / 0.8), hsl(240 25% 10% / 0.9));
-    --gradient-surface: linear-gradient(180deg, hsl(225 20% 6%), hsl(225 15% 10%));
-    
-    /* Elegant shadows */
-    --shadow-elegant: 0 20px 40px -10px hsl(240 75% 15% / 0.4);
-    --shadow-glow: 0 0 60px hsl(280 85% 70% / 0.3);
-    --shadow-card: 0 12px 35px -8px hsl(240 30% 8% / 0.5);
-    
-    /* Smooth transitions */
-    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-spring: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* NYC Editorial Spacing System */
+    --section-padding: clamp(4rem, 8vw, 8rem);
+    --content-width: 1200px;
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 263 70% 50%;
+    /* Subtle gradient patterns */
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 6.7%), hsl(0 0% 8%));
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 6.7%) 0%, hsl(221 100% 58% / 0.02) 50%, hsl(0 0% 8%) 100%);
+    
+    /* Elegant shadows with blue tint */
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
+    --shadow-medium: 0 10px 30px -10px hsl(221 100% 58% / 0.1);
+    --shadow-elegant: 0 20px 40px -10px hsl(221 100% 58% / 0.15);
+    
+    /* Smooth transitions - NYC Editorial feel */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 0 0% 8%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 221 100% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 263 70% 50%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 221 100% 58%;
   }
 
   .light {
-    --background: 0 0% 99%;
-    --foreground: 225 25% 8%;
+    /* NYC Editorial Color System - Light Theme */
+    --background: 0 0% 98%;             /* #FAFAFA - Almost white background */
+    --foreground: 0 0% 6.7%;            /* #111111 - Near black text */
 
-    --card: 0 0% 98%;
-    --card-foreground: 225 25% 8%;
+    --card: 0 0% 100%;                  /* Pure white cards */
+    --card-foreground: 0 0% 6.7%;       /* Near black text */
 
-    --popover: 0 0% 98%;
-    --popover-foreground: 225 25% 8%;
+    --popover: 0 0% 100%;               /* Pure white popover */
+    --popover-foreground: 0 0% 6.7%;    /* Near black text */
 
-    --primary: 256 74% 64%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 256 74% 74%;
+    --primary: 221 100% 58%;            /* #2A6AFF - Bright blue accent */
+    --primary-foreground: 0 0% 100%;    /* Pure white text */
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 225 25% 8%;
+    --secondary: 0 0% 96%;              /* #F5F5F5 - Subtle backgrounds */
+    --secondary-foreground: 0 0% 6.7%;  /* Near black text */
 
-    --muted: 210 40% 94%;
-    --muted-foreground: 215 16% 46%;
+    --muted: 0 0% 96%;                  /* #F5F5F5 - Subtle backgrounds */
+    --muted-foreground: 0 0% 45%;       /* #737373 - Secondary text */
 
-    --accent: 260 60% 50%;
-    --accent-foreground: 0 0% 99%;
+    --accent: 221 100% 58%;             /* Same blue as primary */
+    --accent-foreground: 0 0% 100%;     /* Pure white text */
 
-    --destructive: 0 75% 55%;
-    --destructive-foreground: 0 0% 99%;
+    --destructive: 0 75% 55%;           /* Red for errors */
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214 31% 91%;
-    --input: 214 31% 91%;
-    --ring: 256 74% 64%;
+    --border: 0 0% 90%;                 /* #E5E5E5 - Subtle borders */
+    --input: 0 0% 96%;                  /* #F5F5F5 - Light inputs */
+    --ring: 221 100% 58%;               /* Blue focus ring */
     
     /* Light theme gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(240 75% 55%), hsl(280 85% 65%));
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 99%) 0%, hsl(220 60% 97%) 50%, hsl(240 50% 95%) 100%);
-    --gradient-card: linear-gradient(135deg, hsl(210 40% 98% / 0.8), hsl(240 30% 96% / 0.9));
-    --gradient-surface: linear-gradient(180deg, hsl(0 0% 99%), hsl(210 40% 96%));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 98%), hsl(0 0% 96%));
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 98%) 0%, hsl(221 100% 58% / 0.02) 50%, hsl(0 0% 96%) 100%);
     
     /* Light theme shadows */
-    --shadow-elegant: 0 20px 40px -10px hsl(240 75% 55% / 0.15);
-    --shadow-glow: 0 0 60px hsl(280 85% 65% / 0.1);
-    --shadow-card: 0 12px 35px -8px hsl(240 30% 55% / 0.1);
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
+    --shadow-medium: 0 10px 30px -10px hsl(221 100% 58% / 0.08);
+    --shadow-elegant: 0 20px 40px -10px hsl(221 100% 58% / 0.1);
 
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 263 70% 50%;
+    --sidebar-foreground: 0 0% 6.7%;
+    --sidebar-primary: 221 100% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 6.7%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 221 100% 58%;
+  }
+}
+
+/* NYC Editorial Typography System */
+@layer components {
+  /* Headline Hierarchy */
+  .headline-xl {
+    @apply text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  .headline-lg {
+    @apply text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  .headline-md {
+    @apply text-2xl md:text-3xl font-semibold tracking-tight;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  /* Body Text */
+  .body-lg {
+    @apply text-lg md:text-xl leading-relaxed;
+  }
+
+  .body-md {
+    @apply text-base md:text-lg leading-relaxed;
+  }
+
+  /* Layout Utilities */
+  .section-padding {
+    padding: var(--section-padding) 0;
+  }
+
+  .container-width {
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* Interactive Elements */
+  .link-underline {
+    @apply relative inline-block;
+  }
+
+  .link-underline::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-full h-px bg-current scale-x-0 origin-right transition-transform duration-300;
+  }
+
+  .link-underline:hover::after {
+    @apply scale-x-100 origin-left;
+  }
+
+  .card-hover {
+    transition: var(--transition-smooth);
+  }
+
+  .card-hover:hover {
+    transform: scale(1.01);
+    box-shadow: var(--shadow-medium);
+  }
+
+  /* Focus States for Accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Skip Link */
+  .skip-link {
+    @apply absolute left-4 top-4 z-50 bg-primary text-primary-foreground px-4 py-2 rounded-md transform -translate-y-16 focus:translate-y-0 transition-transform;
   }
 }
 
@@ -121,6 +196,16 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Reduced Motion Support */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
