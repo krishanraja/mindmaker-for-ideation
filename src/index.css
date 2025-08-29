@@ -6,66 +6,7 @@
 
 @layer base {
   :root {
-    /* NYC Editorial Color System - Dark Theme */
-    --background: 0 0% 6.7%;           /* #111111 - Dark background */
-    --foreground: 0 0% 98%;            /* #FAFAFA - Light text */
-
-    --card: 0 0% 8%;                   /* #141414 - Dark cards */
-    --card-foreground: 0 0% 98%;       /* #FAFAFA - Light text */
-
-    --popover: 0 0% 8%;                /* #141414 - Dark popover */
-    --popover-foreground: 0 0% 98%;    /* #FAFAFA - Light text */
-
-    --primary: 221 100% 58%;           /* #2A6AFF - Bright blue accent */
-    --primary-foreground: 0 0% 100%;   /* Pure white text */
-
-    --secondary: 0 0% 12%;             /* #1F1F1F - Dark muted backgrounds */
-    --secondary-foreground: 0 0% 98%;  /* #FAFAFA - Light text */
-
-    --muted: 0 0% 12%;                 /* #1F1F1F - Dark muted backgrounds */
-    --muted-foreground: 0 0% 60%;      /* #999999 - Dark secondary text */
-
-    --accent: 221 100% 58%;            /* Same blue as primary */
-    --accent-foreground: 0 0% 100%;    /* Pure white text */
-
-    --destructive: 0 75% 55%;          /* Red for errors */
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 0 0% 15%;                /* #262626 - Dark borders */
-    --input: 0 0% 12%;                 /* #1F1F1F - Dark inputs */
-    --ring: 221 100% 58%;              /* Blue focus ring */
-
-    --radius: 0.75rem;
-
-    /* NYC Editorial Spacing System */
-    --section-padding: clamp(4rem, 8vw, 8rem);
-    --content-width: 1200px;
-
-    /* Subtle gradient patterns */
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 6.7%), hsl(0 0% 8%));
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 6.7%) 0%, hsl(221 100% 58% / 0.02) 50%, hsl(0 0% 8%) 100%);
-    
-    /* Elegant shadows with blue tint */
-    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
-    --shadow-medium: 0 10px 30px -10px hsl(221 100% 58% / 0.1);
-    --shadow-elegant: 0 20px 40px -10px hsl(221 100% 58% / 0.15);
-    
-    /* Smooth transitions - NYC Editorial feel */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
-    --sidebar-background: 0 0% 8%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 221 100% 58%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 12%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 0 0% 15%;
-    --sidebar-ring: 221 100% 58%;
-  }
-
-  .light {
-    /* NYC Editorial Color System - Light Theme */
+    /* NYC Editorial Color System - Light Theme (Default) */
     --background: 0 0% 98%;             /* #FAFAFA - Almost white background */
     --foreground: 0 0% 6.7%;            /* #111111 - Near black text */
 
@@ -75,7 +16,7 @@
     --popover: 0 0% 100%;               /* Pure white popover */
     --popover-foreground: 0 0% 6.7%;    /* Near black text */
 
-    --primary: 221 100% 58%;            /* #2A6AFF - Bright blue accent */
+    --primary: 266 70% 58%;             /* Purple brand color */
     --primary-foreground: 0 0% 100%;    /* Pure white text */
 
     --secondary: 0 0% 96%;              /* #F5F5F5 - Subtle backgrounds */
@@ -84,7 +25,7 @@
     --muted: 0 0% 96%;                  /* #F5F5F5 - Subtle backgrounds */
     --muted-foreground: 0 0% 45%;       /* #737373 - Secondary text */
 
-    --accent: 221 100% 58%;             /* Same blue as primary */
+    --accent: 266 70% 58%;              /* Same purple as primary */
     --accent-foreground: 0 0% 100%;     /* Pure white text */
 
     --destructive: 0 75% 55%;           /* Red for errors */
@@ -92,25 +33,84 @@
 
     --border: 0 0% 90%;                 /* #E5E5E5 - Subtle borders */
     --input: 0 0% 96%;                  /* #F5F5F5 - Light inputs */
-    --ring: 221 100% 58%;               /* Blue focus ring */
-    
-    /* Light theme gradients */
+    --ring: 266 70% 58%;                /* Purple focus ring */
+
+    --radius: 0.75rem;
+
+    /* NYC Editorial Spacing System */
+    --section-padding: clamp(4rem, 8vw, 8rem);
+    --content-width: 1200px;
+
+    /* Light theme gradients with purple accent */
     --gradient-subtle: linear-gradient(180deg, hsl(0 0% 98%), hsl(0 0% 96%));
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 98%) 0%, hsl(221 100% 58% / 0.02) 50%, hsl(0 0% 96%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 98%) 0%, hsl(266 70% 58% / 0.02) 50%, hsl(0 0% 96%) 100%);
     
-    /* Light theme shadows */
+    /* Light theme shadows with purple tint */
     --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
-    --shadow-medium: 0 10px 30px -10px hsl(221 100% 58% / 0.08);
-    --shadow-elegant: 0 20px 40px -10px hsl(221 100% 58% / 0.1);
+    --shadow-medium: 0 10px 30px -10px hsl(266 70% 58% / 0.08);
+    --shadow-elegant: 0 20px 40px -10px hsl(266 70% 58% / 0.1);
+    
+    /* Smooth transitions - NYC Editorial feel */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 0 0% 6.7%;
-    --sidebar-primary: 221 100% 58%;
+    --sidebar-primary: 266 70% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 96%;
     --sidebar-accent-foreground: 0 0% 6.7%;
     --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 221 100% 58%;
+    --sidebar-ring: 266 70% 58%;
+  }
+
+  .dark {
+    /* NYC Editorial Color System - Dark Theme */
+    --background: 0 0% 6.7%;            /* #111111 - Dark background */
+    --foreground: 0 0% 98%;             /* #FAFAFA - Light text */
+
+    --card: 0 0% 8%;                    /* #141414 - Dark cards */
+    --card-foreground: 0 0% 98%;        /* #FAFAFA - Light text */
+
+    --popover: 0 0% 8%;                 /* #141414 - Dark popover */
+    --popover-foreground: 0 0% 98%;     /* #FAFAFA - Light text */
+
+    --primary: 266 70% 58%;             /* Purple brand color */
+    --primary-foreground: 0 0% 100%;    /* Pure white text */
+
+    --secondary: 0 0% 12%;              /* #1F1F1F - Dark muted backgrounds */
+    --secondary-foreground: 0 0% 98%;   /* #FAFAFA - Light text */
+
+    --muted: 0 0% 12%;                  /* #1F1F1F - Dark muted backgrounds */
+    --muted-foreground: 0 0% 60%;       /* #999999 - Dark secondary text */
+
+    --accent: 266 70% 58%;              /* Same purple as primary */
+    --accent-foreground: 0 0% 100%;     /* Pure white text */
+
+    --destructive: 0 75% 55%;           /* Red for errors */
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 15%;                 /* #262626 - Dark borders */
+    --input: 0 0% 12%;                  /* #1F1F1F - Dark inputs */
+    --ring: 266 70% 58%;                /* Purple focus ring */
+    
+    /* Dark theme gradients with purple accent */
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 6.7%), hsl(0 0% 8%));
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 6.7%) 0%, hsl(266 70% 58% / 0.02) 50%, hsl(0 0% 8%) 100%);
+    
+    /* Dark theme shadows with purple tint */
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
+    --shadow-medium: 0 10px 30px -10px hsl(266 70% 58% / 0.1);
+    --shadow-elegant: 0 20px 40px -10px hsl(266 70% 58% / 0.15);
+
+    --sidebar-background: 0 0% 8%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 266 70% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 266 70% 58%;
   }
 }
 
