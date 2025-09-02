@@ -49,7 +49,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               <img 
                 src="/lovable-uploads/c7b74152-d8c0-44a0-ab35-c7836d10e587.png" 
                 alt="AI MindMaker Logo" 
-                className="w-[70px] h-[70px] object-contain mx-auto"
+                className="w-[140px] h-[140px] object-contain mx-auto"
               />
             </motion.div>
             
