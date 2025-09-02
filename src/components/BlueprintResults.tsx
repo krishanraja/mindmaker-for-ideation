@@ -205,7 +205,7 @@ ${blueprint.agentSuggestions.map((agent, index) => `
           console.log('Could not load logo image');
           resolve(true); // Continue without logo
         };
-        logoImg.src = '/lovable-uploads/fff497b2-2ddb-4e3b-bb5e-690f05f7422a.png';
+        logoImg.src = '/lovable-uploads/c7b74152-d8c0-44a0-ab35-c7836d10e587.png';
       });
 
       // Add main title
@@ -320,7 +320,7 @@ ${blueprint.agentSuggestions.map((agent, index) => `
       <div style="font-family: 'Inter', Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; background: white;">
         <!-- Header -->
         <div style="text-align: center; border-bottom: 3px solid #3b82f6; padding-bottom: 30px; margin-bottom: 40px;">
-          <img src="/lovable-uploads/a9a8850e-efa8-4ff3-be18-e9ca23a403a2.png" alt="FractionalAI Logo" style="width: 80px; height: 80px; margin: 0 auto 20px; display: block;" />
+          <img src="/lovable-uploads/c7b74152-d8c0-44a0-ab35-c7836d10e587.png" alt="AI MindMaker Logo" style="width: 80px; height: 80px; margin: 0 auto 20px; display: block;" />
           <h1 style="font-size: 32px; font-weight: 700; color: #1f2937; margin-bottom: 8px;">${userName || 'User'}'s AI-Powered Blueprint</h1>
           <p style="font-size: 18px; color: #6b7280; font-weight: 400;">Your personalized development roadmap</p>
           <p style="color: #6b7280; font-size: 14px; margin-top: 10px;">Generated on ${new Date().toLocaleDateString('en-US', { 
@@ -462,7 +462,7 @@ ${blueprint.agentSuggestions.map((agent, index) => `
             <div className="flex items-center justify-center mb-6">
               <img 
                 src="/lovable-uploads/a9a8850e-efa8-4ff3-be18-e9ca23a403a2.png" 
-                alt="FractionalAI Logo" 
+                alt="AI MindMaker Logo" 
                 className="w-16 h-16 object-contain"
               />
             </div>

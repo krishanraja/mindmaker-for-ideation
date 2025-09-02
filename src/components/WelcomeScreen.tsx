@@ -47,8 +47,8 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               className="mb-8"
             >
               <img 
-                src="/lovable-uploads/a9a8850e-efa8-4ff3-be18-e9ca23a403a2.png" 
-                alt="FractionalAI Logo" 
+                src="/lovable-uploads/c7b74152-d8c0-44a0-ab35-c7836d10e587.png" 
+                alt="AI MindMaker Logo" 
                 className="w-[70px] h-[70px] object-contain mx-auto"
               />
             </motion.div>
