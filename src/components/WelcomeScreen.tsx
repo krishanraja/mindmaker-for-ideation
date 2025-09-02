@@ -59,12 +59,11 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
-              className="mb-8"
             >
               <img 
                 src="/lovable-uploads/c7b74152-d8c0-44a0-ab35-c7836d10e587.png" 
                 alt="AI MindMaker Logo" 
-                className="w-[140px] h-[140px] object-contain mx-auto"
+                className="h-8 w-auto mx-auto mb-8"
               />
             </motion.div>
             
