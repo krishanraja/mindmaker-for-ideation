@@ -55,7 +55,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             
             {/* Main Headline */}
             <motion.h1 
-              className="headline-xl mb-6 text-balance"
+              className="font-display text-4xl sm:text-5xl lg:text-7xl font-bold text-foreground mb-8 leading-tight mt-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
