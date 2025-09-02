@@ -29,11 +29,26 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   isGenerating,
 }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen bg-background bg-dots flex items-center justify-center p-4 relative overflow-hidden">
       {/* Skip Link for Accessibility */}
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
+      
+      {/* Dynamic Background Elements */}
+      <div 
+        className="absolute top-20 left-10 w-72 h-72 rounded-full blur-3xl opacity-10 animate-pulse"
+        style={{ 
+          background: 'linear-gradient(135deg, hsl(270 70% 60%), hsl(248 100% 70%))',
+        }}
+      ></div>
+      <div 
+        className="absolute bottom-20 right-10 w-96 h-96 rounded-full blur-3xl opacity-8 animate-pulse"
+        style={{ 
+          background: 'linear-gradient(135deg, hsl(270 70% 60%), hsl(248 100% 70%))', 
+          animationDelay: '1s' 
+        }}
+      ></div>
       
       {/* Hero Section - Full Height */}
       <section className="relative min-h-screen flex items-center justify-center section-padding">
@@ -247,11 +262,6 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               ))}
             </motion.div>
           </div>
-        </div>
-        
-        {/* Subtle Background Pattern */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/20"></div>
         </div>
       </section>
     </div>

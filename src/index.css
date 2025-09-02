@@ -8,7 +8,7 @@
 @layer base {
   :root {
     /* Color palette - HSL for Tailwind hsl(var(--token)) usage */
-    --primary: 250 100% 63%;
+    --primary: 270 70% 60%;
     --primary-light: 248 100% 70%;
     --primary-foreground: 0 0% 100%;
 
