@@ -2,192 +2,203 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
+/* Global Design System Tokens */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
 
 @layer base {
   :root {
-    /* NYC Editorial Color System - Light Theme (Default) */
-    --background: 0 0% 98%;             /* #FAFAFA - Almost white background */
-    --foreground: 0 0% 6.7%;            /* #111111 - Near black text */
+    /* Color palette - HSL for Tailwind hsl(var(--token)) usage */
+    --primary: 250 100% 63%;
+    --primary-light: 248 100% 70%;
+    --primary-foreground: 0 0% 100%;
 
-    --card: 0 0% 100%;                  /* Pure white cards */
-    --card-foreground: 0 0% 6.7%;       /* Near black text */
+    --accent: 248 100% 70%;
+    --accent-foreground: 0 0% 100%;
 
-    --popover: 0 0% 100%;               /* Pure white popover */
-    --popover-foreground: 0 0% 6.7%;    /* Near black text */
+    --background: 0 0% 98%;
+    --surface: 0 0% 100%;
+    --surface-muted: 0 0% 96.5%;
 
-    --primary: 266 70% 58%;             /* Purple brand color */
-    --primary-foreground: 0 0% 100%;    /* Pure white text */
+    --foreground: 0 0% 6.7%;
+    --foreground-secondary: 0 0% 45.1%;
+    --foreground-muted: 0 0% 57.8%;
 
-    --secondary: 0 0% 96%;              /* #F5F5F5 - Subtle backgrounds */
-    --secondary-foreground: 0 0% 6.7%;  /* Near black text */
+    --success: 160 84% 39%;
+    --warning: 38 92% 50%;
+    --destructive: 0 84% 60%;
 
-    --muted: 0 0% 96%;                  /* #F5F5F5 - Subtle backgrounds */
-    --muted-foreground: 0 0% 45%;       /* #737373 - Secondary text */
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 250 100% 63%;
 
-    --accent: 266 70% 58%;              /* Same purple as primary */
-    --accent-foreground: 0 0% 100%;     /* Pure white text */
+    /* Legacy mappings for existing components */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 6.7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 6.7%;
+    --secondary: 0 0% 96.5%;
+    --secondary-foreground: 0 0% 6.7%;
+    --muted: 0 0% 96.5%;
+    --muted-foreground: 0 0% 45.1%;
 
-    --destructive: 0 75% 55%;           /* Red for errors */
-    --destructive-foreground: 0 0% 98%;
+    /* Radius and shadows */
+    --radius: 1rem;
+    --radius-lg: 1.5rem;
 
-    --border: 0 0% 90%;                 /* #E5E5E5 - Subtle borders */
-    --input: 0 0% 96%;                  /* #F5F5F5 - Light inputs */
-    --ring: 266 70% 58%;                /* Purple focus ring */
-
-    --radius: 0.75rem;
-
-    /* NYC Editorial Spacing System */
-    --section-padding: clamp(4rem, 8vw, 8rem);
-    --content-width: 1200px;
-
-    /* Light theme gradients with purple accent */
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 98%), hsl(0 0% 96%));
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 98%) 0%, hsl(266 70% 58% / 0.02) 50%, hsl(0 0% 96%) 100%);
-    
-    /* Light theme shadows with purple tint */
     --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
-    --shadow-medium: 0 10px 30px -10px hsl(266 70% 58% / 0.08);
-    --shadow-elegant: 0 20px 40px -10px hsl(266 70% 58% / 0.1);
-    
-    /* Smooth transitions - NYC Editorial feel */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
+    --shadow-purple: 0 10px 30px -10px hsl(250 100% 63% / 0.3);
 
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--primary-light)), hsl(var(--primary)));
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* Sidebar tokens */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 0 0% 6.7%;
-    --sidebar-primary: 266 70% 58%;
+    --sidebar-primary: 250 100% 63%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent: 0 0% 96.5%;
     --sidebar-accent-foreground: 0 0% 6.7%;
-    --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 266 70% 58%;
+    --sidebar-border: 0 0% 89.8%;
+    --sidebar-ring: 250 100% 63%;
   }
 
   .dark {
-    /* NYC Editorial Color System - Dark Theme */
-    --background: 0 0% 6.7%;            /* #111111 - Dark background */
-    --foreground: 0 0% 98%;             /* #FAFAFA - Light text */
-
-    --card: 0 0% 8%;                    /* #141414 - Dark cards */
-    --card-foreground: 0 0% 98%;        /* #FAFAFA - Light text */
-
-    --popover: 0 0% 8%;                 /* #141414 - Dark popover */
-    --popover-foreground: 0 0% 98%;     /* #FAFAFA - Light text */
-
-    --primary: 266 70% 58%;             /* Purple brand color */
-    --primary-foreground: 0 0% 100%;    /* Pure white text */
-
-    --secondary: 0 0% 12%;              /* #1F1F1F - Dark muted backgrounds */
-    --secondary-foreground: 0 0% 98%;   /* #FAFAFA - Light text */
-
-    --muted: 0 0% 12%;                  /* #1F1F1F - Dark muted backgrounds */
-    --muted-foreground: 0 0% 60%;       /* #999999 - Dark secondary text */
-
-    --accent: 266 70% 58%;              /* Same purple as primary */
-    --accent-foreground: 0 0% 100%;     /* Pure white text */
-
-    --destructive: 0 75% 55%;           /* Red for errors */
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 0 0% 15%;                 /* #262626 - Dark borders */
-    --input: 0 0% 12%;                  /* #1F1F1F - Dark inputs */
-    --ring: 266 70% 58%;                /* Purple focus ring */
+    /* Dark theme overrides */
+    --background: 0 0% 6.7%;
+    --surface: 0 0% 8%;
+    --surface-muted: 0 0% 12%;
+    --foreground: 0 0% 98%;
+    --foreground-secondary: 0 0% 60%;
+    --foreground-muted: 0 0% 45%;
+    --border: 0 0% 15%;
+    --input: 0 0% 12%;
     
-    /* Dark theme gradients with purple accent */
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 6.7%), hsl(0 0% 8%));
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 6.7%) 0%, hsl(266 70% 58% / 0.02) 50%, hsl(0 0% 8%) 100%);
+    /* Legacy mappings for dark mode */
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 98%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 60%;
     
-    /* Dark theme shadows with purple tint */
-    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
-    --shadow-medium: 0 10px 30px -10px hsl(266 70% 58% / 0.1);
-    --shadow-elegant: 0 20px 40px -10px hsl(266 70% 58% / 0.15);
-
     --sidebar-background: 0 0% 8%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 266 70% 58%;
-    --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 12%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 0 0% 15%;
-    --sidebar-ring: 266 70% 58%;
   }
 }
 
-/* NYC Editorial Typography System */
-@layer components {
-  /* Headline Hierarchy */
-  .headline-xl {
-    @apply text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight;
-    line-height: 1.2;
-    letter-spacing: -0.025em;
-    text-wrap: balance;
-  }
+/* Typography */
+.font-display { 
+  font-family: 'Outfit', system-ui, sans-serif; 
+  font-weight: 700; 
+  letter-spacing: -0.02em; 
+}
 
-  .headline-lg {
-    @apply text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight;
-    line-height: 1.2;
-    text-wrap: balance;
-  }
+.font-heading { 
+  font-family: 'Outfit', system-ui, sans-serif; 
+  font-weight: 600; 
+  letter-spacing: -0.01em; 
+}
 
-  .headline-md {
-    @apply text-2xl md:text-3xl font-semibold tracking-tight;
-    line-height: 1.2;
-    text-wrap: balance;
-  }
+.font-body { 
+  font-family: 'Inter', system-ui, sans-serif; 
+  font-optical-sizing: auto; 
+}
 
-  /* Body Text */
-  .body-lg {
-    @apply text-lg md:text-xl leading-relaxed;
-  }
+/* Animations */
+@keyframes fadeInUp { 
+  from {opacity:0;transform:translateY(30px);} 
+  to {opacity:1;transform:translateY(0);} 
+}
 
-  .body-md {
-    @apply text-base md:text-lg leading-relaxed;
-  }
+@keyframes confetti { 
+  0%{transform:scale(.8) rotate(0);opacity:0;} 
+  50%{transform:scale(1.1) rotate(5deg);opacity:1;} 
+  100%{transform:scale(1) rotate(0);opacity:1;} 
+}
 
-  /* Layout Utilities */
-  .section-padding {
-    padding: var(--section-padding) 0;
-  }
+@keyframes accordion-down { 
+  from {height:0} 
+  to {height:var(--radix-accordion-content-height)} 
+}
 
-  .container-width {
-    max-width: var(--content-width);
-    margin: 0 auto;
-    padding: 0 1.5rem;
-  }
+@keyframes accordion-up { 
+  from {height:var(--radix-accordion-content-height)} 
+  to {height:0} 
+}
 
-  /* Interactive Elements */
-  .link-underline {
-    @apply relative inline-block;
-  }
+.animate-fade-in-up { animation: fadeInUp .6s ease-out forwards; }
+.confetti-burst { animation: confetti .8s ease-out; }
+.animate-accordion-down { animation: accordion-down .2s ease-out; }
+.animate-accordion-up { animation: accordion-up .2s ease-out; }
 
-  .link-underline::after {
-    content: '';
-    @apply absolute bottom-0 left-0 w-full h-px bg-current scale-x-0 origin-right transition-transform duration-300;
-  }
+.transition-smooth { transition: var(--transition-smooth); }
+.transition-bounce { transition: var(--transition-bounce); }
 
-  .link-underline:hover::after {
-    @apply scale-x-100 origin-left;
-  }
+.hover-lift { 
+  transition: var(--transition-smooth); 
+}
+.hover-lift:hover { 
+  transform: translateY(-2px) scale(1.01); 
+  box-shadow: var(--shadow-lg); 
+}
 
-  .card-hover {
-    transition: var(--transition-smooth);
-  }
+.hover-scale { 
+  transition: var(--transition-bounce); 
+}
+.hover-scale:hover { 
+  transform: scale(1.02); 
+}
 
-  .card-hover:hover {
-    transform: scale(1.01);
-    box-shadow: var(--shadow-medium);
-  }
+/* Subtle dotted background utility */
+.bg-dots {
+  background-image: radial-gradient(circle at 2px 2px, hsl(var(--primary) / 0.1) 1px, transparent 0);
+  background-size: 60px 60px;
+}
 
-  /* Focus States for Accessibility */
-  *:focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
-  }
+/* Interactive Elements */
+.link-underline {
+  @apply relative inline-block;
+}
 
-  /* Skip Link */
-  .skip-link {
-    @apply absolute left-4 top-4 z-50 bg-primary text-primary-foreground px-4 py-2 rounded-md transform -translate-y-16 focus:translate-y-0 transition-transform;
-  }
+.link-underline::after {
+  content: '';
+  @apply absolute bottom-0 left-0 w-full h-px bg-current scale-x-0 origin-right transition-transform duration-300;
+}
+
+.link-underline:hover::after {
+  @apply scale-x-100 origin-left;
+}
+
+.card-hover {
+  transition: var(--transition-smooth);
+}
+
+.card-hover:hover {
+  transform: scale(1.01);
+  box-shadow: var(--shadow-md);
+}
+
+/* Focus States for Accessibility */
+*:focus-visible {
+  @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+}
+
+/* Skip Link */
+.skip-link {
+  @apply absolute left-4 top-4 z-50 bg-primary text-primary-foreground px-4 py-2 rounded-md transform -translate-y-16 focus:translate-y-0 transition-transform;
 }
 
 @layer base {
@@ -196,7 +207,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-body;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 

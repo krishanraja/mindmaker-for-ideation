@@ -20,8 +20,8 @@ export default {
 		extend: {
 			fontFamily: {
 				sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-				display: ['Outfit', 'Inter', 'system-ui', 'sans-serif'],
-				heading: ['Outfit', 'Inter', 'system-ui', 'sans-serif'],
+				display: ['Outfit', 'system-ui', 'sans-serif'],
+				heading: ['Outfit', 'system-ui', 'sans-serif'],
 				body: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
 			},
 			fontWeight: {
@@ -34,30 +34,33 @@ export default {
 				black: '900',
 			},
 			colors: {
+				// New design system tokens
+				primary: "hsl(var(--primary))",
+				"primary-light": "hsl(var(--primary-light))",
+				"primary-foreground": "hsl(var(--primary-foreground))",
+				accent: "hsl(var(--accent))",
+				"accent-foreground": "hsl(var(--accent-foreground))",
+				background: "hsl(var(--background))",
+				surface: "hsl(var(--surface))",
+				"surface-muted": "hsl(var(--surface-muted))",
+				foreground: "hsl(var(--foreground))",
+				"foreground-secondary": "hsl(var(--foreground-secondary))",
+				"foreground-muted": "hsl(var(--foreground-muted))",
+				success: "hsl(var(--success))",
+				warning: "hsl(var(--warning))",
+				destructive: "hsl(var(--destructive))",
+				
+				// Legacy mappings
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
-				background: 'hsl(var(--background))',
-				foreground: 'hsl(var(--foreground))',
-				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
-				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))'
 				},
-				destructive: {
-					DEFAULT: 'hsl(var(--destructive))',
-					foreground: 'hsl(var(--destructive-foreground))'
-				},
 				muted: {
 					DEFAULT: 'hsl(var(--muted))',
 					foreground: 'hsl(var(--muted-foreground))'
-				},
-				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
@@ -79,9 +82,23 @@ export default {
 				}
 			},
 			borderRadius: {
-				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				DEFAULT: "var(--radius)",
+				md: "calc(var(--radius) - 2px)",
+				sm: "calc(var(--radius) - 4px)",
+				lg: "var(--radius-lg)",
+				"2xl": "1rem",
+				"3xl": "1.5rem",
+			},
+			boxShadow: {
+				sm: "var(--shadow-sm)",
+				md: "var(--shadow-md)", 
+				lg: "var(--shadow-lg)",
+				purple: "var(--shadow-purple)",
+			},
+			spacing: {
+				18: "4.5rem",
+				88: "22rem", 
+				128: "32rem",
 			},
 			keyframes: {
 				'accordion-down': {
