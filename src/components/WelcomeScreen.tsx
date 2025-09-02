@@ -59,6 +59,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
+              className="mt-16"
             >
               <img 
                 src="/lovable-uploads/c7b74152-d8c0-44a0-ab35-c7836d10e587.png" 
