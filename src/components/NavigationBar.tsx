@@ -35,8 +35,8 @@ export const NavigationBar = () => {
             {/* Logo Section */}
             <div className="flex flex-col">
               <img 
-                src="/lovable-uploads/c7b74152-d8c0-44a0-ab35-c7836d10e587.png" 
-                alt="AI MindMaker" 
+                src="/lovable-uploads/54e18a29-df2f-4089-9ff0-95f9c1ec4f7f.png" 
+                alt="FractionL/AI" 
                 className="h-8 md:h-10 w-auto"
               />
               <span className="hidden md:block text-xs text-muted-foreground mt-1">
