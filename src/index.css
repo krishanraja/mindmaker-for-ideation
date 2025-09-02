@@ -10,6 +10,7 @@
     /* Color palette - HSL for Tailwind hsl(var(--token)) usage */
     --primary: 270 70% 60%;
     --primary-light: 248 100% 70%;
+    --primary-glow: 248 100% 70%;
     --primary-foreground: 0 0% 100%;
 
     --accent: 248 100% 70%;
@@ -49,6 +50,7 @@
     --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
     --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
     --shadow-purple: 0 10px 30px -10px hsl(250 100% 63% / 0.3);
+    --shadow-glow: 0 10px 30px -10px hsl(270 70% 60% / 0.4);
 
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
