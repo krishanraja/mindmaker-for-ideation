@@ -29,7 +29,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   isGenerating,
 }) => {
   return (
-    <div className="min-h-screen bg-background bg-dots flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen hero-gradient bg-dots flex items-center justify-center p-4 relative overflow-hidden">
       {/* Skip Link for Accessibility */}
       <a href="#main-content" className="skip-link">
         Skip to main content
@@ -39,13 +39,13 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       <div 
         className="absolute top-20 left-10 w-72 h-72 rounded-full blur-3xl opacity-10 animate-pulse"
         style={{ 
-          background: 'linear-gradient(135deg, hsl(270 70% 60%), hsl(248 100% 70%))',
+          background: 'var(--gradient-brand)',
         }}
       ></div>
       <div 
         className="absolute bottom-20 right-10 w-96 h-96 rounded-full blur-3xl opacity-8 animate-pulse"
         style={{ 
-          background: 'linear-gradient(135deg, hsl(270 70% 60%), hsl(248 100% 70%))', 
+          background: 'var(--gradient-subtle)', 
           animationDelay: '1s' 
         }}
       ></div>
@@ -70,19 +70,19 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             
             {/* Main Headline */}
             <motion.h1 
-              className="font-display text-4xl sm:text-5xl lg:text-7xl font-bold text-foreground mb-8 leading-tight mt-8"
+              className="hero-heading text-white mb-8 mt-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
             >
               Transform Ideas Into
               <br />
-              <span className="text-primary">Development Blueprints</span>
+              <span className="hero-text-shimmer">Development Blueprints</span>
             </motion.h1>
             
             {/* Subtitle */}
             <motion.p 
-              className="body-lg text-muted-foreground mb-12 max-w-2xl mx-auto text-balance"
+              className="mobile-text-lg text-white/90 mb-12 max-w-2xl mx-auto text-balance"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
@@ -99,15 +99,15 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               transition={{ delay: 0.4, duration: 0.8 }}
               className="mb-16"
             >
-              <Card className="card-hover border-0 shadow-sm bg-card/50 backdrop-blur-sm max-w-2xl mx-auto">
+              <Card className="glass-card card-hover max-w-2xl mx-auto">
                 <CardHeader className="text-center pb-6">
                   <div className="flex items-center justify-center gap-3 mb-4">
                     <div className="p-2 rounded-lg bg-primary/10">
                       <Sparkles className="w-5 h-5 text-primary" />
                     </div>
-                    <CardTitle className="headline-md">Share Your Vision</CardTitle>
+                    <CardTitle className="section-heading">Share Your Vision</CardTitle>
                   </div>
-                  <CardDescription className="body-md text-muted-foreground">
+                  <CardDescription className="mobile-text-base text-muted-foreground">
                     Tell us about your project and we'll create a personalized development blueprint
                   </CardDescription>
                 </CardHeader>
@@ -178,7 +178,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                       onClick={onStart}
                       disabled={!userName.trim() || !userEmail.trim() || !userInput.trim() || isGenerating}
                       size="lg"
-                      className="w-full h-14 text-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50"
+                      className="btn-hero-primary w-full h-14 mobile-text-base font-semibold mobile-button disabled:opacity-50"
                     >
                       {isGenerating ? (
                         <>
@@ -209,8 +209,8 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 0.6 }}
             >
-              <h2 className="headline-lg mb-6">Why Choose Our Blueprint System?</h2>
-              <p className="body-lg text-muted-foreground max-w-2xl mx-auto">
+              <h2 className="section-heading text-white mb-6">Why Choose Our Blueprint System?</h2>
+              <p className="mobile-text-lg text-white/80 max-w-2xl mx-auto">
                 Get development-ready roadmaps designed for rapid prototyping and real-world implementation
               </p>
             </motion.div>
@@ -245,15 +245,15 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.1 + index * 0.1, duration: 0.6 }}
                 >
-                  <Card className="card-hover border-0 shadow-sm bg-card/50 backdrop-blur-sm h-full">
+                  <Card className="glass-card-dark card-hover h-full">
                     <CardHeader className="text-center">
                       <div className="flex items-center justify-center mb-4">
                         <div className="p-3 rounded-lg bg-primary/10">
                           <feature.icon className="w-6 h-6 text-primary" />
                         </div>
                       </div>
-                      <CardTitle className="text-xl font-semibold mb-3">{feature.title}</CardTitle>
-                      <CardDescription className="text-muted-foreground leading-relaxed">
+                      <CardTitle className="mobile-text-xl text-white font-semibold mb-3">{feature.title}</CardTitle>
+                      <CardDescription className="text-white/70 leading-relaxed">
                         {feature.description}
                       </CardDescription>
                     </CardHeader>

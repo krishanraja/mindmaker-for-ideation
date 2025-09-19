@@ -29,17 +29,15 @@ export const NavigationBar = () => {
   return (
     <>
       {/* Fixed Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 h-16 md:h-20 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+      <header className="glass-card fixed top-0 left-0 right-0 z-50 h-16 md:h-20 shadow-elegant">
+        <div className="container-width h-full">
           <div className="flex items-center justify-between h-full">
-            {/* Logo Section */}
+            {/* Logo Section - Placeholder */}
             <div className="flex flex-col">
-              <img 
-                src="/lovable-uploads/54e18a29-df2f-4089-9ff0-95f9c1ec4f7f.png" 
-                alt="FractionL/AI" 
-                className="h-8 md:h-10 w-auto"
-              />
-              <span className="hidden md:block text-xs text-muted-foreground mt-1">
+              <div className="h-8 md:h-10 w-32 bg-primary/20 rounded-md flex items-center justify-center">
+                <span className="text-primary font-semibold mobile-text-base">LOGO</span>
+              </div>
+              <span className="hidden md:block mobile-text-sm text-muted-foreground mt-1">
                 AI Development Blueprints
               </span>
             </div>
@@ -50,12 +48,12 @@ export const NavigationBar = () => {
                 <button
                   key={item.name}
                   onClick={() => scrollToSection(item.href)}
-                  className="text-muted-foreground hover:text-primary transition-smooth text-base font-medium"
+                  className="text-muted-foreground hover:text-primary transition-all duration-300 mobile-text-base font-medium link-underline"
                 >
                   {item.name}
                 </button>
               ))}
-              <Button variant="outline" size="sm" className="ml-4">
+              <Button variant="outline" size="sm" className="ml-4 mobile-button">
                 Get Started
               </Button>
             </nav>
@@ -63,7 +61,7 @@ export const NavigationBar = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={toggleMobileMenu}
-              className="md:hidden p-2 rounded-md hover:bg-muted transition-smooth"
+              className="md:hidden mobile-padding rounded-md hover:bg-muted/50 transition-all duration-300"
               aria-label="Toggle menu"
             >
               <div className="w-6 h-6 flex flex-col justify-center items-center space-y-1">
@@ -96,20 +94,20 @@ export const NavigationBar = () => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-              className="md:hidden bg-background border-b border-border"
+              className="glass-card md:hidden shadow-md"
             >
-              <div className="px-4 py-4 space-y-3">
+              <div className="mobile-padding mobile-spacing">
                 {navigationItems.map((item) => (
                   <button
                     key={item.name}
                     onClick={() => scrollToSection(item.href)}
-                    className="block w-full text-left py-2 px-3 text-base font-medium text-muted-foreground hover:text-primary hover:bg-muted/50 rounded-md transition-smooth"
+                    className="block w-full text-left mobile-padding mobile-text-base font-medium text-muted-foreground hover:text-primary hover:bg-muted/50 rounded-md transition-all duration-300"
                   >
                     {item.name}
                   </button>
                 ))}
                 <div className="pt-2">
-                  <Button variant="outline" size="sm" className="w-full">
+                  <Button variant="outline" size="sm" className="w-full mobile-button">
                     Get Started
                   </Button>
                 </div>

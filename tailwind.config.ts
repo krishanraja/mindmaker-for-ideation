@@ -20,9 +20,7 @@ export default {
 		extend: {
 			fontFamily: {
 				sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-				display: ['Outfit', 'system-ui', 'sans-serif'],
-				heading: ['Outfit', 'system-ui', 'sans-serif'],
-				body: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+				primary: ['Inter', 'system-ui', 'sans-serif'],
 			},
 			fontWeight: {
 				light: '300',
@@ -34,23 +32,27 @@ export default {
 				black: '900',
 			},
 			colors: {
-				// New design system tokens
-				primary: "hsl(var(--primary))",
-				"primary-light": "hsl(var(--primary-light))",
-				"primary-foreground": "hsl(var(--primary-foreground))",
-				accent: "hsl(var(--accent))",
-				"accent-foreground": "hsl(var(--accent-foreground))",
+				// MindMaker Brand Colors (HSL Format)
+				primary: {
+					DEFAULT: "hsl(var(--primary))",
+					100: "hsl(var(--primary-100))",
+					200: "hsl(var(--primary-200))",
+					400: "hsl(var(--primary-400))",
+					600: "hsl(var(--primary-600))",
+					foreground: "hsl(var(--primary-foreground))",
+				},
+				accent: {
+					DEFAULT: "hsl(var(--accent))",
+					400: "hsl(var(--accent-400))",
+					foreground: "hsl(var(--accent-foreground))",
+				},
 				background: "hsl(var(--background))",
-				surface: "hsl(var(--surface))",
-				"surface-muted": "hsl(var(--surface-muted))",
 				foreground: "hsl(var(--foreground))",
-				"foreground-secondary": "hsl(var(--foreground-secondary))",
-				"foreground-muted": "hsl(var(--foreground-muted))",
 				success: "hsl(var(--success))",
 				warning: "hsl(var(--warning))",
 				destructive: "hsl(var(--destructive))",
 				
-				// Legacy mappings
+				// Legacy shadcn mappings
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -93,7 +95,12 @@ export default {
 				sm: "var(--shadow-sm)",
 				md: "var(--shadow-md)", 
 				lg: "var(--shadow-lg)",
-				purple: "var(--shadow-purple)",
+				elegant: "var(--shadow-elegant)",
+				glow: "var(--shadow-glow)",
+			},
+			backgroundImage: {
+				'gradient-brand': 'var(--gradient-brand)',
+				'gradient-subtle': 'var(--gradient-subtle)',
 			},
 			spacing: {
 				18: "4.5rem",
