@@ -86,32 +86,13 @@ const Index = () => {
           transition={{ duration: 0.4 }}
           className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5"
         >
-          {/* Header */}
-          <header className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50">
-            <div className="container mx-auto px-4 py-3">
-              <div className="flex items-center justify-center">
-                <div className="flex items-center gap-3">
-                  <img 
-                    src="/lovable-uploads/1a44052c-3861-4484-ab2d-b5b970c1f7c1.png" 
-                    alt="AI Business Strategist" 
-                    className="h-8 w-8"
-                  />
-                  <div className="text-center">
-                    <h1 className="text-xl font-bold text-foreground">AI Business Strategist</h1>
-                    <p className="text-sm text-muted-foreground">Transform your ideas into AI solutions</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </header>
-
           {/* Main Content */}
           <div className="container mx-auto px-4 py-6 max-w-7xl">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="h-[calc(100vh-200px)]"
+              className="h-[calc(100vh-100px)]"
             >
               <Card className="h-full shadow-xl border-2">
                 <CardContent className="p-0 h-full">

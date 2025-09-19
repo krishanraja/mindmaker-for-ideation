@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import mindmakerLogo from '@/assets/mindmaker-logo.png';
 
 interface WelcomeScreenProps {
   userName: string;
@@ -27,10 +28,15 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   isGenerating,
 }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-primary/10 flex items-center justify-center p-4 pt-24">
+    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-primary/10 flex items-center justify-center p-4">
       <div className="w-full max-w-lg mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
+          <img 
+            src={mindmakerLogo} 
+            alt="MindMaker Logo" 
+            className="w-16 h-16 mx-auto mb-6"
+          />
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 tracking-[-0.03em] md:tracking-[-0.035em]">
             Idea-to-AI Plan
           </h1>
