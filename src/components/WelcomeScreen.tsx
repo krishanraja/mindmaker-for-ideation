@@ -31,8 +31,8 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       <div className="w-full max-w-lg mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            AI MindMaker
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 tracking-[-0.03em] md:tracking-[-0.035em]">
+            Idea-to-AI Plan
           </h1>
           <p className="text-lg text-muted-foreground max-w-md mx-auto">
             Transform your ideas into development blueprints with AI-powered analysis
