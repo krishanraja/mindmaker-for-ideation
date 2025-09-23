@@ -1,235 +1,212 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { ArrowRight, ArrowLeft, Brain, Target, Users, DollarSign, Clock, Building } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
+import { 
+  Target, ArrowRight, ArrowLeft, CheckCircle, Loader2, Brain 
+} from 'lucide-react';
 
-interface Question {
-  id: string;
-  type: 'text' | 'textarea' | 'select' | 'multiselect';
+interface DynamicQuestion {
   question: string;
-  subtitle?: string;
-  placeholder?: string;
-  options?: string[];
-  required: boolean;
-  category: 'business' | 'pain_points' | 'goals' | 'resources' | 'timeline';
-  icon: React.ReactNode;
+  category: string;
+  reasoning: string;
+}
+
+interface ConversationItem {
+  question: string;
+  answer: string;
+  category: string;
 }
 
 interface StructuredQuestionnaireProps {
   onComplete: (data: any) => void;
   anonymousSessionId?: string;
-  initialData?: any;
+  initialData?: {
+    userName: string;
+    userEmail: string;
+    projectInput: string;
+  };
 }
 
-const questions: Question[] = [
-  {
-    id: 'business_challenge',
-    type: 'textarea',
-    question: 'What is your biggest business challenge right now?',
-    subtitle: 'Be specific about what\'s not working or what you\'re trying to improve',
-    placeholder: 'e.g., Manual data entry is taking 5+ hours daily, customers are waiting too long for responses...',
-    required: true,
-    category: 'pain_points',
-    icon: <Target className="h-5 w-5" />
-  },
-  {
-    id: 'company_info',
-    type: 'text',
-    question: 'What\'s your company name and your role?',
-    subtitle: 'This helps us provide more relevant recommendations',
-    placeholder: 'e.g., ABC Corp - CEO / Marketing Director at XYZ Inc',
-    required: true,
-    category: 'business',
-    icon: <Building className="h-5 w-5" />
-  },
-  {
-    id: 'industry',
-    type: 'select',
-    question: 'Which industry best describes your business?',
-    subtitle: 'Each industry has unique AI opportunities',
-    options: [
-      'Healthcare & Medical',
-      'Financial Services',
-      'Technology & Software',
-      'Retail & E-commerce',
-      'Manufacturing',
-      'Professional Services',
-      'Real Estate',
-      'Education',
-      'Marketing & Advertising',
-      'Legal Services',
-      'Other'
-    ],
-    required: true,
-    category: 'business',
-    icon: <Building className="h-5 w-5" />
-  },
-  {
-    id: 'company_size',
-    type: 'select',
-    question: 'How many people work at your company?',
-    subtitle: 'This affects which AI solutions will be most practical',
-    options: [
-      'Just me (1)',
-      'Small team (2-10)',
-      'Growing business (11-50)',
-      'Mid-size company (51-200)',
-      'Large enterprise (200+)'
-    ],
-    required: true,
-    category: 'business',
-    icon: <Users className="h-5 w-5" />
-  },
-  {
-    id: 'manual_processes',
-    type: 'textarea',
-    question: 'What tasks are you or your team doing manually that feel repetitive?',
-    subtitle: 'These are often the best candidates for AI automation',
-    placeholder: 'e.g., Responding to customer emails, data entry from PDFs, scheduling meetings, creating reports...',
-    required: true,
-    category: 'pain_points',
-    icon: <Target className="h-5 w-5" />
-  },
-  {
-    id: 'desired_outcome',
-    type: 'textarea',
-    question: 'If you could wave a magic wand, what would your ideal outcome look like?',
-    subtitle: 'Help us understand your vision for success',
-    placeholder: 'e.g., Save 10 hours per week, increase customer satisfaction by 50%, double our lead conversion rate...',
-    required: true,
-    category: 'goals',
-    icon: <Target className="h-5 w-5" />
-  },
-  {
-    id: 'budget_range',
-    type: 'select',
-    question: 'What\'s your potential budget range for an AI solution?',
-    subtitle: 'This helps us recommend the right approach for your situation',
-    options: [
-      'Under $1,000/month',
-      '$1,000 - $5,000/month',
-      '$5,000 - $15,000/month',
-      '$15,000 - $50,000/month',
-      '$50,000+/month',
-      'Not sure yet - need to understand ROI first'
-    ],
-    required: true,
-    category: 'resources',
-    icon: <DollarSign className="h-5 w-5" />
-  },
-  {
-    id: 'timeline',
-    type: 'select',
-    question: 'How urgently do you need a solution?',
-    subtitle: 'This affects our recommended implementation approach',
-    options: [
-      'Extremely urgent - need results within 30 days',
-      'High priority - within 2-3 months',
-      'Important but flexible - within 6 months',
-      'Exploring options - no specific timeline'
-    ],
-    required: true,
-    category: 'timeline',
-    icon: <Clock className="h-5 w-5" />
-  },
-  {
-    id: 'email_contact',
-    type: 'text',
-    question: 'What\'s your email address?',
-    subtitle: 'We\'ll send you a personalized AI strategy blueprint based on your answers',
-    placeholder: 'your@email.com',
-    required: true,
-    category: 'business',
-    icon: <Brain className="h-5 w-5" />
-  }
-];
+const TOTAL_QUESTIONS = 6; // Dynamic questions plus final confirmation
 
-const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
-  onComplete,
+const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({ 
+  onComplete, 
   anonymousSessionId,
-  initialData = {}
+  initialData 
 }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, any>>(initialData);
+  const [conversationHistory, setConversationHistory] = useState<ConversationItem[]>([]);
+  const [currentQuestion, setCurrentQuestion] = useState<DynamicQuestion | null>(null);
+  const [currentAnswer, setCurrentAnswer] = useState('');
+  const [isLoadingQuestion, setIsLoadingQuestion] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [analysis, setAnalysis] = useState<any>(null);
   const { toast } = useToast();
 
-  const currentQuestion = questions[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex === questions.length - 1;
-  const canProceed = answers[currentQuestion.id]?.toString().trim();
+  const progress = ((currentQuestionIndex + 1) / TOTAL_QUESTIONS) * 100;
 
-  const handleAnswerChange = (questionId: string, value: any) => {
-    setAnswers(prev => ({
-      ...prev,
-      [questionId]: value
-    }));
+  // Initialize with analysis and first question
+  useEffect(() => {
+    if (initialData?.projectInput && !analysis) {
+      analyzeInitialInput();
+    }
+  }, [initialData, analysis]);
+
+  const analyzeInitialInput = async () => {
+    setIsLoadingQuestion(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('analyze-initial-input', {
+        body: {
+          input: initialData?.projectInput,
+          userName: initialData?.userName
+        }
+      });
+
+      if (error) throw error;
+
+      setAnalysis(data.analysis);
+      await generateNextQuestion(data.analysis, []);
+    } catch (error) {
+      console.error('Error analyzing input:', error);
+      toast({
+        title: "Error",
+        description: "Failed to analyze your input. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingQuestion(false);
+    }
   };
 
-  const handleNext = () => {
-    if (isLastQuestion) {
-      handleSubmit();
+  const generateNextQuestion = async (analysisData: any, history: ConversationItem[]) => {
+    setIsLoadingQuestion(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-dynamic-questions', {
+        body: {
+          analysis: analysisData,
+          conversationHistory: history,
+          questionIndex: currentQuestionIndex
+        }
+      });
+
+      if (error) throw error;
+
+      setCurrentQuestion(data);
+    } catch (error) {
+      console.error('Error generating question:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate the next question. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingQuestion(false);
+    }
+  };
+
+  const handleNext = async () => {
+    if (!currentAnswer.trim()) {
+      toast({
+        title: "Answer required",
+        description: "Please provide an answer before proceeding.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Add current Q&A to history
+    const newHistoryItem: ConversationItem = {
+      question: currentQuestion?.question || '',
+      answer: currentAnswer,
+      category: currentQuestion?.category || ''
+    };
+    
+    const updatedHistory = [...conversationHistory, newHistoryItem];
+    setConversationHistory(updatedHistory);
+    setCurrentAnswer('');
+    
+    // Check if we've reached the end
+    if (currentQuestionIndex >= TOTAL_QUESTIONS - 1) {
+      await handleSubmit(updatedHistory);
     } else {
       setCurrentQuestionIndex(prev => prev + 1);
+      await generateNextQuestion(analysis, updatedHistory);
     }
   };
 
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prev => prev - 1);
+      // Restore previous answer
+      const previousItem = conversationHistory[currentQuestionIndex - 1];
+      if (previousItem) {
+        setCurrentAnswer(previousItem.answer);
+      }
+      // Remove last item from history
+      setConversationHistory(prev => prev.slice(0, -1));
     }
   };
 
-  const handleSubmit = async () => {
-    if (!canProceed) return;
-
+  const handleSubmit = async (finalHistory: ConversationItem[]) => {
     setIsSubmitting(true);
+    
     try {
-      // Store the questionnaire data
-      const { error } = await supabase
+      // Save to database
+      const { error: dbError } = await supabase
         .from('lead_qualification_data')
         .insert({
-          anonymous_session_id: anonymousSessionId,
-          qualification_criteria: {
-            questionnaire_answers: answers,
-            completion_date: new Date().toISOString(),
-            questionnaire_version: '1.0'
+          session_id: anonymousSessionId,
+          user_name: initialData?.userName,
+          user_email: initialData?.userEmail,
+          project_description: initialData?.projectInput,
+          questionnaire_data: {
+            analysis,
+            conversationHistory: finalHistory
           },
-          pain_point_severity: 8, // High since they completed the questionnaire
-          budget_qualified: true,
-          timeline_qualified: true,
-          authority_level: 7,
-          need_urgency: 7,
-          fit_score: 0.85,
-          conversion_probability: 0.75,
-          recommended_service: 'AI Strategy Blueprint',
-          next_action: 'Generate personalized blueprint',
-          notes: `Completed structured questionnaire. Email: ${answers.email_contact}`,
-          follow_up_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 1 day from now
+          created_at: new Date().toISOString()
         });
 
-      if (error) throw error;
+      if (dbError) {
+        console.error('Error saving questionnaire:', dbError);
+        throw dbError;
+      }
 
-      // Call completion handler with the answers
-      onComplete(answers);
-
-      toast({
-        title: "Analysis Complete!",
-        description: "Generating your personalized AI strategy blueprint...",
+      // Generate comprehensive blueprint
+      const { data: blueprintData, error: blueprintError } = await supabase.functions.invoke('generate-comprehensive-blueprint', {
+        body: {
+          analysis,
+          conversationHistory: finalHistory,
+          userName: initialData?.userName,
+          initialInput: initialData?.projectInput
+        }
       });
 
+      if (blueprintError) {
+        console.error('Error generating blueprint:', blueprintError);
+        throw blueprintError;
+      }
+
+      toast({
+        title: "Success!",
+        description: "Your comprehensive blueprint has been generated!",
+      });
+      
+      onComplete({
+        analysis,
+        conversationHistory: finalHistory,
+        blueprint: blueprintData.blueprint,
+        disclaimer: blueprintData.disclaimer
+      });
     } catch (error) {
-      console.error('Error submitting questionnaire:', error);
+      console.error('Error completing questionnaire:', error);
       toast({
         title: "Error",
-        description: "Failed to save your responses. Please try again.",
+        description: "Failed to generate your blueprint. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -238,83 +215,53 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
   };
 
   const renderInput = () => {
-    const question = currentQuestion;
-    const value = answers[question.id] || '';
-
-    switch (question.type) {
-      case 'text':
-        return (
-          <Input
-            value={value}
-            onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-            placeholder={question.placeholder}
-            className="text-base h-12"
-            disabled={isSubmitting}
-          />
-        );
-
-      case 'textarea':
-        return (
-          <Textarea
-            value={value}
-            onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-            placeholder={question.placeholder}
-            className="min-h-[120px] text-base resize-none"
-            disabled={isSubmitting}
-          />
-        );
-
-      case 'select':
-        return (
-          <Select
-            value={value}
-            onValueChange={(selectedValue) => handleAnswerChange(question.id, selectedValue)}
-            disabled={isSubmitting}
-          >
-            <SelectTrigger className="h-12 text-base">
-              <SelectValue placeholder="Choose an option..." />
-            </SelectTrigger>
-            <SelectContent>
-              {question.options?.map((option) => (
-                <SelectItem key={option} value={option} className="text-base">
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        );
-
-      default:
-        return null;
-    }
+    return (
+      <Textarea
+        value={currentAnswer}
+        onChange={(e) => setCurrentAnswer(e.target.value)}
+        placeholder="Share your thoughts in detail..."
+        className="min-h-[120px] text-base bg-white/50 border-white/20 focus:border-primary/50 focus:ring-primary/20"
+        rows={4}
+      />
+    );
   };
 
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+  if (!currentQuestion && !isLoadingQuestion) {
+    return null; // Still initializing
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-primary/10 flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl mx-auto">
-        {/* Progress Bar */}
+    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-primary/10 p-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Progress Header */}
         <div className="mb-8">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-muted-foreground">
-              Question {currentQuestionIndex + 1} of {questions.length}
-            </span>
-            <span className="text-sm font-medium text-primary">
-              {Math.round(progress)}% Complete
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold text-foreground">Strategic Business Discovery</h1>
+            <span className="text-sm text-muted-foreground">
+              Question {currentQuestionIndex + 1} of {TOTAL_QUESTIONS}
             </span>
           </div>
-          <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-primary"
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.3 }}
-            />
-          </div>
+          <Progress value={progress} className="h-2" />
         </div>
 
-        {/* Question Card */}
+        {/* Conversation History Preview */}
+        {conversationHistory.length > 0 && (
+          <div className="mb-6">
+            <Card className="bg-white/60 backdrop-blur-sm border-white/20">
+              <CardContent className="p-4">
+                <h3 className="text-sm font-medium text-muted-foreground mb-2">Previous insights:</h3>
+                <div className="space-y-1">
+                  {conversationHistory.slice(-2).map((item, index) => (
+                    <div key={index} className="text-xs text-muted-foreground/80">
+                      <span className="font-medium">{item.category}:</span> {item.answer.slice(0, 60)}...
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         <AnimatePresence mode="wait">
           <motion.div
             key={currentQuestionIndex}
@@ -323,69 +270,72 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <Card className="glass-card">
-              <CardHeader className="pb-4">
-                <div className="flex items-start gap-3">
-                  <div className="bg-primary/10 p-2 rounded-lg">
-                    {currentQuestion.icon}
+            <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-lg">
+              <CardContent className="p-8">
+                {isLoadingQuestion ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="text-center">
+                      <Brain className="w-8 h-8 text-primary mx-auto mb-4 animate-pulse" />
+                      <p className="text-lg font-medium text-foreground mb-2">Analyzing your response...</p>
+                      <p className="text-sm text-muted-foreground">Crafting the perfect next question</p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <Badge variant="outline" className="mb-3 text-xs">
-                      {currentQuestion.category.replace('_', ' ').toUpperCase()}
-                    </Badge>
-                    <CardTitle className="text-xl font-semibold mb-2">
-                      {currentQuestion.question}
-                    </CardTitle>
-                    {currentQuestion.subtitle && (
-                      <p className="text-muted-foreground text-sm">
-                        {currentQuestion.subtitle}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="answer" className="sr-only">Your answer</Label>
-                  {renderInput()}
-                </div>
+                ) : (
+                  <>
+                    <div className="flex items-start gap-4 mb-6">
+                      <div className="p-3 bg-primary/10 rounded-lg">
+                        <Target className="w-6 h-6 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <h2 className="text-xl font-semibold text-foreground mb-2">
+                          {currentQuestion?.question}
+                        </h2>
+                        <p className="text-sm text-muted-foreground">
+                          {currentQuestion?.reasoning}
+                        </p>
+                      </div>
+                    </div>
 
-                <div className="flex justify-between gap-3">
-                  <Button
-                    onClick={handlePrevious}
-                    disabled={currentQuestionIndex === 0 || isSubmitting}
-                    variant="outline"
-                    className="flex-1"
-                  >
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Previous
-                  </Button>
-                  
-                  <Button
-                    onClick={handleNext}
-                    disabled={!canProceed || isSubmitting}
-                    className="flex-1"
-                    size="lg"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-4 h-4 mr-2 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                        Processing...
-                      </>
-                    ) : isLastQuestion ? (
-                      <>
-                        Generate Blueprint
-                        <Brain className="ml-2 h-4 w-4" />
-                      </>
-                    ) : (
-                      <>
-                        Continue
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </>
-                    )}
-                  </Button>
-                </div>
+                    <div className="mb-8">
+                      {renderInput()}
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <Button
+                        variant="outline"
+                        onClick={handlePrevious}
+                        disabled={currentQuestionIndex === 0 || isLoadingQuestion}
+                        className="bg-white/50 border-white/20 hover:bg-white/70"
+                      >
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Previous
+                      </Button>
+
+                      <Button
+                        onClick={handleNext}
+                        disabled={isSubmitting || isLoadingQuestion || !currentAnswer.trim()}
+                        className="bg-primary hover:bg-primary/90 text-white"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Generating Blueprint...
+                          </>
+                        ) : currentQuestionIndex >= TOTAL_QUESTIONS - 1 ? (
+                          <>
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            Generate Blueprint
+                          </>
+                        ) : (
+                          <>
+                            Next Question
+                            <ArrowRight className="w-4 h-4 ml-2" />
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           </motion.div>

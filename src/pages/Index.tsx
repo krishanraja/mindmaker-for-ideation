@@ -7,6 +7,7 @@ import { getOrCreateAnonymousSession } from '@/utils/anonymousSession';
 
 import WelcomeScreen from '@/components/WelcomeScreen';
 import StructuredQuestionnaire from '@/components/StructuredQuestionnaire';
+import BlueprintResults from '@/components/BlueprintResults';
 
 const Index = () => {
   const [currentSessionId, setCurrentSessionId] = useState<string | undefined>();
@@ -16,11 +17,13 @@ const Index = () => {
   // Welcome screen state
   const [showWelcome, setShowWelcome] = useState(true);
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+  const [showResults, setShowResults] = useState(false);
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
-  const [userInput, setUserInput] = useState('');
+  const [projectInput, setProjectInput] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [questionnaireData, setQuestionnaireData] = useState<any>(null);
+  const [blueprintData, setBlueprintData] = useState<any>(null);
 
   useEffect(() => {
     // Initialize anonymous session
@@ -38,14 +41,14 @@ const Index = () => {
   };
 
   const handleWelcomeStart = async () => {
-    if (!userName.trim() || !userEmail.trim() || !userInput.trim()) return;
+    if (!userName.trim() || !userEmail.trim() || !projectInput.trim()) return;
     
     setIsGenerating(true);
     
     // Store user data for the questionnaire
     setUserName(userName);
     setUserEmail(userEmail);
-    setUserInput(userInput);
+    setProjectInput(projectInput);
     
     setShowWelcome(false);
     setShowQuestionnaire(true);
@@ -54,8 +57,20 @@ const Index = () => {
 
   const handleQuestionnaireComplete = (data: any) => {
     setQuestionnaireData(data);
+    setBlueprintData(data);
     setShowQuestionnaire(false);
-    setActiveTab('blueprint');
+    setShowResults(true);
+  };
+
+  const handleStartOver = () => {
+    setShowWelcome(true);
+    setShowQuestionnaire(false);
+    setShowResults(false);
+    setUserName('');
+    setUserEmail('');
+    setProjectInput('');
+    setQuestionnaireData(null);
+    setBlueprintData(null);
   };
 
 
@@ -75,8 +90,8 @@ const Index = () => {
               setUserName={setUserName}
               userEmail={userEmail}
               setUserEmail={setUserEmail}
-              userInput={userInput}
-              setUserInput={setUserInput}
+              projectInput={projectInput}
+              setProjectInput={setProjectInput}
               onStart={handleWelcomeStart}
               isGenerating={isGenerating}
             />
@@ -93,9 +108,23 @@ const Index = () => {
               onComplete={handleQuestionnaireComplete}
               anonymousSessionId={anonymousSessionId}
               initialData={{
-                email_contact: userEmail,
-                business_challenge: userInput
+                userName,
+                userEmail,
+                projectInput
               }}
+            />
+          </motion.div>
+        ) : showResults && blueprintData ? (
+          <motion.div
+            key="results"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <BlueprintResults
+              data={blueprintData}
+              onStartOver={handleStartOver}
             />
           </motion.div>
         ) : (
