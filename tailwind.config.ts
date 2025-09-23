@@ -39,6 +39,7 @@ export default {
 					200: "hsl(var(--primary-200))",
 					400: "hsl(var(--primary-400))",
 					600: "hsl(var(--primary-600))",
+					glow: "hsl(var(--primary-glow))",
 					foreground: "hsl(var(--primary-foreground))",
 				},
 				accent: {

@@ -242,7 +242,6 @@ Always end responses with a thoughtful follow-up question that deepens the conve
         model: 'gpt-5-2025-08-07',
         messages: messages,
         max_completion_tokens: 800,
-        temperature: 0.7,
       }),
     });
 
