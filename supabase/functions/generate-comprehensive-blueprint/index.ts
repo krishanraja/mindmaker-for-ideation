@@ -97,12 +97,22 @@ Generate a comprehensive blueprint that includes:
    - Key milestones
    - Resource requirements
 
-6. LOVABLE PROMPTS
-   - 3-5 specific, detailed prompts that could be used with Lovable
-   - Each prompt should be comprehensive enough to build nearly perfect functionality
-   - Include UI/UX specifications, technical requirements, and business logic
+6. LOVABLE PROMPTS (MOST IMPORTANT SECTION)
+   - 5-7 specific, detailed prompts that can be copy-pasted into Lovable
+   - Each prompt should be 2-3 paragraphs long and comprehensive enough to build nearly perfect functionality
+   - Include exact UI/UX specifications, technical requirements, business logic, and styling details
+   - Format as: "Prompt 1: [Title]" followed by the complete prompt text
+   - Make prompts actionable and specific to their business idea
+   - Include database schema, API integrations, and component structure when relevant
+   - Reference any website analysis data for design consistency
+   - Include specific color schemes, fonts, and branding elements if provided
 
-Make this feel inspirational and comprehensive. The user should feel excited about their vision and confident in the next steps.
+WEBSITE ANALYSIS DATA (if provided):
+${conversationHistory.some(item => item.websiteAnalysis) ? 
+  JSON.stringify(conversationHistory.find(item => item.websiteAnalysis)?.websiteAnalysis, null, 2) : 
+  'No website analysis available'}
+
+Make this feel inspirational and comprehensive. The user should feel excited about their vision and confident in the next steps. Focus heavily on the LOVABLE PROMPTS section - these should be production-ready prompts that can immediately build their app.
 
 Return as JSON with clear sections and actionable insights.`;
 

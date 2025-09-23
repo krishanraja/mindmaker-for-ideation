@@ -76,7 +76,15 @@ Now ask question #${questionIndex + 1}. Make it:
 - Help them think through a logical next step for their business
 - Avoid generic business advice - make it personal to their vision
 
+IMPORTANT QUESTION PRIORITIES (ask these when relevant):
+- Around question 2-3: Ask about existing websites/branding if they have any online presence to analyze
+- Around question 3-4: Ask about visual preferences, design style, and branding requirements  
+- Around question 4-5: Ask about technical requirements and integrations needed
+- Around question 5-6: Ask about user experience and interface expectations
+
 Example: Instead of "Who is your target market?" ask "You mentioned wanting to create 'beautiful, not boring events' - what would make an event beautiful in your eyes? What's an example of a boring event you'd want to avoid?"
+
+For design questions: "Do you have an existing website or brand that this should match? If so, what's the URL so I can understand your current visual style?"
 
 Think of it as helping a friend explore their specific idea, not giving generic business consulting advice.
 

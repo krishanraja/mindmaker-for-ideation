@@ -46,6 +46,8 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
   const [isLoadingQuestion, setIsLoadingQuestion] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [analysis, setAnalysis] = useState<any>(null);
+  const [isAnalyzingWebsite, setIsAnalyzingWebsite] = useState(false);
+  const [websiteAnalysis, setWebsiteAnalysis] = useState<any>(null);
   const [loadingStep, setLoadingStep] = useState(0);
 
   const loadingSteps = [
@@ -138,6 +140,29 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
       clearInterval(progressInterval);
       setIsLoadingQuestion(false);
       setLoadingStep(0);
+    }
+  };
+
+  const analyzeWebsiteUrl = async (url: string) => {
+    if (!url || !url.startsWith('http')) return null;
+    
+    setIsAnalyzingWebsite(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('parse-website', {
+        body: { url }
+      });
+      
+      if (error) {
+        console.error('Error analyzing website:', error);
+        return null;
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Error analyzing website:', error);
+      return null;
+    } finally {
+      setIsAnalyzingWebsite(false);
     }
   };
 
@@ -258,7 +283,7 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
           }
         }}
         placeholder="Share your thoughts in detail... (Press Enter to continue, Shift+Enter for new line)"
-        className="min-h-[120px] text-base bg-white/50 border-white/20 focus:border-primary/50 focus:ring-primary/20"
+        className="min-h-[140px] max-h-[200px] text-base bg-white/50 border-white/20 focus:border-primary/50 focus:ring-primary/20"
         rows={4}
       />
     );
@@ -308,8 +333,8 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <Card className="glass-card shadow-lg">
-              <CardContent className="p-8">
+            <Card className="glass-card shadow-lg w-full max-w-2xl mx-auto min-h-[450px] flex flex-col">
+              <CardContent className="p-8 h-full flex flex-col">
                 {isLoadingQuestion ? (
                   <motion.div
                     initial={{ opacity: 0 }}

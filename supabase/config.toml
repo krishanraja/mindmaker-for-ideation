@@ -24,6 +24,9 @@ verify_jwt = false
 [functions.generate-pdf-blueprint]
 verify_jwt = false
 
+[functions.parse-website]
+verify_jwt = false
+
 [functions.send-admin-notification]
 verify_jwt = false
 
