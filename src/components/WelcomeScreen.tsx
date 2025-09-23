@@ -11,8 +11,8 @@ interface WelcomeScreenProps {
   setUserName: (value: string) => void;
   userEmail: string;
   setUserEmail: (value: string) => void;
-  userInput: string;
-  setUserInput: (value: string) => void;
+  projectInput: string;
+  setProjectInput: (value: string) => void;
   onStart: () => void;
   isGenerating: boolean;
 }
@@ -22,8 +22,8 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   setUserName,
   userEmail,
   setUserEmail,
-  userInput,
-  setUserInput,
+  projectInput,
+  setProjectInput,
   onStart,
   isGenerating,
 }) => {
@@ -81,14 +81,14 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
 
             {/* Project Vision */}
             <div className="space-y-2">
-              <Label htmlFor="userInput" className="text-sm font-medium">
+              <Label htmlFor="projectInput" className="text-sm font-medium">
                 Project Vision
               </Label>
               <Textarea
-                id="userInput"
+                id="projectInput"
                 placeholder="I want to build an app that helps people..."
-                value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
+                value={projectInput}
+                onChange={(e) => setProjectInput(e.target.value)}
                 disabled={isGenerating}
                 className="min-h-[120px] resize-none"
               />
@@ -97,7 +97,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             {/* CTA Button */}
             <Button
               onClick={onStart}
-              disabled={!userName.trim() || !userEmail.trim() || !userInput.trim() || isGenerating}
+              disabled={!userName.trim() || !userEmail.trim() || !projectInput.trim() || isGenerating}
               className="w-full h-12 text-base font-semibold"
               size="lg"
             >
