@@ -119,7 +119,8 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
         body: {
           analysis: analysisData,
           conversationHistory: history,
-          questionIndex: currentQuestionIndex
+          questionIndex: currentQuestionIndex,
+          originalProjectInput: initialData?.projectInput
         }
       });
 

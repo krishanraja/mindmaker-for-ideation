@@ -40,17 +40,22 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY is not configured');
     }
 
-    const { analysis, conversationHistory, questionIndex } = await req.json();
+    const { analysis, conversationHistory, questionIndex, originalProjectInput } = await req.json();
     
     if (!analysis) {
       throw new Error('Analysis context is required');
     }
 
-    console.log('Generating dynamic question:', { questionIndex, historyLength: conversationHistory?.length });
+    // Add original input to analysis for context
+    if (originalProjectInput && analysis) {
+      analysis.originalInput = originalProjectInput;
+    }
 
-    const prompt = `You're having a friendly conversation with someone about their business idea. Based on what they've told you, ask the next natural question that helps them think through their business.
+const prompt = `You're having a friendly conversation with someone about their business idea. Based on what they've told you, ask the next natural question that helps them think through their business.
 
-Here's what they've shared about their business:
+They initially described their idea as: "${analysis.originalInput || 'Not provided'}"
+
+Here's what you've learned about their business so far:
 Industry: ${analysis.industry}
 Who they're building for: ${analysis.targetAudience}
 Problem they're solving: ${analysis.coreProblem}
@@ -65,25 +70,21 @@ They said: ${item.answer}`
 ).join('\n\n') || 'This is the first question'}
 
 Now ask question #${questionIndex + 1}. Make it:
-- Sound like you're talking to a friend, not giving a business presentation
-- Easy to understand (no fancy business words)
-- One clear question at a time
-- Helpful for figuring out their next steps
-- Specific to what they've already told you
+- Sound natural and conversational, like you're genuinely curious about their specific idea
+- Reference their actual words and context from "${analysis.originalInput || 'their idea'}"
+- Build directly on what they've shared so far
+- Help them think through a logical next step for their business
+- Avoid generic business advice - make it personal to their vision
 
-Avoid:
-- Business jargon or consultant-speak
-- Multiple questions packed into one
-- Intimidating or overly formal language
-- Asking the same thing again
+Example: Instead of "Who is your target market?" ask "You mentioned wanting to create 'beautiful, not boring events' - what would make an event beautiful in your eyes? What's an example of a boring event you'd want to avoid?"
 
-Think of it like you're genuinely curious about their idea and want to help them succeed. Ask something that helps them discover what they really need to build.
+Think of it as helping a friend explore their specific idea, not giving generic business consulting advice.
 
 Return as JSON:
 {
-  "question": "Your friendly, clear question here",
+  "question": "Your specific, contextual question here",
   "category": "Your Customers/What You're Building/Business Basics/Technical Stuff/Your Vision",
-  "reasoning": "Simple explanation of why this question helps them"
+  "reasoning": "Why this specific question helps them with their particular idea"
 }`;
 
     // Try GPT-5 first, fallback to GPT-4o if it fails

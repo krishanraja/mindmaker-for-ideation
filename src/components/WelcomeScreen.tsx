@@ -86,9 +86,15 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               </Label>
               <Textarea
                 id="projectInput"
-                placeholder="I want to build an app that helps people..."
+                placeholder="I want to build an app that helps people... (Press Enter to continue, Shift+Enter for new line)"
                 value={projectInput}
                 onChange={(e) => setProjectInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey && userName.trim() && userEmail.trim() && projectInput.trim() && !isGenerating) {
+                    e.preventDefault();
+                    onStart();
+                  }
+                }}
                 disabled={isGenerating}
                 className="min-h-[120px] resize-none"
               />
