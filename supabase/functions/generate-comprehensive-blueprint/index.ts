@@ -10,11 +10,22 @@ const corsHeaders = {
 
 function parseOpenAIResponse(content: string): any {
   try {
+    console.log('Raw OpenAI content received:', JSON.stringify(content));
+    
+    if (!content || content.trim() === '') {
+      console.error('Empty content received from OpenAI API');
+      throw new Error('Empty response from OpenAI API');
+    }
+    
     const cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    console.log('Cleaned content for parsing:', JSON.stringify(cleanContent));
+    
     return JSON.parse(cleanContent);
   } catch (error) {
     console.error('Failed to parse OpenAI response:', error);
     console.error('Raw content:', content);
+    console.error('Content type:', typeof content);
+    console.error('Content length:', content?.length || 0);
     throw new Error('Failed to parse AI response');
   }
 }
@@ -95,30 +106,82 @@ Make this feel inspirational and comprehensive. The user should feel excited abo
 
 Return as JSON with clear sections and actionable insights.`;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    // Try GPT-5 first, fallback to GPT-4o if it fails
+    let response;
+    let requestBody;
+    
+    try {
+      // First attempt with GPT-5 using max_tokens
+      requestBody = {
         model: 'gpt-5-2025-08-07',
         messages: [
           { role: 'system', content: prompt },
           { role: 'user', content: 'Generate the comprehensive business and product blueprint.' }
         ],
-        max_completion_tokens: 4000
-      }),
-    });
+        max_tokens: 4000
+      };
+      
+      console.log('Attempting GPT-5 with request:', JSON.stringify(requestBody));
+      
+      response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+      
+      console.log('GPT-5 Response status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`GPT-5 failed with status ${response.status}`);
+      }
+    } catch (gpt5Error) {
+      console.warn('GPT-5 failed, falling back to GPT-4o:', gpt5Error);
+      
+      // Fallback to GPT-4o
+      requestBody = {
+        model: 'gpt-4o',
+        messages: [
+          { role: 'system', content: prompt },
+          { role: 'user', content: 'Generate the comprehensive business and product blueprint.' }
+        ],
+        max_tokens: 4000,
+        temperature: 0.7
+      };
+      
+      console.log('Attempting GPT-4o fallback with request:', JSON.stringify(requestBody));
+      
+      response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('OpenAI API error:', errorText);
+      console.error('Request body that failed:', JSON.stringify(requestBody));
       throw new Error(`OpenAI API error: ${response.status}`);
     }
 
     const data = await response.json();
-    const blueprint = parseOpenAIResponse(data.choices[0].message.content);
+    console.log('Full OpenAI response:', JSON.stringify(data));
+    
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('Invalid OpenAI response structure:', data);
+      throw new Error('Invalid response structure from OpenAI API');
+    }
+    
+    const content = data.choices[0].message.content;
+    console.log('OpenAI message content:', JSON.stringify(content));
+    
+    const blueprint = parseOpenAIResponse(content);
 
     console.log('Blueprint generated successfully');
 

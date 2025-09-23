@@ -9,8 +9,13 @@ const corsHeaders = {
 };
 
 // Helper function to parse JSON that might be wrapped in markdown
-function parseOpenAIResponse(content: string): any {
-  if (!content) return type === 'should_continue' ? {} : [];
+function parseOpenAIResponse(content: string, type: string): any {
+  console.log('Raw OpenAI content received:', JSON.stringify(content));
+  
+  if (!content || content.trim() === '') {
+    console.error('Empty content received from OpenAI API');
+    return type === 'should_continue' ? {} : [];
+  }
   
   // Remove markdown code blocks if present
   const cleanedContent = content
@@ -18,10 +23,14 @@ function parseOpenAIResponse(content: string): any {
     .replace(/\s*```$/i, '')
     .trim();
   
+  console.log('Cleaned content for parsing:', JSON.stringify(cleanedContent));
+  
   try {
     return JSON.parse(cleanedContent);
   } catch (error) {
     console.error('Failed to parse OpenAI response:', { content, cleanedContent, error });
+    console.error('Content type:', typeof content);
+    console.error('Content length:', content?.length || 0);
     throw new Error(`Invalid JSON response: ${error.message}`);
   }
 }
@@ -65,33 +74,40 @@ serve(async (req) => {
       userContent = `Conversation history:\nOriginal: ${session.originalInput}\nPrevious questions: ${JSON.stringify(session.questions)}\nUser responses: ${session.userResponses.join('\n')}`;
     }
 
+    // Try GPT-4o-mini first with proper parameters
+    const requestBody = {
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: "system",
+          content: systemContent
+        },
+        {
+          role: "user",
+          content: userContent
+        }
+      ],
+      temperature: type === 'should_continue' ? 0.2 : 0.4,
+      max_tokens: 1000
+    };
+    
+    console.log('Making OpenAI request:', JSON.stringify(requestBody));
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: "system",
-            content: systemContent
-          },
-          {
-            role: "user",
-            content: userContent
-          }
-        ],
-        temperature: type === 'should_continue' ? 0.2 : 0.4,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     const data = await response.json();
-    console.log('OpenAI Generate Questions Response:', data);
+    console.log('Full OpenAI response:', JSON.stringify(data));
 
     if (data.error) {
       console.error('OpenAI API Error:', data.error);
+      console.error('Request body that failed:', JSON.stringify(requestBody));
       return new Response(
         JSON.stringify({ error: `OpenAI API Error: ${data.error.message || 'Unknown error'}` }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -100,13 +116,17 @@ serve(async (req) => {
 
     if (!data.choices || !data.choices[0] || !data.choices[0].message) {
       console.error('Invalid OpenAI response structure:', data);
+      console.error('Request body that failed:', JSON.stringify(requestBody));
       return new Response(
         JSON.stringify({ error: 'Invalid response from OpenAI API' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const result = parseOpenAIResponse(data.choices[0].message.content || (type === 'should_continue' ? '{}' : '[]'));
+    const content = data.choices[0].message.content || (type === 'should_continue' ? '{}' : '[]');
+    console.log('OpenAI message content:', JSON.stringify(content));
+    
+    const result = parseOpenAIResponse(content, type);
 
     console.log('Questions generated successfully');
 
