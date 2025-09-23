@@ -111,14 +111,13 @@ Return as JSON with clear sections and actionable insights.`;
     let requestBody;
     
     try {
-      // First attempt with GPT-5 using max_tokens
+      // First attempt with GPT-5 using minimal parameters
       requestBody = {
         model: 'gpt-5-2025-08-07',
         messages: [
           { role: 'system', content: prompt },
           { role: 'user', content: 'Generate the comprehensive business and product blueprint.' }
-        ],
-        max_tokens: 4000
+        ]
       };
       
       console.log('Attempting GPT-5 with request:', JSON.stringify(requestBody));
@@ -133,9 +132,12 @@ Return as JSON with clear sections and actionable insights.`;
       });
       
       console.log('GPT-5 Response status:', response.status);
+      console.log('GPT-5 Response headers:', Object.fromEntries(response.headers.entries()));
       
       if (!response.ok) {
-        throw new Error(`GPT-5 failed with status ${response.status}`);
+        const errorText = await response.text();
+        console.error('GPT-5 failed with error:', errorText);
+        throw new Error(`GPT-5 failed with status ${response.status}: ${errorText}`);
       }
     } catch (gpt5Error) {
       console.warn('GPT-5 failed, falling back to GPT-4o:', gpt5Error);

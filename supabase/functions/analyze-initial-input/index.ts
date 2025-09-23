@@ -56,7 +56,7 @@ serve(async (req) => {
     let requestBody;
     
     try {
-      // First attempt with GPT-5 using max_tokens instead of max_completion_tokens
+      // First attempt with GPT-5 using minimal parameters (no max_tokens)
       requestBody = {
         model: 'gpt-5-2025-08-07',
         messages: [
@@ -93,8 +93,7 @@ Return as JSON with these exact keys:
             role: 'user',
             content: `User: ${userName || 'Anonymous'}\nProject idea: ${input}`
           }
-        ],
-        max_tokens: 1000
+        ]
       };
       
       console.log('Attempting GPT-5 with request:', JSON.stringify(requestBody));
@@ -109,9 +108,12 @@ Return as JSON with these exact keys:
       });
       
       console.log('GPT-5 Response status:', analysisResponse.status);
+      console.log('GPT-5 Response headers:', Object.fromEntries(analysisResponse.headers.entries()));
       
       if (!analysisResponse.ok) {
-        throw new Error(`GPT-5 failed with status ${analysisResponse.status}`);
+        const errorText = await analysisResponse.text();
+        console.error('GPT-5 failed with error:', errorText);
+        throw new Error(`GPT-5 failed with status ${analysisResponse.status}: ${errorText}`);
       }
     } catch (gpt5Error) {
       console.warn('GPT-5 failed, falling back to GPT-4o:', gpt5Error);
@@ -187,6 +189,13 @@ Return as JSON with these exact keys:
     
     const content = analysisData.choices[0].message.content;
     console.log('OpenAI message content:', JSON.stringify(content));
+    console.log('Content type:', typeof content);
+    console.log('Content length:', content?.length || 0);
+    
+    if (!content || content.trim() === '') {
+      console.error('Empty content received from OpenAI API');  
+      throw new Error('Empty response from OpenAI API');
+    }
     
     const analysis = parseOpenAIResponse(content);
 

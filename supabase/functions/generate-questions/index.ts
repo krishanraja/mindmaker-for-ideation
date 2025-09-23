@@ -125,6 +125,16 @@ serve(async (req) => {
 
     const content = data.choices[0].message.content || (type === 'should_continue' ? '{}' : '[]');
     console.log('OpenAI message content:', JSON.stringify(content));
+    console.log('Content type:', typeof content);
+    console.log('Content length:', content?.length || 0);
+    
+    if (!content || content.trim() === '') {
+      console.warn('Empty content received from OpenAI API, using fallback');
+      const fallback = type === 'should_continue' ? { shouldContinue: false, reason: 'No content received' } : [];
+      return new Response(JSON.stringify({ result: fallback }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     
     const result = parseOpenAIResponse(content, type);
 
