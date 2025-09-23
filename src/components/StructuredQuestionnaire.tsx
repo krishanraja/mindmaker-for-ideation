@@ -271,7 +271,7 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
             transition={{ duration: 0.3 }}
           >
             <Card className="glass-card shadow-lg">
-              <CardContent className="mobile-padding">
+              <CardContent className="p-8">
                 {isLoadingQuestion ? (
                   <div className="flex items-center justify-center py-12">
                     <div className="text-center">
@@ -282,22 +282,49 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
                   </div>
                 ) : (
                   <>
-                    <div className="flex items-start gap-4 mb-6">
-                      <div className="p-3 bg-primary/10 rounded-lg">
-                        <Target className="w-6 h-6 text-primary" />
+                    <div className="mb-8">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2.5 bg-primary/10 rounded-lg">
+                          <Target className="w-5 h-5 text-primary" />
+                        </div>
+                        {currentQuestion?.category && (
+                          <span className="px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full">
+                            {currentQuestion.category}
+                          </span>
+                        )}
                       </div>
-                      <div className="flex-1">
-                        <h2 className="mobile-text-xl font-semibold text-foreground mb-2">
-                          {currentQuestion?.question}
+                      
+                      <div className="space-y-4">
+                        <h2 className="text-lg font-semibold text-foreground leading-relaxed">
+                          {currentQuestion?.question?.split(/(?<=[.!?])\s+/).map((sentence, index) => (
+                            <span key={index} className="block mb-2 last:mb-0">
+                              {sentence.trim()}
+                            </span>
+                          ))}
                         </h2>
-                        <p className="mobile-text-sm text-muted-foreground">
-                          {currentQuestion?.reasoning}
-                        </p>
+                        
+                        <div className="border-l-2 border-primary/20 pl-4">
+                          <p className="text-sm text-muted-foreground leading-relaxed">
+                            <span className="font-medium text-primary/80">Context: </span>
+                            {currentQuestion?.reasoning?.split(/(?<=[.!?])\s+/).map((sentence, index) => (
+                              <span key={index} className="block mb-1.5 last:mb-0">
+                                {sentence.trim()}
+                              </span>
+                            ))}
+                          </p>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="mb-8">
+                    <div className="mb-8 space-y-3">
+                      <label className="text-sm font-medium text-foreground">
+                        Your Response
+                      </label>
                       {renderInput()}
+                      <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                        <span className="w-1 h-1 bg-primary rounded-full"></span>
+                        The more detail you provide, the better your blueprint will be
+                      </p>
                     </div>
 
                     <div className="flex justify-between items-center">

@@ -46,31 +46,44 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
       className="w-full max-w-2xl mx-auto"
     >
       <Card className="bg-gradient-to-br from-card to-card/80 border border-border/50 shadow-card backdrop-blur-sm">
-        <CardHeader className="text-center pb-6">
-          <div className="flex items-center justify-center mb-4">
-            <HelpCircle className="w-8 h-8 text-primary mr-3" />
-            <div>
-              <Badge variant="secondary" className="mb-2">
+        <CardHeader className="pb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <HelpCircle className="w-5 h-5 text-primary" />
+              <Badge variant="secondary" className="text-xs">
                 Question {questionNumber} of {totalQuestions}
               </Badge>
-              {question.category && (
-                <Badge variant="outline" className="ml-2">
-                  {question.category}
-                </Badge>
-              )}
             </div>
+            {question.category && (
+              <Badge variant="outline" className="text-xs">
+                {question.category}
+              </Badge>
+            )}
           </div>
           
-          <h2 className="text-2xl font-bold text-foreground leading-tight">
-            {question.question}
-          </h2>
-          
-          <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
-            {question.rationale}
-          </p>
+          <div className="space-y-4 text-left">
+            <h2 className="text-lg font-semibold text-foreground leading-relaxed">
+              {question.question.split(/(?<=[.!?])\s+/).map((sentence, index) => (
+                <span key={index} className="block mb-2 last:mb-0">
+                  {sentence.trim()}
+                </span>
+              ))}
+            </h2>
+            
+            <div className="border-l-2 border-primary/20 pl-4">
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                <span className="font-medium text-primary/80">Context: </span>
+                {question.rationale.split(/(?<=[.!?])\s+/).map((sentence, index) => (
+                  <span key={index} className="block mb-1.5 last:mb-0">
+                    {sentence.trim()}
+                  </span>
+                ))}
+              </p>
+            </div>
+          </div>
         </CardHeader>
 
-        <CardContent className="space-y-6">
+        <CardContent className="p-8 space-y-6">
           <div className="space-y-3">
             <label className="text-sm font-medium text-foreground">
               Your Response
@@ -82,9 +95,10 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
               className="min-h-[120px] resize-none bg-input/50 border-border/50 focus:border-primary/50 focus:bg-input transition-all duration-300"
               disabled={isGenerating}
             />
-            <div className="text-xs text-muted-foreground">
-              💡 The more detail you provide, the better your blueprint will be
-            </div>
+            <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+              <span className="w-1 h-1 bg-primary rounded-full"></span>
+              The more detail you provide, the better your blueprint will be
+            </p>
           </div>
 
           <div className="flex gap-3 pt-4">
