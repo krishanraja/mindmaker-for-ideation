@@ -212,8 +212,14 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
   const handleSubmit = async (finalHistory: ConversationItem[]) => {
     setIsSubmitting(true);
     
+    console.log('=== STARTING BLUEPRINT GENERATION ===');
+    console.log('Analysis data:', analysis);
+    console.log('Conversation history length:', finalHistory.length);
+    console.log('Initial data:', initialData);
+    
     try {
       // Save to database
+      console.log('Saving questionnaire data to database...');
       const { error: dbError } = await supabase
         .from('lead_qualification_data')
         .insert({
@@ -233,6 +239,9 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
         throw dbError;
       }
 
+      console.log('Questionnaire saved successfully');
+      console.log('=== CALLING BLUEPRINT GENERATION FUNCTION ===');
+
       // Generate comprehensive blueprint
       const { data: blueprintData, error: blueprintError } = await supabase.functions.invoke('generate-comprehensive-blueprint', {
         body: {
@@ -243,10 +252,21 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
         }
       });
 
+      console.log('=== BLUEPRINT FUNCTION RESPONSE ===');
+      console.log('Blueprint error:', blueprintError);
+      console.log('Blueprint data:', blueprintData);
+
       if (blueprintError) {
         console.error('Error generating blueprint:', blueprintError);
         throw blueprintError;
       }
+
+      if (!blueprintData || !blueprintData.blueprint) {
+        console.error('Invalid blueprint data structure:', blueprintData);
+        throw new Error('Invalid blueprint data received');
+      }
+
+      console.log('Blueprint generated successfully');
 
       toast({
         title: "Success!",
@@ -260,11 +280,26 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
         disclaimer: blueprintData.disclaimer
       });
     } catch (error) {
+      console.error('=== BLUEPRINT GENERATION ERROR ===');
       console.error('Error completing questionnaire:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        cause: error.cause
+      });
+      
       toast({
         title: "Error",
         description: "Failed to generate your blueprint. Please try again.",
         variant: "destructive",
+      });
+      
+      // Still complete the questionnaire even if blueprint generation fails
+      onComplete({
+        analysis,
+        conversationHistory: finalHistory,
+        blueprint: null,
+        disclaimer: "Blueprint generation failed. Please try again."
       });
     } finally {
       setIsSubmitting(false);

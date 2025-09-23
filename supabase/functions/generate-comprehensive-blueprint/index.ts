@@ -17,16 +17,45 @@ function parseOpenAIResponse(content: string): any {
       throw new Error('Empty response from OpenAI API');
     }
     
-    const cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    // More aggressive cleaning for various markdown formats
+    let cleanContent = content
+      .replace(/```json\n?/gi, '')
+      .replace(/```\n?/g, '')
+      .replace(/^```/gm, '')
+      .replace(/```$/gm, '')
+      .trim();
+    
+    // Remove any leading/trailing text that's not JSON
+    const jsonStart = cleanContent.indexOf('{');
+    const jsonEnd = cleanContent.lastIndexOf('}');
+    
+    if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+      cleanContent = cleanContent.substring(jsonStart, jsonEnd + 1);
+    }
+    
     console.log('Cleaned content for parsing:', JSON.stringify(cleanContent));
     
-    return JSON.parse(cleanContent);
+    const parsed = JSON.parse(cleanContent);
+    
+    // Validate the structure
+    if (!parsed || typeof parsed !== 'object') {
+      throw new Error('Invalid JSON structure');
+    }
+    
+    return parsed;
   } catch (error) {
     console.error('Failed to parse OpenAI response:', error);
     console.error('Raw content:', content);
     console.error('Content type:', typeof content);
     console.error('Content length:', content?.length || 0);
-    throw new Error('Failed to parse AI response');
+    
+    // Create a fallback structure if parsing fails
+    return {
+      error: 'Failed to parse AI response',
+      rawContent: content,
+      executiveSummary: { productVision: 'Error generating blueprint' },
+      lovablePrompts: ['Error: Could not generate prompts due to parsing failure']
+    };
   }
 }
 
@@ -114,20 +143,31 @@ ${conversationHistory.some(item => item.websiteAnalysis) ?
 
 Make this feel inspirational and comprehensive. The user should feel excited about their vision and confident in the next steps. Focus heavily on the LOVABLE PROMPTS section - these should be production-ready prompts that can immediately build their app.
 
-Return as JSON with clear sections and actionable insights.`;
+CRITICAL: You MUST return a valid JSON object with the following structure:
+{
+  "executiveSummary": {...},
+  "technicalSpecifications": {...},
+  "userExperience": {...},
+  "businessStrategy": {...},
+  "implementationRoadmap": {...},
+  "lovablePrompts": [...]
+}
+
+Do not include any markdown formatting, code blocks, or explanatory text outside the JSON.`;
 
     // Try GPT-5 first, fallback to GPT-4o if it fails
     let response;
     let requestBody;
     
     try {
-      // First attempt with GPT-5 using minimal parameters
+      // First attempt with GPT-5 with proper parameters
       requestBody = {
         model: 'gpt-5-2025-08-07',
         messages: [
           { role: 'system', content: prompt },
-          { role: 'user', content: 'Generate the comprehensive business and product blueprint.' }
-        ]
+          { role: 'user', content: 'Generate the comprehensive business and product blueprint as a valid JSON object.' }
+        ],
+        max_completion_tokens: 4000
       };
       
       console.log('Attempting GPT-5 with request:', JSON.stringify(requestBody));
