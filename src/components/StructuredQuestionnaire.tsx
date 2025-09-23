@@ -46,6 +46,23 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
   const [isLoadingQuestion, setIsLoadingQuestion] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [analysis, setAnalysis] = useState<any>(null);
+  const [loadingStep, setLoadingStep] = useState(0);
+
+  const loadingSteps = [
+    "Reading your response...",
+    "Understanding your context...", 
+    "Thinking of the right question...",
+    "Making it personal for you...",
+    "Almost ready!"
+  ];
+
+  const engagementTips = [
+    "💡 The more specific you are, the better insights you'll get",
+    "🎯 Successful businesses often pivot 2-3 times before finding their sweet spot",
+    "⚡ Most breakthrough ideas come from solving personal problems", 
+    "🚀 Quick wins often reveal bigger opportunities",
+    "💪 Every expert started as a beginner with lots of questions"
+  ];
   const { toast } = useToast();
 
   const progress = ((currentQuestionIndex + 1) / TOTAL_QUESTIONS) * 100;
@@ -85,6 +102,18 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
 
   const generateNextQuestion = async (analysisData: any, history: ConversationItem[]) => {
     setIsLoadingQuestion(true);
+    setLoadingStep(0);
+    
+    // Progressive loading animation
+    const progressInterval = setInterval(() => {
+      setLoadingStep(prev => {
+        if (prev < loadingSteps.length - 1) {
+          return prev + 1;
+        }
+        return prev;
+      });
+    }, 4000); // Change step every 4 seconds
+
     try {
       const { data, error } = await supabase.functions.invoke('generate-dynamic-questions', {
         body: {
@@ -105,7 +134,9 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
         variant: "destructive",
       });
     } finally {
+      clearInterval(progressInterval);
       setIsLoadingQuestion(false);
+      setLoadingStep(0);
     }
   };
 
@@ -273,13 +304,46 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
             <Card className="glass-card shadow-lg">
               <CardContent className="p-8">
                 {isLoadingQuestion ? (
-                  <div className="flex items-center justify-center py-12">
-                    <div className="text-center">
-                      <Brain className="w-8 h-8 text-primary mx-auto mb-4 animate-pulse" />
-                      <p className="text-lg font-medium text-foreground mb-2">Analyzing your response...</p>
-                      <p className="text-sm text-muted-foreground">Crafting the perfect next question</p>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex flex-col items-center justify-center py-16 space-y-8"
+                  >
+                    <div className="relative">
+                      <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
+                      <div className="absolute inset-0 rounded-full h-16 w-16 border-2 border-primary/20"></div>
                     </div>
-                  </div>
+                    
+                    <div className="text-center space-y-4 max-w-md">
+                      <div className="space-y-2">
+                        <p className="text-lg font-medium">
+                          {loadingSteps[loadingStep]}
+                        </p>
+                        <div className="w-full bg-muted rounded-full h-2">
+                          <div 
+                            className="bg-primary h-2 rounded-full transition-all duration-1000 ease-out"
+                            style={{ width: `${((loadingStep + 1) / loadingSteps.length) * 100}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      <motion.div
+                        key={loadingStep}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="p-4 bg-muted/50 rounded-lg border border-border/50"
+                      >
+                        <p className="text-muted-foreground text-sm">
+                          {engagementTips[loadingStep % engagementTips.length]}
+                        </p>
+                      </motion.div>
+                      
+                      <p className="text-xs text-muted-foreground">
+                        Taking a moment to craft the perfect question for you...
+                      </p>
+                    </div>
+                  </motion.div>
                 ) : (
                   <>
                     <div className="mb-8">

@@ -48,45 +48,42 @@ serve(async (req) => {
 
     console.log('Generating dynamic question:', { questionIndex, historyLength: conversationHistory?.length });
 
-    const prompt = `You are Krish's AI clone, a world-class business strategist and product consultant. Generate the next thoughtful question for this user based on their business context and conversation history.
+    const prompt = `You're having a friendly conversation with someone about their business idea. Based on what they've told you, ask the next natural question that helps them think through their business.
 
-BUSINESS CONTEXT:
+Here's what they've shared about their business:
 Industry: ${analysis.industry}
-Target Audience: ${analysis.targetAudience}
-Core Problem: ${analysis.coreProblem}
-User Role: ${analysis.userRole}
-Technical Complexity: ${analysis.technicalComplexity}
-Missing Critical Info: ${analysis.missingCriticalInfo?.join(', ')}
+Who they're building for: ${analysis.targetAudience}
+Problem they're solving: ${analysis.coreProblem}
+Their role: ${analysis.userRole}
+How complex it might be: ${analysis.technicalComplexity}
+What we still need to know: ${analysis.missingCriticalInfo?.join(', ')}
 
-CONVERSATION HISTORY:
-${conversationHistory?.map((item: any, i: number) => `Q${i+1}: ${item.question}\nA${i+1}: ${item.answer}`).join('\n') || 'No previous questions'}
+Previous conversation:
+${conversationHistory?.map((item: any, i: number) => 
+  `You asked: ${item.question}
+They said: ${item.answer}`
+).join('\n\n') || 'This is the first question'}
 
-QUESTION #${questionIndex + 1} GUIDELINES:
-${questionIndex === 0 ? `
-- This is the FIRST question. Show you listened by referencing their specific project idea
-- Demonstrate domain expertise in their industry
-- Ask something that shows you understand their space but need clarification on a key detail
-` : `
-- Build directly on their previous answers
-- Reference specific things they mentioned
-- Help them discover needs they haven't articulated
-- Guide them toward strategic thinking about their product
-`}
+Now ask question #${questionIndex + 1}. Make it:
+- Sound like you're talking to a friend, not giving a business presentation
+- Easy to understand (no fancy business words)
+- One clear question at a time
+- Helpful for figuring out their next steps
+- Specific to what they've already told you
 
-The question should:
-1. Show active listening ("You mentioned event templates...")
-2. Demonstrate industry knowledge 
-3. Uncover critical missing information
-4. Help them ideate and discover new requirements
-5. Be conversational but strategic
+Avoid:
+- Business jargon or consultant-speak
+- Multiple questions packed into one
+- Intimidating or overly formal language
+- Asking the same thing again
 
-Generate exactly ONE question that would help create comprehensive product requirements for a tool like Lovable.
+Think of it like you're genuinely curious about their idea and want to help them succeed. Ask something that helps them discover what they really need to build.
 
 Return as JSON:
 {
-  "question": "Your thoughtful question here",
-  "category": "audience/features/business/technical/vision",
-  "reasoning": "Why this question matters for their success"
+  "question": "Your friendly, clear question here",
+  "category": "Your Customers/What You're Building/Business Basics/Technical Stuff/Your Vision",
+  "reasoning": "Simple explanation of why this question helps them"
 }`;
 
     // Try GPT-5 first, fallback to GPT-4o if it fails
