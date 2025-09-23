@@ -28,25 +28,25 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   isGenerating,
 }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-primary/10 flex items-center justify-center p-4">
-      <div className="w-full max-w-lg mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-primary/10 flex items-center justify-center pb-safe-bottom pt-safe-area-top">
+      <div className="container-width w-full max-w-lg">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 fade-in-up">
           <img 
             src={mindmakerLogo} 
             alt="MindMaker Logo" 
-            className="w-16 h-16 mx-auto mb-6"
+            className="w-16 h-16 mx-auto mb-6 hover-scale"
           />
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 tracking-[-0.03em] md:tracking-[-0.035em]">
+          <h1 className="hero-heading text-foreground mb-4">
             Idea-to-AI Plan
           </h1>
-          <p className="text-lg text-muted-foreground max-w-md mx-auto">
+          <p className="mobile-text-base text-muted-foreground max-w-md mx-auto">
             Transform your ideas into development blueprints with AI-powered analysis
           </p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-card border border-border rounded-lg shadow-lg p-8">
+        <div className="glass-card rounded-lg shadow-lg mobile-padding fade-in-up" style={{ animationDelay: '0.2s' }}>
           <div className="space-y-6">
             {/* Name Input */}
             <div className="space-y-2">
@@ -98,8 +98,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             <Button
               onClick={onStart}
               disabled={!userName.trim() || !userEmail.trim() || !projectInput.trim() || isGenerating}
-              className="w-full h-12 text-base font-semibold"
-              size="lg"
+              className="w-full mobile-button btn-hero-primary group"
             >
               {isGenerating ? (
                 <>
@@ -109,7 +108,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               ) : (
                 <>
                   Generate Blueprint
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 h-4 w-4 animated-arrow" />
                 </>
               )}
             </Button>

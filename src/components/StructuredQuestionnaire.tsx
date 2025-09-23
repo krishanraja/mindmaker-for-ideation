@@ -231,13 +231,13 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-primary/10 p-6">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-primary/10 pb-safe-bottom pt-safe-area-top">
+      <div className="container-width max-w-4xl mobile-padding">
         {/* Progress Header */}
-        <div className="mb-8">
+        <div className="mb-8 fade-in-up">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-foreground">Strategic Business Discovery</h1>
-            <span className="text-sm text-muted-foreground">
+            <h1 className="section-heading text-foreground">Strategic Business Discovery</h1>
+            <span className="mobile-text-sm text-muted-foreground">
               Question {currentQuestionIndex + 1} of {TOTAL_QUESTIONS}
             </span>
           </div>
@@ -246,13 +246,13 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
 
         {/* Conversation History Preview */}
         {conversationHistory.length > 0 && (
-          <div className="mb-6">
-            <Card className="bg-white/60 backdrop-blur-sm border-white/20">
-              <CardContent className="p-4">
-                <h3 className="text-sm font-medium text-muted-foreground mb-2">Previous insights:</h3>
-                <div className="space-y-1">
+          <div className="mb-6 fade-in-up" style={{ animationDelay: '0.1s' }}>
+            <Card className="glass-card">
+              <CardContent className="mobile-padding">
+                <h3 className="mobile-text-sm font-medium text-muted-foreground mb-2">Previous insights:</h3>
+                <div className="mobile-spacing">
                   {conversationHistory.slice(-2).map((item, index) => (
-                    <div key={index} className="text-xs text-muted-foreground/80">
+                    <div key={index} className="mobile-text-sm text-muted-foreground/80">
                       <span className="font-medium">{item.category}:</span> {item.answer.slice(0, 60)}...
                     </div>
                   ))}
@@ -270,8 +270,8 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-lg">
-              <CardContent className="p-8">
+            <Card className="glass-card shadow-lg">
+              <CardContent className="mobile-padding">
                 {isLoadingQuestion ? (
                   <div className="flex items-center justify-center py-12">
                     <div className="text-center">
@@ -287,10 +287,10 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
                         <Target className="w-6 h-6 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <h2 className="text-xl font-semibold text-foreground mb-2">
+                        <h2 className="mobile-text-xl font-semibold text-foreground mb-2">
                           {currentQuestion?.question}
                         </h2>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="mobile-text-sm text-muted-foreground">
                           {currentQuestion?.reasoning}
                         </p>
                       </div>
@@ -305,7 +305,7 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
                         variant="outline"
                         onClick={handlePrevious}
                         disabled={currentQuestionIndex === 0 || isLoadingQuestion}
-                        className="bg-white/50 border-white/20 hover:bg-white/70"
+                        className="mobile-button glass-card hover-scale"
                       >
                         <ArrowLeft className="w-4 h-4 mr-2" />
                         Previous
@@ -314,7 +314,7 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
                       <Button
                         onClick={handleNext}
                         disabled={isSubmitting || isLoadingQuestion || !currentAnswer.trim()}
-                        className="bg-primary hover:bg-primary/90 text-white"
+                        className="mobile-button btn-hero-primary group"
                       >
                         {isSubmitting ? (
                           <>
@@ -329,7 +329,7 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
                         ) : (
                           <>
                             Next Question
-                            <ArrowRight className="w-4 h-4 ml-2" />
+                            <ArrowRight className="w-4 h-4 ml-2 animated-arrow" />
                           </>
                         )}
                       </Button>
