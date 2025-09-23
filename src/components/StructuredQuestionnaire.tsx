@@ -231,34 +231,32 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-primary/10 p-6">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen hero-gradient mobile-padding section-padding">
+      <div className="container-width fade-in-up">
         {/* Progress Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-foreground">Strategic Business Discovery</h1>
-            <span className="text-sm text-muted-foreground">
+        <div className="mb-8 lg:mb-12">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4">
+            <h1 className="section-heading">Strategic Business Discovery</h1>
+            <span className="mobile-text-lg text-muted-foreground font-medium">
               Question {currentQuestionIndex + 1} of {TOTAL_QUESTIONS}
             </span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={progress} className="h-3 shadow-elegant" />
         </div>
 
         {/* Conversation History Preview */}
         {conversationHistory.length > 0 && (
-          <div className="mb-6">
-            <Card className="bg-white/60 backdrop-blur-sm border-white/20">
-              <CardContent className="p-4">
-                <h3 className="text-sm font-medium text-muted-foreground mb-2">Previous insights:</h3>
-                <div className="space-y-1">
-                  {conversationHistory.slice(-2).map((item, index) => (
-                    <div key={index} className="text-xs text-muted-foreground/80">
-                      <span className="font-medium">{item.category}:</span> {item.answer.slice(0, 60)}...
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+          <div className="mb-6 lg:mb-8">
+            <div className="glass-card mobile-padding">
+              <h3 className="text-base font-semibold text-muted-foreground mb-4">Previous insights:</h3>
+              <div className="space-y-3">
+                {conversationHistory.slice(-2).map((item, index) => (
+                  <div key={index} className="text-sm text-muted-foreground/80">
+                    <span className="font-semibold text-primary">{item.category}:</span> {item.answer.slice(0, 80)}...
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
@@ -270,8 +268,7 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-lg">
-              <CardContent className="p-8">
+            <div className="glass-card mobile-padding lg:p-10">
                 {isLoadingQuestion ? (
                   <div className="flex items-center justify-center py-12">
                     <div className="text-center">
@@ -301,43 +298,41 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <Button
-                        variant="outline"
+                      <button
                         onClick={handlePrevious}
                         disabled={currentQuestionIndex === 0 || isLoadingQuestion}
-                        className="bg-white/50 border-white/20 hover:bg-white/70"
+                        className="btn-hero-secondary mobile-button"
                       >
-                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        <ArrowLeft className="w-5 h-5 mr-3" />
                         Previous
-                      </Button>
+                      </button>
 
-                      <Button
+                      <button
                         onClick={handleNext}
                         disabled={isSubmitting || isLoadingQuestion || !currentAnswer.trim()}
-                        className="bg-primary hover:bg-primary/90 text-white"
+                        className="btn-hero-primary mobile-button"
                       >
                         {isSubmitting ? (
                           <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            <Loader2 className="w-5 h-5 mr-3 animate-spin" />
                             Generating Blueprint...
                           </>
                         ) : currentQuestionIndex >= TOTAL_QUESTIONS - 1 ? (
                           <>
-                            <CheckCircle className="w-4 h-4 mr-2" />
+                            <CheckCircle className="w-5 h-5 mr-3" />
                             Generate Blueprint
                           </>
                         ) : (
                           <>
                             Next Question
-                            <ArrowRight className="w-4 h-4 ml-2" />
+                            <ArrowRight className="w-5 h-5 ml-3 animated-arrow" />
                           </>
                         )}
-                      </Button>
+                      </button>
                     </div>
                   </>
                 )}
-              </CardContent>
-            </Card>
+            </div>
           </motion.div>
         </AnimatePresence>
       </div>

@@ -28,25 +28,25 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   isGenerating,
 }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-primary/10 flex items-center justify-center p-4">
-      <div className="w-full max-w-lg mx-auto">
+    <div className="min-h-screen hero-gradient flex items-center justify-center mobile-padding section-padding">
+      <div className="container-width fade-in-up">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 lg:mb-12">
           <img 
             src={mindmakerLogo} 
             alt="MindMaker Logo" 
-            className="w-16 h-16 mx-auto mb-6"
+            className="w-16 h-16 lg:w-20 lg:h-20 mx-auto mb-6 hover-scale"
           />
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 tracking-[-0.03em] md:tracking-[-0.035em]">
+          <h1 className="hero-heading hero-text-shimmer mb-6">
             Idea-to-AI Plan
           </h1>
-          <p className="text-lg text-muted-foreground max-w-md mx-auto">
+          <p className="mobile-text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Transform your ideas into development blueprints with AI-powered analysis
           </p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-card border border-border rounded-lg shadow-lg p-8">
+        <div className="glass-card mobile-padding lg:p-10">
           <div className="space-y-6">
             {/* Name Input */}
             <div className="space-y-2">
@@ -95,28 +95,27 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             </div>
 
             {/* CTA Button */}
-            <Button
+            <button
               onClick={onStart}
               disabled={!userName.trim() || !userEmail.trim() || !projectInput.trim() || isGenerating}
-              className="w-full h-12 text-base font-semibold"
-              size="lg"
+              className="btn-hero-primary w-full mobile-button"
             >
               {isGenerating ? (
                 <>
-                  <div className="w-4 h-4 mr-2 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                  <div className="w-5 h-5 mr-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   Creating Blueprint...
                 </>
               ) : (
                 <>
                   Generate Blueprint
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-3 h-5 w-5 animated-arrow" />
                 </>
               )}
-            </Button>
+            </button>
 
             {/* Pro Tip */}
-            <p className="text-xs text-muted-foreground text-center mt-4">
-              Include your target audience and key features for better results
+            <p className="text-sm text-muted-foreground/80 text-center mt-6 font-medium">
+              💡 Include your target audience and key features for better results
             </p>
           </div>
         </div>
