@@ -250,7 +250,13 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
       <Textarea
         value={currentAnswer}
         onChange={(e) => setCurrentAnswer(e.target.value)}
-        placeholder="Share your thoughts in detail..."
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey && currentAnswer.trim() && !isSubmitting && !isLoadingQuestion) {
+            e.preventDefault();
+            handleNext();
+          }
+        }}
+        placeholder="Share your thoughts in detail... (Press Enter to continue, Shift+Enter for new line)"
         className="min-h-[120px] text-base bg-white/50 border-white/20 focus:border-primary/50 focus:ring-primary/20"
         rows={4}
       />
