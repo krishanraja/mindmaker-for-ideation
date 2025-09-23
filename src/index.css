@@ -95,27 +95,13 @@
 }
 
 @layer components {
-  /* Enhanced glass morphism with perfect mobile performance */
+  /* Bulletproof Glass Morphism Cards */
   .glass-card {
     background: hsl(var(--background) / 0.95) !important;
     backdrop-filter: blur(12px) !important;
     border: 1px solid hsl(var(--border) / 0.3) !important;
-    border-radius: 1.25rem !important;
-    box-shadow: 
-      0 8px 32px hsl(var(--foreground) / 0.08),
-      0 1px 0 hsl(var(--background) / 0.1) inset !important;
-    /* Enhanced mobile performance */
-    transform: translate3d(0, 0, 0);
-    will-change: transform;
-    @apply p-6 sm:p-8 lg:p-10;
-    @apply transition-all duration-300 ease-out;
-  }
-  
-  .glass-card:hover {
-    box-shadow: 
-      0 16px 48px hsl(var(--foreground) / 0.12),
-      0 1px 0 hsl(var(--background) / 0.2) inset !important;
-    transform: translate3d(0, -2px, 0);
+    border-radius: 1rem !important;
+    box-shadow: 0 8px 32px hsl(var(--foreground) / 0.08) !important;
   }
   
   .glass-card-dark {
@@ -153,58 +139,31 @@
     50% { background-position: -200% 0; }
   }
   
-  /* Enhanced Button System with Perfect Mobile Experience */
+  /* Button System */
   .btn-hero-primary {
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))) !important;
+    background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent))) !important;
     color: white !important;
-    box-shadow: 
-      0 8px 32px hsl(var(--primary) / 0.3),
-      0 1px 0 hsl(var(--primary-glow) / 0.8) inset !important;
+    box-shadow: var(--shadow-lg) !important;
     transform: scale(1) !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    @apply border-0 outline-0;
+    transition: all 0.3s ease !important;
   }
   
   .btn-hero-primary:hover {
-    background: linear-gradient(135deg, hsl(var(--primary-400)), hsl(var(--accent-400))) !important;
-    box-shadow: 
-      0 16px 48px hsl(var(--primary) / 0.4),
-      0 1px 0 hsl(var(--primary-glow) / 0.9) inset !important;
-    transform: scale(1.02) translateY(-1px) !important;
-  }
-  
-  .btn-hero-primary:active {
-    transform: scale(0.98) translateY(0px) !important;
-    box-shadow: 
-      0 4px 16px hsl(var(--primary) / 0.3),
-      0 1px 0 hsl(var(--primary-glow) / 0.6) inset !important;
+    box-shadow: var(--shadow-elegant) !important;
+    transform: scale(1.05) !important;
   }
   
   .btn-hero-secondary {
-    background: rgba(255, 255, 255, 0.1) !important;
+    background: transparent !important;
     color: white !important;
     border: 2px solid rgba(255, 255, 255, 0.3) !important;
-    backdrop-filter: blur(8px) !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    box-shadow: 
-      0 4px 16px rgba(0, 0, 0, 0.1),
-      0 1px 0 rgba(255, 255, 255, 0.1) inset !important;
+    backdrop-filter: blur(4px) !important;
+    transition: all 0.3s ease !important;
   }
   
   .btn-hero-secondary:hover {
-    background: rgba(255, 255, 255, 0.2) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
     border-color: rgba(255, 255, 255, 0.5) !important;
-    box-shadow: 
-      0 8px 32px rgba(0, 0, 0, 0.15),
-      0 1px 0 rgba(255, 255, 255, 0.2) inset !important;
-    transform: translateY(-1px) !important;
-  }
-  
-  .btn-hero-secondary:active {
-    transform: translateY(0px) scale(0.98) !important;
-    box-shadow: 
-      0 2px 8px rgba(0, 0, 0, 0.1),
-      0 1px 0 rgba(255, 255, 255, 0.05) inset !important;
   }
   
   /* Mobile-First Responsive System */
@@ -212,9 +171,8 @@
     @apply py-8 sm:py-12 md:py-20 lg:py-24; 
   }
   
-  /* Mobile-First Responsive Container System */
   .container-width { 
-    @apply w-full max-w-lg mx-auto px-4 sm:max-w-2xl sm:px-6 lg:max-w-4xl lg:px-8 xl:max-w-6xl; 
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8; 
   }
   
   .mobile-spacing { 
@@ -240,21 +198,12 @@
     @apply gap-4 sm:gap-6 lg:gap-8;
   }
   
-  /* Mobile-optimized buttons with enhanced touch targets */
+  /* Mobile-optimized buttons */
   .mobile-button {
     @apply min-h-[48px] sm:min-h-[44px];
     @apply px-6 md:px-8;
     @apply text-sm sm:text-base md:text-lg;
-    @apply rounded-xl sm:rounded-lg;
-    @apply font-semibold;
-    @apply transition-all duration-300 ease-out;
-    @apply transform-gpu;
-    @apply active:scale-95 active:duration-75;
-    @apply focus:ring-2 focus:ring-primary/30 focus:ring-offset-2;
-    /* Enhanced touch feedback for mobile */
-    touch-action: manipulation;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
+    @apply rounded-lg sm:rounded-md;
   }
   
   /* Typography System */
