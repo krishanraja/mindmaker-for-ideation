@@ -203,6 +203,24 @@ html {
     animation-fill-mode: forwards !important;
   }
 
+  .hero-text-shimmer-black {
+    color: black !important;
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.4) 0%,
+      rgba(0, 0, 0, 0.8) 20%,
+      rgba(0, 0, 0, 1) 50%,
+      rgba(0, 0, 0, 0.8) 80%,
+      rgba(0, 0, 0, 0.4) 100%
+    ) !important;
+    background-size: 400% 100% !important;
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    animation: hero-text-shimmer 10s linear 2s 1 !important;
+    animation-fill-mode: forwards !important;
+  }
+
   /* === BRAND GRADIENT UTILITY === */
   .bg-brand-gradient {
     background-image: var(--gradient-brand) !important;

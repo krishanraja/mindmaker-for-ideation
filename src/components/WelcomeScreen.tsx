@@ -37,7 +37,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             alt="MindMaker Logo" 
             className="w-16 h-16 mx-auto mb-6 hover-scale"
           />
-          <h1 className="font-gobold mobile-text-xl hero-text-shimmer mb-4">
+          <h1 className="font-gobold mobile-text-xl hero-text-shimmer-black mb-4">
             Idea-to-AI Plan
           </h1>
           <p className="mobile-text-base text-muted-foreground max-w-md mx-auto">
