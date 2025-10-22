@@ -376,29 +376,97 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
                     animate={{ opacity: 1 }}
                     className="flex flex-col items-center justify-center py-16 space-y-8"
                   >
+                    {/* Dynamic AI Brain Animation */}
                     <div className="relative">
-                      <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
-                      <div className="absolute inset-0 rounded-full h-16 w-16 border-2 border-primary/20"></div>
+                      {/* Pulsing outer rings */}
+                      <motion.div
+                        animate={{
+                          scale: [1, 1.2, 1],
+                          opacity: [0.5, 0.2, 0.5]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                        className="absolute inset-0 rounded-full h-20 w-20 border-2 border-primary -translate-x-2 -translate-y-2"
+                      />
+                      <motion.div
+                        animate={{
+                          scale: [1, 1.3, 1],
+                          opacity: [0.3, 0.1, 0.3]
+                        }}
+                        transition={{
+                          duration: 2.5,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          delay: 0.5
+                        }}
+                        className="absolute inset-0 rounded-full h-24 w-24 border-2 border-primary/50 -translate-x-4 -translate-y-4"
+                      />
+                      
+                      {/* Central brain icon with pulse */}
+                      <motion.div
+                        animate={{
+                          scale: [1, 1.1, 1],
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                        className="relative z-10 p-4 bg-primary/10 rounded-full"
+                      >
+                        <Brain className="w-8 h-8 text-primary" />
+                      </motion.div>
+                      
+                      {/* Orbiting thinking particles */}
+                      {[0, 1, 2].map((i) => (
+                        <motion.div
+                          key={i}
+                          animate={{
+                            rotate: 360
+                          }}
+                          transition={{
+                            duration: 3 + i,
+                            repeat: Infinity,
+                            ease: "linear"
+                          }}
+                          className="absolute inset-0"
+                          style={{
+                            transformOrigin: "center"
+                          }}
+                        >
+                          <div 
+                            className="absolute w-2 h-2 bg-primary rounded-full"
+                            style={{
+                              top: '50%',
+                              left: `${20 + i * 15}px`,
+                              transform: 'translateY(-50%)'
+                            }}
+                          />
+                        </motion.div>
+                      ))}
                     </div>
                     
                     <div className="text-center space-y-4 max-w-md">
-                      <div className="space-y-2">
-                        <p className="text-lg font-medium">
-                          {loadingSteps[loadingStep]}
-                        </p>
-                        <div className="w-full bg-muted rounded-full h-2">
-                          <div 
-                            className="bg-primary h-2 rounded-full transition-all duration-1000 ease-out"
-                            style={{ width: `${((loadingStep + 1) / loadingSteps.length) * 100}%` }}
-                          ></div>
-                        </div>
-                      </div>
+                      {/* Animated loading text */}
+                      <motion.p 
+                        key={loadingStep}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="text-lg font-medium"
+                      >
+                        {loadingSteps[loadingStep]}
+                      </motion.p>
                       
+                      {/* Animated engagement tips */}
                       <motion.div
                         key={loadingStep}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
                         className="p-4 bg-muted/50 rounded-lg border border-border/50"
                       >
                         <p className="text-muted-foreground text-sm">
@@ -406,9 +474,24 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
                         </p>
                       </motion.div>
                       
-                      <p className="text-xs text-muted-foreground">
-                        Taking a moment to craft the perfect question for you...
-                      </p>
+                      {/* Animated dots */}
+                      <div className="flex items-center justify-center gap-2">
+                        {[0, 1, 2].map((i) => (
+                          <motion.div
+                            key={i}
+                            animate={{
+                              scale: [1, 1.5, 1],
+                              opacity: [0.3, 1, 0.3]
+                            }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              delay: i * 0.2
+                            }}
+                            className="w-2 h-2 bg-primary rounded-full"
+                          />
+                        ))}
+                      </div>
                     </div>
                   </motion.div>
                 ) : (
