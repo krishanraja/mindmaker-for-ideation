@@ -10,11 +10,23 @@ interface Profile {
   created_at: string;
 }
 
+interface ConversationSession {
+  id: string;
+  user_id: string | null;
+  business_context: any;
+  session_title: string | null;
+  status: string | null;
+  started_at: string;
+  last_activity: string;
+}
+
 interface AuthContextType {
   profile: Profile | null;
   loading: boolean;
-  signIn: (username: string) => Promise<{ error: any }>;
+  lastSession: ConversationSession | null;
+  signIn: (username: string) => Promise<{ error: any; isExisting?: boolean }>;
   signOut: () => void;
+  checkUsername: (username: string) => Promise<{ exists: boolean; profile?: Profile }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,6 +35,7 @@ const STORAGE_KEY = 'mindmaker_username';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [lastSession, setLastSession] = useState<ConversationSession | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -46,6 +59,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       if (data && !error) {
         setProfile(data);
+        
+        // Load last session for this user
+        const { data: sessionData } = await supabase
+          .from('conversation_sessions')
+          .select('*')
+          .eq('user_id', data.id)
+          .order('last_activity', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        
+        if (sessionData) {
+          setLastSession(sessionData);
+        }
       } else {
         // Username doesn't exist anymore, clear storage
         localStorage.removeItem(STORAGE_KEY);
@@ -54,6 +80,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Error loading profile:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkUsername = async (username: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('username', username)
+        .maybeSingle();
+
+      if (error) {
+        return { exists: false };
+      }
+
+      return { exists: !!data, profile: data || undefined };
+    } catch (err) {
+      console.error('Error checking username:', err);
+      return { exists: false };
     }
   };
 
@@ -73,9 +118,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (existingProfile) {
         // Username exists, log in
         setProfile(existingProfile);
+        
+        // Load last session
+        const { data: sessionData } = await supabase
+          .from('conversation_sessions')
+          .select('*')
+          .eq('user_id', existingProfile.id)
+          .order('last_activity', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        
+        if (sessionData) {
+          setLastSession(sessionData);
+        }
+        
         localStorage.setItem(STORAGE_KEY, username);
         navigate('/ideation');
-        return { error: null };
+        return { error: null, isExisting: true };
       } else {
         // Create new profile
         const newId = crypto.randomUUID();
@@ -98,9 +157,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         setProfile(newProfile);
+        setLastSession(null);
         localStorage.setItem(STORAGE_KEY, username);
         navigate('/ideation');
-        return { error: null };
+        return { error: null, isExisting: false };
       }
     } catch (err) {
       return { error: err };
@@ -109,6 +169,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = () => {
     setProfile(null);
+    setLastSession(null);
     localStorage.removeItem(STORAGE_KEY);
     navigate('/');
   };
@@ -117,8 +178,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider value={{
       profile,
       loading,
+      lastSession,
       signIn,
       signOut,
+      checkUsername,
     }}>
       {children}
     </AuthContext.Provider>

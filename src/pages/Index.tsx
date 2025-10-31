@@ -9,7 +9,7 @@ import { MainNav } from '@/components/MainNav';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
-  const { profile } = useAuth();
+  const { profile, lastSession } = useAuth();
   const [showWelcome, setShowWelcome] = useState(true);
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
   const [showResults, setShowResults] = useState(false);
@@ -17,6 +17,15 @@ const Index = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [questionnaireData, setQuestionnaireData] = useState<any>(null);
   const [blueprintData, setBlueprintData] = useState<any>(null);
+
+  // Restore previous session if user is returning
+  React.useEffect(() => {
+    if (lastSession && lastSession.status === 'active') {
+      // User has an active session - could restore their progress here
+      // For now, just show welcome screen but could expand this
+      setShowWelcome(true);
+    }
+  }, [lastSession]);
 
   const handleWelcomeStart = async () => {
     if (!projectInput.trim()) return;
