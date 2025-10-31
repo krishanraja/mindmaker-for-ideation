@@ -8,6 +8,7 @@ import { getOrCreateAnonymousSession } from '@/utils/anonymousSession';
 import WelcomeScreen from '@/components/WelcomeScreen';
 import StructuredQuestionnaire from '@/components/StructuredQuestionnaire';
 import BlueprintResults from '@/components/BlueprintResults';
+import { MainNav } from '@/components/MainNav';
 
 const Index = () => {
   const [currentSessionId, setCurrentSessionId] = useState<string | undefined>();
@@ -76,6 +77,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <MainNav />
       <AnimatePresence mode="wait">
         {showWelcome ? (
           <motion.div
