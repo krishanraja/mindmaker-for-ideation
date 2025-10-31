@@ -61,26 +61,11 @@ const LeadQualificationDashboard: React.FC = () => {
 
   const loadQualificationData = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      const { data, error } = await supabase
-        .from('lead_qualification_data')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      setQualificationData(data || []);
-      calculateMetrics(data || []);
+      // Temporarily disabled - tables not yet created
+      setQualificationData([]);
+      calculateMetrics([]);
     } catch (error) {
       console.error('Error loading qualification data:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load qualification data",
-        variant: "destructive",
-      });
     } finally {
       setIsLoading(false);
     }

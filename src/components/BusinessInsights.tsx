@@ -60,43 +60,8 @@ const BusinessInsights: React.FC = () => {
 
   const loadBusinessInsights = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      // Load user profile
-      const { data: profileData } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      if (profileData) {
-        setProfile(profileData);
-      }
-
-      // Load business context
-      const { data: contextData } = await supabase
-        .from('user_business_context')
-        .select('*')
-        .eq('user_id', user.id);
-
-      if (contextData) {
-        setBusinessContext(contextData);
-      }
-
-      // Load lead qualification
-      const { data: qualificationData } = await supabase
-        .from('lead_qualification_data')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-
-      if (qualificationData) {
-        setLeadQualification(qualificationData);
-      }
-
+      // Temporarily disabled - tables not yet created
+      setLoading(false);
     } catch (error) {
       console.error('Error loading business insights:', error);
     } finally {

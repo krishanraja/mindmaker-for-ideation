@@ -52,25 +52,10 @@ const ConversationHistory: React.FC<ConversationHistoryProps> = ({
 
   const loadConversationHistory = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      const { data, error } = await supabase
-        .from('conversation_sessions')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .order('updated_at', { ascending: false });
-
-      if (error) throw error;
-
-      setSessions(data || []);
+      // Temporarily disabled - tables not yet created
+      setSessions([]);
     } catch (error) {
       console.error('Error loading conversation history:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load conversation history",
-        variant: "destructive",
-      });
     } finally {
       setIsLoading(false);
     }

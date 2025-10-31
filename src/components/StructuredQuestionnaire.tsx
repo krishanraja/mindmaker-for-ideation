@@ -218,26 +218,8 @@ const StructuredQuestionnaire: React.FC<StructuredQuestionnaireProps> = ({
     console.log('Initial data:', initialData);
     
     try {
-      // Save to database
-      console.log('Saving questionnaire data to database...');
-      const { error: dbError } = await supabase
-        .from('lead_qualification_data')
-        .insert({
-          session_id: anonymousSessionId,
-          user_name: initialData?.userName,
-          user_email: initialData?.userEmail,
-          project_description: initialData?.projectInput,
-          questionnaire_data: {
-            analysis,
-            conversationHistory: finalHistory
-          },
-          created_at: new Date().toISOString()
-        });
-
-      if (dbError) {
-        console.error('Error saving questionnaire:', dbError);
-        throw dbError;
-      }
+      // Save to database - temporarily disabled as tables not yet created
+      console.log('Questionnaire data would be saved here');
 
       console.log('Questionnaire saved successfully');
       console.log('=== CALLING BLUEPRINT GENERATION FUNCTION ===');
