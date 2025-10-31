@@ -78,13 +78,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: null };
       } else {
         // Create new profile
+        const newId = crypto.randomUUID();
         const { data: newProfile, error: insertError } = await supabase
           .from('profiles')
-          .insert({
+          .insert([{
+            id: newId,
             username,
             display_name: username,
             email: null,
-          })
+          }])
           .select()
           .single();
 

@@ -713,7 +713,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           email?: string | null
-          id: string
+          id?: string
           updated_at?: string
           username: string
         }
