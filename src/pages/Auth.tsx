@@ -1,12 +1,8 @@
-import { useState } from "react";
-import { LoginForm } from "@/components/auth/LoginForm";
-import { SignupForm } from "@/components/auth/SignupForm";
+import { UsernameForm } from "@/components/auth/UsernameForm";
 import { Card } from "@/components/ui/card";
 import { Lightbulb, GraduationCap } from "lucide-react";
 
 export default function Auth() {
-  const [showLogin, setShowLogin] = useState(true);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/20">
       <div className="container mx-auto px-4 py-12">
@@ -47,11 +43,7 @@ export default function Auth() {
 
         <div className="flex justify-center">
           <Card className="p-8">
-            {showLogin ? (
-              <LoginForm onSwitchToSignup={() => setShowLogin(false)} />
-            ) : (
-              <SignupForm onSwitchToLogin={() => setShowLogin(true)} />
-            )}
+            <UsernameForm />
           </Card>
         </div>
       </div>

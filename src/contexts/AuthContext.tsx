@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,112 +7,114 @@ interface Profile {
   username: string;
   display_name: string | null;
   email: string | null;
+  created_at: string;
 }
 
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
   profile: Profile | null;
   loading: boolean;
-  signUp: (username: string, email: string, password: string) => Promise<{ error: any }>;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signOut: () => Promise<void>;
+  signIn: (username: string) => Promise<{ error: any }>;
+  signOut: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const STORAGE_KEY = 'mindmaker_username';
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        // Fetch profile after state is set
-        if (session?.user) {
-          setTimeout(() => {
-            fetchProfile(session.user.id);
-          }, 0);
-        } else {
-          setProfile(null);
-        }
-      }
-    );
-
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      }
+    // Check for stored username
+    const storedUsername = localStorage.getItem(STORAGE_KEY);
+    if (storedUsername) {
+      loadProfile(storedUsername);
+    } else {
       setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    }
   }, []);
 
-  const fetchProfile = async (userId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-    
-    if (data && !error) {
-      setProfile(data);
-    }
-  };
-
-  const signUp = async (username: string, email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          username,
-          display_name: username,
-        },
-        emailRedirectTo: `${window.location.origin}/ideation`
+  const loadProfile = async (username: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('username', username)
+        .single();
+      
+      if (data && !error) {
+        setProfile(data);
+      } else {
+        // Username doesn't exist anymore, clear storage
+        localStorage.removeItem(STORAGE_KEY);
       }
-    });
-    return { error };
-  };
-
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    
-    if (!error) {
-      navigate('/ideation');
+    } catch (err) {
+      console.error('Error loading profile:', err);
+    } finally {
+      setLoading(false);
     }
-    
-    return { error };
   };
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
+  const signIn = async (username: string) => {
+    try {
+      // Check if username exists
+      const { data: existingProfile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('username', username)
+        .maybeSingle();
+
+      if (fetchError) {
+        return { error: fetchError };
+      }
+
+      if (existingProfile) {
+        // Username exists, log in
+        setProfile(existingProfile);
+        localStorage.setItem(STORAGE_KEY, username);
+        navigate('/ideation');
+        return { error: null };
+      } else {
+        // Create new profile
+        const { data: newProfile, error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            username,
+            display_name: username,
+            email: null,
+          })
+          .select()
+          .single();
+
+        if (insertError) {
+          if (insertError.code === '23505') {
+            return { error: { message: 'Username already taken' } };
+          }
+          return { error: insertError };
+        }
+
+        setProfile(newProfile);
+        localStorage.setItem(STORAGE_KEY, username);
+        navigate('/ideation');
+        return { error: null };
+      }
+    } catch (err) {
+      return { error: err };
+    }
+  };
+
+  const signOut = () => {
     setProfile(null);
+    localStorage.removeItem(STORAGE_KEY);
     navigate('/');
   };
 
   return (
     <AuthContext.Provider value={{
-      user,
-      session,
       profile,
       loading,
-      signUp,
       signIn,
       signOut,
     }}>

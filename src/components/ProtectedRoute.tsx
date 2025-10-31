@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { profile, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && !profile) {
       navigate("/");
     }
-  }, [user, loading, navigate]);
+  }, [profile, loading, navigate]);
 
   if (loading) {
     return (
@@ -20,7 +20,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!user) {
+  if (!profile) {
     return null;
   }
 
