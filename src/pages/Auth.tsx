@@ -1,14 +1,20 @@
 import { UsernameForm } from "@/components/auth/UsernameForm";
 import { Card } from "@/components/ui/card";
 import { Lightbulb, GraduationCap } from "lucide-react";
+import heroLogo from "@/assets/mindmaker-hero-logo.png";
 
 export default function Auth() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/20">
       <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12 space-y-4">
+        <div className="text-center mb-12 space-y-6">
+          <img 
+            src={heroLogo} 
+            alt="MindMaker" 
+            className="h-16 mx-auto"
+          />
           <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            MindMaker AI Suite
+            MINDMAKER AI SUITE
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Your comprehensive platform for AI ideation and literacy
@@ -21,7 +27,7 @@ export default function Auth() {
               <div className="p-3 rounded-lg bg-primary/10">
                 <Lightbulb className="h-6 w-6 text-primary" />
               </div>
-              <h2 className="text-2xl font-bold">AI Ideation</h2>
+              <h2 className="text-2xl font-bold">AI IDEATION</h2>
             </div>
             <p className="text-muted-foreground">
               Generate comprehensive business blueprints and AI strategies tailored to your needs.
@@ -33,7 +39,7 @@ export default function Auth() {
               <div className="p-3 rounded-lg bg-accent/10">
                 <GraduationCap className="h-6 w-6 text-accent" />
               </div>
-              <h2 className="text-2xl font-bold">AI Literacy</h2>
+              <h2 className="text-2xl font-bold">AI LITERACY</h2>
             </div>
             <p className="text-muted-foreground">
               Build your AI knowledge with interactive exercises and daily challenges.
@@ -41,8 +47,8 @@ export default function Auth() {
           </Card>
         </div>
 
-        <div className="flex justify-center">
-          <Card className="p-8">
+        <div className="flex justify-center max-w-4xl mx-auto">
+          <Card className="p-8 w-full">
             <UsernameForm />
           </Card>
         </div>

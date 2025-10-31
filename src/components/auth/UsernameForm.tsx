@@ -64,9 +64,8 @@ export function UsernameForm() {
   };
 
   return (
-    <div className="w-full max-w-md space-y-6">
+    <div className="w-full space-y-6">
       <div className="text-center space-y-2">
-        <h2 className="text-3xl font-bold">Welcome to MindMaker</h2>
         <p className="text-muted-foreground">Choose a username to get started</p>
       </div>
 
