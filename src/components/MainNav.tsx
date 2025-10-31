@@ -1,10 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Lightbulb, GraduationCap } from "lucide-react";
+import { Lightbulb, GraduationCap, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function MainNav() {
   const location = useLocation();
-  const isIdeation = location.pathname === "/";
+  const { profile, signOut } = useAuth();
+  const isIdeation = location.pathname === "/ideation";
   const isLiteracy = location.pathname === "/literacy";
 
   return (
@@ -12,15 +14,7 @@ export function MainNav() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img 
-              src="/lovable-uploads/a9a8850e-efa8-4ff3-be18-e9ca23a403a2.png" 
-              alt="MindMaker" 
-              className="h-8"
-            />
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Link to="/">
+            <Link to="/ideation">
               <Button 
                 variant={isIdeation ? "default" : "ghost"}
                 className="gap-2"
@@ -38,6 +32,16 @@ export function MainNav() {
                 AI Literacy
               </Button>
             </Link>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-muted-foreground">
+              @{profile?.username}
+            </span>
+            <Button variant="ghost" size="sm" onClick={signOut} className="gap-2">
+              <LogOut className="h-4 w-4" />
+              Logout
+            </Button>
           </div>
         </div>
       </div>

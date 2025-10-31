@@ -2,15 +2,10 @@ import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import mindmakerLogo from '@/assets/mindmaker-logo.png';
 
 interface WelcomeScreenProps {
-  userName: string;
-  setUserName: (value: string) => void;
-  userEmail: string;
-  setUserEmail: (value: string) => void;
   projectInput: string;
   setProjectInput: (value: string) => void;
   onStart: () => void;
@@ -18,10 +13,6 @@ interface WelcomeScreenProps {
 }
 
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
-  userName,
-  setUserName,
-  userEmail,
-  setUserEmail,
   projectInput,
   setProjectInput,
   onStart,
@@ -48,37 +39,6 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         {/* Form Card */}
         <div className="glass-card rounded-lg shadow-lg mobile-padding fade-in-up" style={{ animationDelay: '0.2s' }}>
           <div className="space-y-6">
-            {/* Name Input */}
-            <div className="space-y-2">
-              <Label htmlFor="userName" className="text-sm font-medium">
-                Name
-              </Label>
-              <Input
-                id="userName"
-                placeholder="Enter your name"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                disabled={isGenerating}
-                className="h-12"
-              />
-            </div>
-
-            {/* Email Input */}
-            <div className="space-y-2">
-              <Label htmlFor="userEmail" className="text-sm font-medium">
-                Email
-              </Label>
-              <Input
-                id="userEmail"
-                type="email"
-                placeholder="your@email.com"
-                value={userEmail}
-                onChange={(e) => setUserEmail(e.target.value)}
-                disabled={isGenerating}
-                className="h-12"
-              />
-            </div>
-
             {/* Project Vision */}
             <div className="space-y-2">
               <Label htmlFor="projectInput" className="text-sm font-medium">
@@ -90,20 +50,20 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 value={projectInput}
                 onChange={(e) => setProjectInput(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey && userName.trim() && userEmail.trim() && projectInput.trim() && !isGenerating) {
+                  if (e.key === 'Enter' && !e.shiftKey && projectInput.trim() && !isGenerating) {
                     e.preventDefault();
                     onStart();
                   }
                 }}
                 disabled={isGenerating}
-                className="min-h-[120px] resize-none"
+                className="min-h-[180px] resize-none"
               />
             </div>
 
             {/* CTA Button */}
             <Button
               onClick={onStart}
-              disabled={!userName.trim() || !userEmail.trim() || !projectInput.trim() || isGenerating}
+              disabled={!projectInput.trim() || isGenerating}
               className="w-full mobile-button btn-hero-primary group"
             >
               {isGenerating ? (

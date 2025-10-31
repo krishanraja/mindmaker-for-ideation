@@ -1,56 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MessageCircle, Brain } from 'lucide-react';
-import { getOrCreateAnonymousSession } from '@/utils/anonymousSession';
 
 import WelcomeScreen from '@/components/WelcomeScreen';
 import StructuredQuestionnaire from '@/components/StructuredQuestionnaire';
 import BlueprintResults from '@/components/BlueprintResults';
 import { MainNav } from '@/components/MainNav';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
-  const [currentSessionId, setCurrentSessionId] = useState<string | undefined>();
-  const [activeTab, setActiveTab] = useState('chat');
-  const [anonymousSessionId, setAnonymousSessionId] = useState<string>('');
-  
-  // Welcome screen state
+  const { profile } = useAuth();
   const [showWelcome, setShowWelcome] = useState(true);
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const [userName, setUserName] = useState('');
-  const [userEmail, setUserEmail] = useState('');
   const [projectInput, setProjectInput] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [questionnaireData, setQuestionnaireData] = useState<any>(null);
   const [blueprintData, setBlueprintData] = useState<any>(null);
 
-  useEffect(() => {
-    // Initialize anonymous session
-    const sessionId = getOrCreateAnonymousSession();
-    setAnonymousSessionId(sessionId);
-  }, []);
-
-  const handleSessionCreated = (sessionId: string) => {
-    setCurrentSessionId(sessionId);
-  };
-
-  const handleNewConversation = () => {
-    setCurrentSessionId(undefined);
-    setActiveTab('chat');
-  };
-
   const handleWelcomeStart = async () => {
-    if (!userName.trim() || !userEmail.trim() || !projectInput.trim()) return;
+    if (!projectInput.trim()) return;
     
     setIsGenerating(true);
-    
-    // Store user data for the questionnaire
-    setUserName(userName);
-    setUserEmail(userEmail);
-    setProjectInput(projectInput);
-    
     setShowWelcome(false);
     setShowQuestionnaire(true);
     setIsGenerating(false);
@@ -67,8 +38,6 @@ const Index = () => {
     setShowWelcome(true);
     setShowQuestionnaire(false);
     setShowResults(false);
-    setUserName('');
-    setUserEmail('');
     setProjectInput('');
     setQuestionnaireData(null);
     setBlueprintData(null);
@@ -88,10 +57,6 @@ const Index = () => {
             transition={{ duration: 0.4 }}
           >
             <WelcomeScreen
-              userName={userName}
-              setUserName={setUserName}
-              userEmail={userEmail}
-              setUserEmail={setUserEmail}
               projectInput={projectInput}
               setProjectInput={setProjectInput}
               onStart={handleWelcomeStart}
@@ -108,10 +73,9 @@ const Index = () => {
           >
             <StructuredQuestionnaire
               onComplete={handleQuestionnaireComplete}
-              anonymousSessionId={anonymousSessionId}
               initialData={{
-                userName,
-                userEmail,
+                userName: profile?.display_name || profile?.username || '',
+                userEmail: profile?.email || '',
                 projectInput
               }}
             />
@@ -138,7 +102,6 @@ const Index = () => {
             transition={{ duration: 0.4 }}
             className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5"
           >
-            {/* Main Content */}
             <div className="container mx-auto px-4 py-6 max-w-7xl">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -148,18 +111,14 @@ const Index = () => {
               >
                 <Card className="h-full shadow-xl border-2">
                   <CardContent className="p-0 h-full">
-                    <Tabs value={activeTab} className="h-full flex flex-col">
-                      <TabsContent value="blueprint" className="flex-1 m-0">
-                        <div className="h-full flex items-center justify-center">
-                          <div className="text-center">
-                            <h2 className="text-2xl font-bold mb-4">AI Blueprint Generation</h2>
-                            <p className="text-muted-foreground">
-                              Your personalized AI strategy blueprint will appear here based on your questionnaire responses.
-                            </p>
-                          </div>
-                        </div>
-                      </TabsContent>
-                    </Tabs>
+                    <div className="h-full flex items-center justify-center">
+                      <div className="text-center">
+                        <h2 className="text-2xl font-bold mb-4">AI Blueprint Generation</h2>
+                        <p className="text-muted-foreground">
+                          Your personalized AI strategy blueprint will appear here based on your questionnaire responses.
+                        </p>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>
